@@ -25,7 +25,7 @@ class BarangController extends Controller
         return view('Barang.create', compact('kategori'));
     }
 
-    public function simpan_barang(Request $request)
+    public function store(Request $request)
     {
         $request->validate([
             'id_kategori_barang' => 'required',

@@ -15,7 +15,7 @@
               </div>
               <!-- /.card-header -->
               <!-- form start -->
-              <form role="form" action="{{ route('simpan-kategori') }}" method="POST">
+              <form role="form" action="{{ route('kategori.store') }}" method="POST">
                 @csrf
 
                 <div class="card-body">

@@ -44,7 +44,7 @@
                             Data Barang
                         </h3>
 
-                        <a href="{{ route('form-barang') }}"
+                        <a href="{{ route('barang.create') }}"
                            class="btn btn-primary btn-sm ml-auto">
                             <i class="fas fa-plus"></i>
                             Tambah Barang
@@ -119,12 +119,12 @@
 
                                         <td>
 
-                                            <a href="{{ route('form-barang', $item->id_barang) }}"
+                                            <a href="{{ route('barang.index', $item->id_barang) }}"
                                                class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
 
-                                            <form action=""
+                                            <form action="{{ route('barang.index', $item->id_barang) }}"
                                                   method="POST"
                                                   style="display:inline-block;">
 

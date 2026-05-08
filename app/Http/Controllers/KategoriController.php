@@ -17,7 +17,12 @@ class KategoriController extends Controller
         return view('Kategori.index', compact('kategori'));
     }
 
-    public function simpan_kategori_barang(Request $request)
+    public function create()
+    {
+        return view('Kategori.create');
+    }
+
+    public function store(Request $request)
     {
         DB::beginTransaction();
 

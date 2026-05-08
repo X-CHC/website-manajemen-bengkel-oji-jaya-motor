@@ -2,7 +2,7 @@
 
     <a href="#" class="brand-link">
         <span class="brand-text font-weight-light">
-            AdminLTE
+            Sahabat Selamanya
         </span>
     </a>
 
@@ -31,78 +31,46 @@
 
 
                 {{-- MENU BARANG --}}
-                <li class="nav-item has-treeview
-                    {{ request()->routeIs('form-barang') || request()->routeIs('daftar-barang') ? 'menu-open' : '' }}">
+                <li class="nav-item {{ request()->routeIs('barang.*') ? 'menu-open' : '' }}">
 
-                    <a href="#"
-                       class="nav-link
-                       {{ request()->routeIs('form-barang') || request()->routeIs('daftar-barang') ? 'active' : '' }}">
-
+                    <a href="#" class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-box"></i>
-
-                        <p>
-                            Barang
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-
+                        <p>Barang</p>
                     </a>
 
                     <ul class="nav nav-treeview">
 
                         <li class="nav-item">
-
-                            <a href="{{ route('form-barang') }}"
-                               class="nav-link {{ request()->routeIs('form-barang') ? 'active' : '' }}">
-
-                                <i class="far fa-circle nav-icon"></i>
-
-                                <p>Form Barang</p>
-
+                            <a href="{{ route('barang.index') }}"
+                            class="nav-link {{ request()->routeIs('barang.index') ? 'active' : '' }}">
+                                <p>Daftar Barang</p>
                             </a>
-
                         </li>
 
                         <li class="nav-item">
-
-                            <a href="{{ route('daftar-barang') }}"
-                               class="nav-link {{ request()->routeIs('daftar-barang') ? 'active' : '' }}">
-
-                                <i class="far fa-circle nav-icon"></i>
-
-                                <p>Daftar Barang</p>
-
+                            <a href="{{ route('barang.create') }}"
+                            class="nav-link {{ request()->routeIs('barang.create') ? 'active' : '' }}">
+                                <p>Tambah Barang</p>
                             </a>
-
                         </li>
 
                     </ul>
-
                 </li>
 
-
                 {{-- MENU KATEGORI --}}
-                <li class="nav-item has-treeview
-                    {{ request()->routeIs('form-kategori') || request()->routeIs('daftar-kategori') ? 'menu-open' : '' }}">
+                <li class="nav-item {{ request()->routeIs('kategori.*') ? 'menu-open' : '' }}">
 
-                    <a href="#"
-                       class="nav-link
-                       {{ request()->routeIs('form-kategori') || request()->routeIs('daftar-kategori') ? 'active' : '' }}">
-
+                    <a href="#" class="nav-link {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-tags"></i>
-
-                        <p>
-                            Kategori Barang
-                            <i class="right fas fa-angle-left"></i>
-                        </p>
-
+                        <p>Kategori</p>
                     </a>
 
                     <ul class="nav nav-treeview">
 
                         <li class="nav-item">
 
-                            <a href="{{ route('form-kategori') }}"
-                               class="nav-link {{ request()->routeIs('form-kategori') ? 'active' : '' }}">
+                            <a href="{{ route('kategori.create') }}"
+                               class="nav-link {{ request()->routeIs('kategori.create') ? 'active' : '' }}">
 
                                 <i class="far fa-circle nav-icon"></i>
 
@@ -114,8 +82,8 @@
 
                         <li class="nav-item">
 
-                            <a href="{{ route('daftar-kategori') }}"
-                               class="nav-link {{ request()->routeIs('daftar-kategori') ? 'active' : '' }}">
+                            <a href="{{ route('kategori.index') }}"
+                               class="nav-link {{ request()->routeIs('kategori.index') ? 'active' : '' }}">
 
                                 <i class="far fa-circle nav-icon"></i>
 
@@ -129,6 +97,55 @@
 
                 </li>
 
+                {{-- MENU PELANGGAN --}}
+                <li class="nav-item {{ request()->routeIs('pelanggan.*') ? 'menu-open' : '' }}">
+
+                    <a href="#" class="nav-link {{ request()->routeIs('pelanggan.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-users"></i>
+                        <p>Pelanggan</p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{ route('pelanggan.create') }}"
+                               class="nav-link {{ request()->routeIs('pelanggan.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Tambah Pelanggan</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a href="{{ route('pelanggan.index') }}"
+                               class="nav-link {{ request()->routeIs('pelanggan.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Daftar Pelanggan</p>
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+
+                {{-- MENU TRANSAKSI --}}
+                <li class="nav-item {{ request()->routeIs('transaksi.*') ? 'menu-open' : '' }}">
+
+                    <a href="#" class="nav-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-cash-register"></i>
+                        <p>Transaksi</p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{ route('transaksi.create') }}"
+                               class="nav-link {{ request()->routeIs('transaksi.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Buat Transaksi</p>
+                            </a>
+                        </li>
+
+                    </ul>
+
+                </li>
 
                 {{-- Logout --}}
                 <li class="nav-item">

@@ -4,6 +4,9 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\BarangController;
+use App\Http\Controllers\PelangganController;
+use App\Http\Controllers\TransaksiController;
+
 
 Route::get('/login', function () {
     return view('login');
@@ -26,18 +29,52 @@ Route::middleware('auth')->group(function () {
     })->name('dashboard');
 
     // halaman barang
-    Route::get('/form-barang', [BarangController::class, 'create'])->name('form-barang');
-    Route::post('/simpan-barang', [BarangController::class, 'simpan_barang'])->name('simpan-barang');
-    Route::get('/daftar-barang', [BarangController::class, 'index'])->name('daftar-barang');
+    Route::prefix('barang')->name('barang.')->group(function () {
+
+        Route::get('/index', [BarangController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [BarangController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [BarangController::class, 'store'])
+            ->name('store');
+    });
 
     // halaman kategori
-    Route::get('/form-kategori', function () {
-        return view('Kategori.create');
-    })->name('form-kategori');
-    Route::post('/simpan-kategori', [KategoriController::class, 'simpan_kategori_barang'])
-    ->name('simpan-kategori');
+    Route::prefix('kategori')->name('kategori.')->group(function () {
 
-    Route::get('/daftar-kategori', [KategoriController::class, 'index'])
-    ->name('daftar-kategori');
+        Route::get('/index', [KategoriController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [KategoriController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [KategoriController::class, 'store'])
+            ->name('store');
+    });
+
+
+    // halaman pelanggan
+    Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
+
+        Route::get('/create', [PelangganController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [PelangganController::class, 'store'])
+            ->name('store');
+
+        Route::get('/index', [PelangganController::class, 'index'])
+            ->name('index');
+    });
+
+    // halaman transaksi
+    Route::prefix('transaksi')->name('transaksi.')->group(function () {
+
+        Route::get('/create', [TransaksiController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [TransaksiController::class, 'store'])
+            ->name('store');
+    });
 });
-

@@ -14,7 +14,7 @@
                         <h3 class="card-title">Form Tambah Barang</h3>
                     </div>
 
-                    <form action="{{ route('simpan-barang') }}" method="POST">
+                    <form action="{{ route('barang.store') }}" method="POST">
                         @csrf
 
                         <div class="card-body">
