@@ -43,7 +43,7 @@
                         <li class="nav-item">
                             <a href="{{ route('barang.index') }}"
                             class="nav-link {{ request()->routeIs('barang.index') ? 'active' : '' }}">
-                                <p>Daftar Barang</p>
+                                <p>List Barang</p>
                             </a>
                         </li>
 
@@ -74,7 +74,7 @@
 
                                 <i class="far fa-circle nav-icon"></i>
 
-                                <p>Form Kategori</p>
+                                <p>Tambah Kategori</p>
 
                             </a>
 
@@ -87,7 +87,7 @@
 
                                 <i class="far fa-circle nav-icon"></i>
 
-                                <p>Daftar Kategori</p>
+                                <p>List Kategori</p>
 
                             </a>
 
@@ -119,7 +119,7 @@
                             <a href="{{ route('pelanggan.index') }}"
                                class="nav-link {{ request()->routeIs('pelanggan.index') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
-                                <p>Daftar Pelanggan</p>
+                                <p>List Pelanggan</p>
                             </a>
                         </li>
                     </ul>

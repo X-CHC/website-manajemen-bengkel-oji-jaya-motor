@@ -5,6 +5,46 @@
 <section class="content">
     <div class="container-fluid">
 
+        {{-- ALERT ERROR --}}
+        @if ($errors->any())
+
+            <div class="alert alert-danger">
+
+                <ul class="mb-0">
+
+                    @foreach ($errors->all() as $error)
+
+                        <li>{{ $error }}</li>
+
+                    @endforeach
+
+                </ul>
+
+            </div>
+
+        @endif
+
+
+        {{-- ALERT ERROR SESSION --}}
+        @if(session('error'))
+
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+
+        @endif
+
+
+        {{-- ALERT SUCCESS --}}
+        @if(session('success'))
+
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+
+        @endif
+
+
         <form action="{{ route('transaksi.store') }}"
               method="POST">
 
@@ -40,13 +80,16 @@
                                     @foreach($pelanggan as $item)
 
                                         <option value="{{ $item->id_pelanggan }}">
+
                                             {{ $item->nama_pelanggan }}
+
                                         </option>
 
                                     @endforeach
 
                                 </select>
                             </div>
+
 
                             {{-- PELANGGAN LAIN --}}
                             <div class="form-group">
@@ -62,13 +105,23 @@
 
                     </div>
 
+
                     {{-- CARD DETAIL BARANG --}}
                     <div class="card card-info">
 
                         <div class="card-header d-flex justify-content-between align-items-center">
 
                             <h3 class="card-title">
+
                                 Detail Barang
+
+                                <span class="badge badge-light ml-1"
+                                      id="jumlahItemBarang">
+
+                                    1
+
+                                </span>
+
                             </h3>
 
                             <button type="button"
@@ -121,9 +174,11 @@
                                                     @endforeach
 
                                                 </select>
+
                                             </div>
 
                                         </div>
+
 
                                         {{-- JUMLAH --}}
                                         <div class="col-md-2">
@@ -139,6 +194,7 @@
                                             </div>
 
                                         </div>
+
 
                                         {{-- HARGA --}}
                                         <div class="col-md-2">
@@ -157,6 +213,7 @@
 
                                         </div>
 
+
                                         {{-- SUBTOTAL --}}
                                         <div class="col-md-2">
 
@@ -173,6 +230,7 @@
                                             </div>
 
                                         </div>
+
 
                                         {{-- HAPUS --}}
                                         <div class="col-md-1 d-flex align-items-center">
@@ -198,6 +256,7 @@
 
                 </div>
 
+
                 {{-- KANAN --}}
                 <div class="col-md-4">
 
@@ -211,21 +270,27 @@
 
                         <div class="card-body">
 
-                            {{-- JASA --}}
+                            {{-- HARGA JASA --}}
                             <div class="form-group">
+
                                 <label>Harga Jasa</label>
 
                                 <input type="text"
                                        id="harga_jasa_view"
-                                       class="form-control">
+                                       class="form-control"
+                                       value="0">
+
+                                <input type="hidden"
+                                       name="harga_jasa"
+                                       id="harga_jasa"
+                                       value="0">
+
                             </div>
 
-                            <input type="hidden"
-                                   name="harga_jasa"
-                                   id="harga_jasa">
 
                             {{-- TOTAL --}}
                             <div class="form-group">
+
                                 <label>Total Harga</label>
 
                                 <input type="text"
@@ -236,23 +301,31 @@
                                 <input type="hidden"
                                        name="total_harga"
                                        id="total_harga">
+
                             </div>
+
 
                             {{-- BAYAR --}}
                             <div class="form-group">
+
                                 <label>Uang Bayar</label>
 
                                 <input type="text"
                                        id="uang_bayar_view"
-                                       class="form-control">
+                                       class="form-control"
+                                       value="0">
+
+                                <input type="hidden"
+                                       name="uang_bayar"
+                                       id="uang_bayar"
+                                       value="0">
+
                             </div>
 
-                            <input type="hidden"
-                                   name="uang_bayar"
-                                   id="uang_bayar">
 
                             {{-- KEMBALI --}}
                             <div class="form-group">
+
                                 <label>Uang Kembali</label>
 
                                 <input type="text"
@@ -264,11 +337,14 @@
                                        name="uang_kembali"
                                        id="uang_kembali">
 
+                            </div>
+
                         </div>
+
 
                         <div class="card-footer">
 
-                            <button type="submit"
+                            <button type="submit" id="btnSimpan"
                                     class="btn btn-success btn-block">
 
                                 Simpan Transaksi
@@ -290,14 +366,17 @@
 
 @endsection
 
+
 @push('scripts')
 
 <script>
 
 /*
 |--------------------------------------------------------------------------
-| Format angka jadi format rupiah Indonesia
+| FORMAT RUPIAH
 |--------------------------------------------------------------------------
+| Mengubah angka biasa menjadi format Indonesia
+|
 | Contoh:
 | 50000 => 50.000
 */
@@ -309,12 +388,12 @@ function formatRupiah(angka)
 
 /*
 |--------------------------------------------------------------------------
-| Menghapus titik dari format rupiah
+| PARSE RUPIAH
 |--------------------------------------------------------------------------
+| Menghapus titik dari format rupiah
+|
 | Contoh:
 | 50.000 => 50000
-|
-| Dipakai supaya value bisa dihitung matematika
 */
 function parseRupiah(angka)
 {
@@ -324,11 +403,10 @@ function parseRupiah(angka)
 
 /*
 |--------------------------------------------------------------------------
-| Disable barang yang sudah dipilih
+| UPDATE OPTION BARANG
 |--------------------------------------------------------------------------
-| Tujuan:
-| Barang yang sudah dipilih di row A
-| tidak bisa dipilih lagi di row B
+| Barang yang sudah dipilih
+| tidak bisa dipilih lagi di row lain
 */
 function updateBarangOptions()
 {
@@ -345,14 +423,13 @@ function updateBarangOptions()
         }
     });
 
-    // Loop semua select barang
+    // Disable barang duplicate
     $('.barang-select').each(function(){
 
         let currentSelect = $(this);
 
         let currentValue = currentSelect.val();
 
-        // Loop semua option di dalam select
         currentSelect.find('option').each(function(){
 
             let optionValue = $(this).val();
@@ -363,12 +440,7 @@ function updateBarangOptions()
                 return;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | Jika barang sudah dipilih di select lain
-            | maka disable option tersebut
-            |--------------------------------------------------------------------------
-            */
+            // Disable jika barang sudah dipilih di select lain
             if(selectedBarang.includes(optionValue) &&
                optionValue != currentValue)
             {
@@ -385,9 +457,26 @@ function updateBarangOptions()
 
 /*
 |--------------------------------------------------------------------------
-| Menghitung subtotal dan total transaksi
+| UPDATE JUMLAH ITEM BARANG
 |--------------------------------------------------------------------------
-| Yang dihitung:
+| Menghitung total card barang
+|
+| Contoh:
+| ada 3 item barang => badge tampil 3
+*/
+function updateJumlahItemBarang()
+{
+    let totalItem = $('.barang-item').length;
+
+    $('#jumlahItemBarang').text(totalItem);
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| HITUNG TOTAL TRANSAKSI
+|--------------------------------------------------------------------------
+| Menghitung:
 | - subtotal tiap barang
 | - grand total
 | - total + jasa
@@ -397,17 +486,19 @@ function hitungSemuaTotal()
 {
     let grandTotal = 0;
 
-    // Loop semua item barang
+    // Loop semua barang
     $('.barang-item').each(function(){
 
+        // Ambil harga barang
         let harga = parseInt($(this).find('.harga-input').val()) || 0;
 
+        // Ambil jumlah barang
         let jumlah = parseInt($(this).find('.jumlah-barang').val()) || 0;
 
-        // Hitung subtotal barang
+        // Hitung subtotal
         let subtotal = harga * jumlah;
 
-        // Simpan subtotal ke input hidden
+        // Simpan subtotal ke hidden input
         $(this).find('.subtotal-input').val(subtotal);
 
         // Tampilkan subtotal format rupiah
@@ -438,46 +529,69 @@ function hitungSemuaTotal()
     // Simpan uang kembali
     $('#uang_kembali').val(kembali);
 
-    // Tampilkan uang kembali format rupiah
+    // Tampilkan uang kembali
     $('#uang_kembali_view').val(formatRupiah(kembali));
-}
 
+    /*
+    |--------------------------------------------------------------------------
+    | VALIDASI UANG BAYAR
+    |--------------------------------------------------------------------------
+    | Jika uang bayar kurang:
+    | - field kembali merah
+    | - tombol simpan disable
+    */
+    if(kembali < 0)
+    {
+        // Tambah warna merah
+        $('#uang_kembali_view').addClass('is-invalid');
+
+        // Disable tombol simpan
+        $('#btnSimpan').prop('disabled', true);
+    }
+    else
+    {
+        // Hapus warna merah
+        $('#uang_kembali_view').removeClass('is-invalid');
+
+        // Enable tombol simpan
+        $('#btnSimpan').prop('disabled', false);
+    }
+}
 
 /*
 |--------------------------------------------------------------------------
-| Saat barang dipilih
+| EVENT PILIH BARANG
 |--------------------------------------------------------------------------
-| Yang dilakukan:
+| Saat barang dipilih:
 | - ambil harga barang
 | - ambil stok barang
-| - tampilkan harga
-| - set max jumlah sesuai stok
-| - update total
+| - set max jumlah
+| - hitung total ulang
 */
 $(document).on('change', '.barang-select', function(){
 
-    // Ambil harga barang dari data-harga
+    // Ambil harga barang
     let harga = $(this).find(':selected').data('harga') || 0;
 
-    // Ambil stok barang dari data-stok
+    // Ambil stok barang
     let stok = $(this).find(':selected').data('stok') || 0;
 
-    // Ambil parent card barang
+    // Ambil parent item
     let parent = $(this).closest('.barang-item');
 
-    // Simpan harga asli ke hidden input
+    // Simpan harga asli
     parent.find('.harga-input').val(harga);
 
-    // Tampilkan harga format rupiah
+    // Tampilkan harga rupiah
     parent.find('.harga-view').val(formatRupiah(harga));
 
-    // Set jumlah maksimal sesuai stok
+    // Set max jumlah barang
     parent.find('.jumlah-barang').attr('max', stok);
 
-    // Tampilkan placeholder max stok
+    // Placeholder max stok
     parent.find('.jumlah-barang').attr('placeholder', 'Max ' + stok);
 
-    // Update option barang agar tidak duplicate
+    // Update select option
     updateBarangOptions();
 
     // Hitung ulang total
@@ -487,10 +601,10 @@ $(document).on('change', '.barang-select', function(){
 
 /*
 |--------------------------------------------------------------------------
-| Saat jumlah barang berubah
+| EVENT JUMLAH BARANG
 |--------------------------------------------------------------------------
 | Validasi:
-| jumlah tidak boleh lebih dari stok
+| jumlah tidak boleh melebihi stok
 */
 $(document).on('keyup change', '.jumlah-barang', function(){
 
@@ -498,7 +612,7 @@ $(document).on('keyup change', '.jumlah-barang', function(){
 
     let max = parseInt($(this).attr('max')) || 0;
 
-    // Jika jumlah melebihi stok
+    // Jika melebihi stok
     if(jumlah > max)
     {
         alert('Jumlah barang melebihi stok!');
@@ -514,13 +628,14 @@ $(document).on('keyup change', '.jumlah-barang', function(){
 
 /*
 |--------------------------------------------------------------------------
-| Saat input harga jasa
+| EVENT HARGA JASA
 |--------------------------------------------------------------------------
-| - format rupiah otomatis
-| - update total transaksi
+| Format otomatis rupiah
+| lalu hitung ulang total
 */
 $('#harga_jasa_view').on('keyup', function(){
 
+    // Hapus titik
     let angka = parseRupiah($(this).val());
 
     // Simpan angka asli
@@ -536,13 +651,14 @@ $('#harga_jasa_view').on('keyup', function(){
 
 /*
 |--------------------------------------------------------------------------
-| Saat input uang bayar
+| EVENT UANG BAYAR
 |--------------------------------------------------------------------------
-| - format rupiah otomatis
-| - hitung uang kembali
+| Format otomatis rupiah
+| lalu hitung uang kembali
 */
 $('#uang_bayar_view').on('keyup', function(){
 
+    // Hapus titik
     let angka = parseRupiah($(this).val());
 
     // Simpan angka asli
@@ -558,35 +674,42 @@ $('#uang_bayar_view').on('keyup', function(){
 
 /*
 |--------------------------------------------------------------------------
-| Tombol tambah barang
+| TAMBAH BARANG
 |--------------------------------------------------------------------------
-| Fungsi:
-| clone row barang sebelumnya
+| Clone card barang baru
 */
 $('#tambahBarang').click(function(){
 
-    // Clone item barang pertama
+    // Clone item pertama
     let item = $('.barang-item:first').clone();
 
-    // Reset semua input
-    item.find('input').val('');
-
     // Reset select barang
-    item.find('select').val('');
+    item.find('.barang-select').val('');
 
-    // Default jumlah = 1
+    // Reset harga
+    item.find('.harga-view').val('');
+    item.find('.harga-input').val('');
+
+    // Reset subtotal
+    item.find('.subtotal-view').val('');
+    item.find('.subtotal-input').val('');
+
+    // Reset jumlah
     item.find('.jumlah-barang').val(1);
 
     // Tambahkan item ke list
     $('#listBarang').append(item);
+
+    // Update jumlah item
+    updateJumlahItemBarang();
 });
 
 
 /*
 |--------------------------------------------------------------------------
-| Tombol hapus barang
+| HAPUS BARANG
 |--------------------------------------------------------------------------
-| Hapus item barang
+| Menghapus item barang
 */
 $(document).on('click', '.hapusBarang', function(){
 
@@ -596,8 +719,11 @@ $(document).on('click', '.hapusBarang', function(){
         // Hapus item
         $(this).closest('.barang-item').remove();
 
-        // Update option barang
+        // Update select option
         updateBarangOptions();
+
+        // Update jumlah item
+        updateJumlahItemBarang();
 
         // Hitung ulang total
         hitungSemuaTotal();

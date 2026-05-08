@@ -64,7 +64,7 @@ class PelangganController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('daftar-pelanggan')
+                ->route('pelanggan.index')
                 ->with('success', 'Data pelanggan berhasil ditambahkan');
         } catch (\Exception $e) {
 

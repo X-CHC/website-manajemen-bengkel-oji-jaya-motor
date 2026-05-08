@@ -20,7 +20,6 @@ class HistoryStok extends Model
         'jumlah_masuk',
         'jumlah_keluar',
         'jumlah_sisa',
-        'jenis_stok',
         'jumlah_barang'
     ];
 

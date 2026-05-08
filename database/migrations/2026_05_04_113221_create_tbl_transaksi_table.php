@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tbl_transaksi', function (Blueprint $table) {
             $table->char('id_transaksi', 6)->primary();
             $table->char('id_pelanggan', 6)->nullable();
-            $table->char('nama_pelanggan_lain', 100);
+            $table->char('nama_pelanggan_lain', 100)->nullable();
             $table->date('tanggal_transaksi')->nullable();
             $table->integer('total_harga')->nullable();
             $table->integer('harga_jasa')->nullable();

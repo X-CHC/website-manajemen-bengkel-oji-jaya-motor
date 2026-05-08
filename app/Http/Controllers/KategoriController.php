@@ -54,7 +54,7 @@ class KategoriController extends Controller
 
             DB::commit();
 
-            return redirect()->route('daftar-kategori')
+            return redirect()->route('kategori.index')
                             ->with('success', 'Kategori berhasil ditambahkan');
 
         } catch (\Exception $e) {

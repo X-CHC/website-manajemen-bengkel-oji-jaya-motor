@@ -17,7 +17,6 @@ return new class extends Migration
         $table->integer('jumlah_masuk');
         $table->integer('jumlah_keluar');
         $table->integer('jumlah_sisa');
-        $table->enum('jenis_stok', ['masuk', 'keluar'])->nullable();
         $table->integer('jumlah_barang')->nullable();
         $table->timestamps(); // Menggantikan kolom 'updated' manual sebelumnya
         $table->softDeletes();
