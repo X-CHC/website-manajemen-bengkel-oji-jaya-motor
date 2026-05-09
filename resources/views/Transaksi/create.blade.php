@@ -151,7 +151,7 @@
                                                 <label>Pilih Barang</label>
 
                                                 <select name="id_barang[]"
-                                                        class="form-control barang-select">
+                                                    class="form-control barang-select select2">
 
                                                     <option value="">
                                                         -- Pilih Barang --
@@ -367,6 +367,9 @@
 @endsection
 
 
+
+
+
 @push('scripts')
 
 <script>
@@ -375,10 +378,6 @@
 |--------------------------------------------------------------------------
 | FORMAT RUPIAH
 |--------------------------------------------------------------------------
-| Mengubah angka biasa menjadi format Indonesia
-|
-| Contoh:
-| 50000 => 50.000
 */
 function formatRupiah(angka)
 {
@@ -390,14 +389,24 @@ function formatRupiah(angka)
 |--------------------------------------------------------------------------
 | PARSE RUPIAH
 |--------------------------------------------------------------------------
-| Menghapus titik dari format rupiah
-|
-| Contoh:
-| 50.000 => 50000
 */
 function parseRupiah(angka)
 {
-    return angka.replace(/\./g, '');
+    return angka.toString().replace(/\./g, '');
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| AKTIFKAN SELECT2
+|--------------------------------------------------------------------------
+*/
+function initSelect2()
+{
+    $('.barang-select').select2({
+        width: '100%',
+        placeholder: '-- Pilih Barang --'
+    });
 }
 
 
@@ -406,13 +415,13 @@ function parseRupiah(angka)
 | UPDATE OPTION BARANG
 |--------------------------------------------------------------------------
 | Barang yang sudah dipilih
-| tidak bisa dipilih lagi di row lain
+| tidak bisa dipilih lagi
 */
 function updateBarangOptions()
 {
     let selectedBarang = [];
 
-    // Ambil semua barang yang sudah dipilih
+    // Ambil semua barang terpilih
     $('.barang-select').each(function(){
 
         let value = $(this).val();
@@ -421,9 +430,10 @@ function updateBarangOptions()
         {
             selectedBarang.push(value);
         }
+
     });
 
-    // Disable barang duplicate
+    // Disable duplicate option
     $('.barang-select').each(function(){
 
         let currentSelect = $(this);
@@ -434,15 +444,15 @@ function updateBarangOptions()
 
             let optionValue = $(this).val();
 
-            // Skip option kosong
             if(optionValue == '')
             {
                 return;
             }
 
-            // Disable jika barang sudah dipilih di select lain
-            if(selectedBarang.includes(optionValue) &&
-               optionValue != currentValue)
+            if(
+                selectedBarang.includes(optionValue) &&
+                optionValue != currentValue
+            )
             {
                 $(this).prop('disabled', true);
             }
@@ -450,19 +460,20 @@ function updateBarangOptions()
             {
                 $(this).prop('disabled', false);
             }
+
         });
+
     });
+
+    // Refresh select2
+    $('.barang-select').trigger('change.select2');
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| UPDATE JUMLAH ITEM BARANG
+| UPDATE JUMLAH ITEM
 |--------------------------------------------------------------------------
-| Menghitung total card barang
-|
-| Contoh:
-| ada 3 item barang => badge tampil 3
 */
 function updateJumlahItemBarang()
 {
@@ -474,127 +485,105 @@ function updateJumlahItemBarang()
 
 /*
 |--------------------------------------------------------------------------
-| HITUNG TOTAL TRANSAKSI
+| HITUNG TOTAL
 |--------------------------------------------------------------------------
-| Menghitung:
-| - subtotal tiap barang
-| - grand total
-| - total + jasa
-| - uang kembali
 */
 function hitungSemuaTotal()
 {
     let grandTotal = 0;
 
-    // Loop semua barang
     $('.barang-item').each(function(){
 
-        // Ambil harga barang
-        let harga = parseInt($(this).find('.harga-input').val()) || 0;
+        let harga =
+            parseInt($(this).find('.harga-input').val()) || 0;
 
-        // Ambil jumlah barang
-        let jumlah = parseInt($(this).find('.jumlah-barang').val()) || 0;
+        let jumlah =
+            parseInt($(this).find('.jumlah-barang').val()) || 0;
 
-        // Hitung subtotal
         let subtotal = harga * jumlah;
 
-        // Simpan subtotal ke hidden input
         $(this).find('.subtotal-input').val(subtotal);
 
-        // Tampilkan subtotal format rupiah
-        $(this).find('.subtotal-view').val(formatRupiah(subtotal));
+        $(this).find('.subtotal-view')
+               .val(formatRupiah(subtotal));
 
-        // Tambahkan ke grand total
         grandTotal += subtotal;
     });
 
-    // Ambil harga jasa
-    let jasa = parseInt($('#harga_jasa').val()) || 0;
+    let jasa =
+        parseInt($('#harga_jasa').val()) || 0;
 
-    // Hitung total akhir
     let total = grandTotal + jasa;
 
-    // Simpan total
     $('#total_harga').val(total);
 
-    // Tampilkan total format rupiah
-    $('#total_harga_view').val(formatRupiah(total));
+    $('#total_harga_view')
+        .val(formatRupiah(total));
 
-    // Ambil uang bayar
-    let bayar = parseInt($('#uang_bayar').val()) || 0;
+    let bayar =
+        parseInt($('#uang_bayar').val()) || 0;
 
-    // Hitung uang kembali
     let kembali = bayar - total;
 
-    // Simpan uang kembali
     $('#uang_kembali').val(kembali);
 
-    // Tampilkan uang kembali
-    $('#uang_kembali_view').val(formatRupiah(kembali));
+    $('#uang_kembali_view')
+        .val(formatRupiah(kembali));
 
     /*
     |--------------------------------------------------------------------------
-    | VALIDASI UANG BAYAR
+    | VALIDASI UANG KURANG
     |--------------------------------------------------------------------------
-    | Jika uang bayar kurang:
-    | - field kembali merah
-    | - tombol simpan disable
     */
     if(kembali < 0)
     {
-        // Tambah warna merah
-        $('#uang_kembali_view').addClass('is-invalid');
+        $('#uang_kembali_view')
+            .addClass('is-invalid');
 
-        // Disable tombol simpan
-        $('#btnSimpan').prop('disabled', true);
+        $('#btnSimpan')
+            .prop('disabled', true);
     }
     else
     {
-        // Hapus warna merah
-        $('#uang_kembali_view').removeClass('is-invalid');
+        $('#uang_kembali_view')
+            .removeClass('is-invalid');
 
-        // Enable tombol simpan
-        $('#btnSimpan').prop('disabled', false);
+        $('#btnSimpan')
+            .prop('disabled', false);
     }
 }
+
 
 /*
 |--------------------------------------------------------------------------
 | EVENT PILIH BARANG
 |--------------------------------------------------------------------------
-| Saat barang dipilih:
-| - ambil harga barang
-| - ambil stok barang
-| - set max jumlah
-| - hitung total ulang
 */
 $(document).on('change', '.barang-select', function(){
 
-    // Ambil harga barang
-    let harga = $(this).find(':selected').data('harga') || 0;
+    let harga =
+        $(this).find(':selected').data('harga') || 0;
 
-    // Ambil stok barang
-    let stok = $(this).find(':selected').data('stok') || 0;
+    let stok =
+        $(this).find(':selected').data('stok') || 0;
 
-    // Ambil parent item
-    let parent = $(this).closest('.barang-item');
+    let parent =
+        $(this).closest('.barang-item');
 
-    // Simpan harga asli
-    parent.find('.harga-input').val(harga);
+    parent.find('.harga-input')
+          .val(harga);
 
-    // Tampilkan harga rupiah
-    parent.find('.harga-view').val(formatRupiah(harga));
+    parent.find('.harga-view')
+          .val(formatRupiah(harga));
 
-    // Set max jumlah barang
-    parent.find('.jumlah-barang').attr('max', stok);
+    parent.find('.jumlah-barang')
+          .attr('max', stok);
 
-    // Placeholder max stok
-    parent.find('.jumlah-barang').attr('placeholder', 'Max ' + stok);
+    parent.find('.jumlah-barang')
+          .attr('placeholder', 'Max ' + stok);
 
-    // Update select option
     updateBarangOptions();
 
-    // Hitung ulang total
     hitungSemuaTotal();
 });
 
@@ -603,71 +592,56 @@ $(document).on('change', '.barang-select', function(){
 |--------------------------------------------------------------------------
 | EVENT JUMLAH BARANG
 |--------------------------------------------------------------------------
-| Validasi:
-| jumlah tidak boleh melebihi stok
 */
 $(document).on('keyup change', '.jumlah-barang', function(){
 
-    let jumlah = parseInt($(this).val()) || 0;
+    let jumlah =
+        parseInt($(this).val()) || 0;
 
-    let max = parseInt($(this).attr('max')) || 0;
+    let max =
+        parseInt($(this).attr('max')) || 0;
 
-    // Jika melebihi stok
     if(jumlah > max)
     {
         alert('Jumlah barang melebihi stok!');
 
-        // Kembalikan ke max stok
         $(this).val(max);
     }
 
-    // Hitung ulang total
     hitungSemuaTotal();
 });
 
 
 /*
 |--------------------------------------------------------------------------
-| EVENT HARGA JASA
+| HARGA JASA
 |--------------------------------------------------------------------------
-| Format otomatis rupiah
-| lalu hitung ulang total
 */
 $('#harga_jasa_view').on('keyup', function(){
 
-    // Hapus titik
     let angka = parseRupiah($(this).val());
 
-    // Simpan angka asli
     $('#harga_jasa').val(angka);
 
-    // Tampilkan format rupiah
     $(this).val(formatRupiah(angka));
 
-    // Hitung ulang total
     hitungSemuaTotal();
 });
 
 
 /*
 |--------------------------------------------------------------------------
-| EVENT UANG BAYAR
+| UANG BAYAR
 |--------------------------------------------------------------------------
-| Format otomatis rupiah
-| lalu hitung uang kembali
 */
 $('#uang_bayar_view').on('keyup', function(){
 
-    // Hapus titik
     let angka = parseRupiah($(this).val());
 
-    // Simpan angka asli
     $('#uang_bayar').val(angka);
 
-    // Tampilkan format rupiah
     $(this).val(formatRupiah(angka));
 
-    // Hitung ulang total
     hitungSemuaTotal();
 });
 
@@ -676,14 +650,17 @@ $('#uang_bayar_view').on('keyup', function(){
 |--------------------------------------------------------------------------
 | TAMBAH BARANG
 |--------------------------------------------------------------------------
-| Clone card barang baru
 */
 $('#tambahBarang').click(function(){
 
-    // Clone item pertama
-    let item = $('.barang-item:first').clone();
+    // Destroy select2 sementara
+    $('.barang-select').select2('destroy');
 
-    // Reset select barang
+    // Clone item pertama
+    let item =
+        $('.barang-item:first').clone();
+
+    // Reset select
     item.find('.barang-select').val('');
 
     // Reset harga
@@ -697,11 +674,21 @@ $('#tambahBarang').click(function(){
     // Reset jumlah
     item.find('.jumlah-barang').val(1);
 
-    // Tambahkan item ke list
+    // Reset max
+    item.find('.jumlah-barang')
+        .removeAttr('max');
+
+    // Tambah item
     $('#listBarang').append(item);
 
-    // Update jumlah item
+    // Aktifkan select2 lagi
+    initSelect2();
+
     updateJumlahItemBarang();
+
+    updateBarangOptions();
+
+    hitungSemuaTotal();
 });
 
 
@@ -709,25 +696,37 @@ $('#tambahBarang').click(function(){
 |--------------------------------------------------------------------------
 | HAPUS BARANG
 |--------------------------------------------------------------------------
-| Menghapus item barang
 */
 $(document).on('click', '.hapusBarang', function(){
 
-    // Minimal harus ada 1 item
     if($('.barang-item').length > 1)
     {
-        // Hapus item
-        $(this).closest('.barang-item').remove();
+        $(this)
+            .closest('.barang-item')
+            .remove();
 
-        // Update select option
         updateBarangOptions();
 
-        // Update jumlah item
         updateJumlahItemBarang();
 
-        // Hitung ulang total
         hitungSemuaTotal();
     }
+
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| INIT AWAL
+|--------------------------------------------------------------------------
+*/
+$(document).ready(function(){
+
+    initSelect2();
+
+    updateBarangOptions();
+
+    hitungSemuaTotal();
 
 });
 

@@ -19,7 +19,7 @@ return new class extends Migration
         $table->timestamps();
         $table->softDeletes();
 
-        $table->foreign('id_po')->references('id_po')->on('tbl_transaksi_po')->onDelete('cascade');
+        $table->foreign('id_po')->references('id_po')->on('tbl_po')->onDelete('cascade');
         $table->foreign('id_barang')->references('id_barang')->on('tbl_barang')->onDelete('cascade');
     });
     }

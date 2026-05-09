@@ -18,7 +18,7 @@ class DetailPo extends Model
 
     public function po()
     {
-        return $this->belongsTo(TransaksiPo::class, 'id_po', 'id_po');
+        return $this->belongsTo(Po::class, 'id_po', 'id_po');
     }
 
     public function barang()

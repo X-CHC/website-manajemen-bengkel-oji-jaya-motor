@@ -219,7 +219,7 @@ class TransaksiController extends Controller
 
             if (!$historyTerakhir) {
 
-                $id_history = 'HST001';
+                $id_history = 'HS0001';
 
             } else {
 
@@ -229,7 +229,7 @@ class TransaksiController extends Controller
 
                 $noUrutHistory++;
 
-                $id_history = 'HST' . sprintf('%03s', $noUrutHistory + $index);
+                $id_history = 'HS' . sprintf('%04s', $noUrutHistory + $index);
             }
 
             /*

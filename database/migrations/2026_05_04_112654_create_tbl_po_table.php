@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('tbl_transaksi_po', function (Blueprint $table) {
+        Schema::create('tbl_po', function (Blueprint $table) {
         $table->char('id_po', 6)->primary();
         $table->date('tgl_po')->nullable();
         $table->string('mitra_po', 255)->nullable();
@@ -25,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('tbl_transaksi_po');
+        Schema::dropIfExists('tbl_po');
     }
 };

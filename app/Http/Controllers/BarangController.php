@@ -100,7 +100,7 @@ class BarangController extends Controller
 
             if (!$historyTerakhir) {
 
-                $id_history_stok = 'HST001';
+                $id_history_stok = 'HS0001';
 
             } else {
 
@@ -110,8 +110,8 @@ class BarangController extends Controller
 
                 $noUrutHistory++;
 
-                $id_history_stok = 'HST' .
-                    sprintf('%03s', $noUrutHistory);
+                $id_history_stok = 'HS' .
+                    sprintf('%04s', $noUrutHistory);
             }
 
             /*

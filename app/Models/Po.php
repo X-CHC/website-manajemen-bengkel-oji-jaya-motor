@@ -7,11 +7,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\DetailPo;
 
 
-class TransaksiPo extends Model
+class Po extends Model
 {
     use SoftDeletes;
 
-    protected $table = 'tbl_transaksi_po';
+    protected $table = 'tbl_po';
     protected $primaryKey = 'id_po';
     public $incrementing = false;
     protected $keyType = 'string';

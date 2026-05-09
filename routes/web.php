@@ -6,6 +6,8 @@ use App\Http\Controllers\KategoriController;
 use App\Http\Controllers\BarangController;
 use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\TransaksiController;
+use App\Http\Controllers\PoController;
+use App\Http\Controllers\BarangMasukController;
 
 
 Route::get('/login', function () {
@@ -75,6 +77,30 @@ Route::middleware('auth')->group(function () {
             ->name('create');
 
         Route::post('/', [TransaksiController::class, 'store'])
+            ->name('store');
+    });
+
+    // halaman po
+    Route::prefix('po')->name('po.')->group(function () {
+
+        Route::get('/index', [PoController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [PoController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [PoController::class, 'store'])
+            ->name('store');
+    });
+
+    // halaman barang masuk
+    Route::prefix('barang-masuk')->name('barang-masuk.')->group(function ()
+    {
+
+        Route::get('/create', [BarangMasukController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [BarangMasukController::class, 'store'])
             ->name('store');
     });
 });

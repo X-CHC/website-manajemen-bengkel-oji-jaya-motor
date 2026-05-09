@@ -41,18 +41,20 @@
                     <ul class="nav nav-treeview">
 
                         <li class="nav-item">
+                            <a href="{{ route('barang.create') }}"
+                            class="nav-link {{ request()->routeIs('barang.create') ? 'active' : '' }}">
+                                <p>Tambah Barang</p>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
                             <a href="{{ route('barang.index') }}"
                             class="nav-link {{ request()->routeIs('barang.index') ? 'active' : '' }}">
                                 <p>List Barang</p>
                             </a>
                         </li>
 
-                        <li class="nav-item">
-                            <a href="{{ route('barang.create') }}"
-                            class="nav-link {{ request()->routeIs('barang.create') ? 'active' : '' }}">
-                                <p>Tambah Barang</p>
-                            </a>
-                        </li>
+
 
                     </ul>
                 </li>
@@ -144,8 +146,50 @@
                         </li>
 
                     </ul>
-
                 </li>
+
+                {{-- MENU PO --}}
+                <li class="nav-item {{ request()->routeIs('po.*') ? 'menu-open' : '' }}">
+
+                    <a href="#" class="nav-link {{ request()->routeIs('po.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-file-invoice"></i>
+                        <p>Purchase Order</p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{ route('po.create') }}"
+                               class="nav-link {{ request()->routeIs('po.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Buat PO</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <!-- MENU BARANG MASUK -->
+                <li class="nav-item {{ request()->routeIs('barang-masuk.*') ? 'menu-open' : '' }}">
+
+                    <a href="#" class="nav-link {{ request()->routeIs('barang-masuk.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-truck"></i>
+                        <p>Barang Masuk</p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{ route('barang-masuk.create') }}"
+                               class="nav-link {{ request()->routeIs('barang-masuk.create') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Tambah Barang Masuk</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
 
                 {{-- Logout --}}
                 <li class="nav-item">
