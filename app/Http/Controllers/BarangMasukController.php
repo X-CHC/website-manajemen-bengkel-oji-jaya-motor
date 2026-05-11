@@ -26,6 +26,7 @@ class BarangMasukController extends Controller
     }
 
 
+
     public function store(Request $request)
     {
         /*
@@ -166,7 +167,7 @@ class BarangMasukController extends Controller
 
             if(!$last)
             {
-                $idBarangMasuk = 'BM0001';
+                $idBarangMasuk = 'BRM001';
             }
             else
             {
@@ -178,8 +179,8 @@ class BarangMasukController extends Controller
                 $number++;
 
                 $idBarangMasuk =
-                    'BM' .
-                    str_pad($number, 4, '0', STR_PAD_LEFT);
+                    'BRM' .
+                    str_pad($number, 3, '0', STR_PAD_LEFT);
             }
 
 
@@ -291,10 +292,10 @@ class BarangMasukController extends Controller
                 |--------------------------------------------------------------------------
                 */
                 $idDetail =
-                    'DM' .
+                    'DTM' .
                     str_pad(
                         $numberDetail,
-                        4,
+                        3,
                         '0',
                         STR_PAD_LEFT
                     );

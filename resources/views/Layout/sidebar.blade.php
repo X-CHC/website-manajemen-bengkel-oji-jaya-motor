@@ -1,9 +1,12 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-    <a href="#" class="brand-link">
-        <span class="brand-text font-weight-light">
-            Sahabat Selamanya
-        </span>
+    <a href="{{ url('/') }}" class="brand-link">
+        <img src="{{ asset('assets/img/logo.jpg') }}"
+            alt="Logo"
+            class="brand-image img-circle elevation-3"
+            style="opacity: .8; width: 40px; height: 40px; max-height: none; margin-top: -5px;">
+
+        <span class="brand-text font-weight-light">Sahabat Selamanya</span>
     </a>
 
     <div class="sidebar">
@@ -18,8 +21,8 @@
                 {{-- Dashboard --}}
                 <li class="nav-item">
 
-                    <a href="{{ route('dashboard') }}"
-                       class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">
+                    <a href="{{ route('dashboard.index') }}"
+                       class="nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
 
                         <i class="nav-icon fas fa-home"></i>
 
@@ -205,6 +208,27 @@
                                class="nav-link {{ request()->routeIs('history.index') ? 'active' : '' }}">
                                 <i class="far fa-circle nav-icon"></i>
                                 <p>Lihat History Stock</p>
+                            </a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                {{-- Laporan --}}
+                <li class="nav-item {{ request()->routeIs('laporan.*') ? 'menu-open' : '' }}">
+
+                    <a href="#" class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+                        <i class="nav-icon fas fa-chart-bar"></i>
+                        <p>Laporan</p>
+                    </a>
+
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{ route('laporan.index') }}"
+                               class="nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>Lihat Laporan</p>
                             </a>
                         </li>
 

@@ -9,6 +9,8 @@ use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\BarangMasukController;
 use App\Http\Controllers\HistoryStokController;
+use App\Http\Controllers\LaporanController;
+use App\Http\Controllers\DashboardController;
 
 Route::get('/login', function () {
     return view('login');
@@ -26,9 +28,7 @@ Route::get('/', function () {
 Route::middleware('auth')->group(function () {
 
     // dashboard
-    Route::get('/dashboard', function () {
-        return view('dashboard.index');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     // halaman barang
     Route::prefix('barang')->name('barang.')->group(function () {
@@ -108,5 +108,22 @@ Route::middleware('auth')->group(function () {
     Route::prefix('history')->name('history.')->group(function () {
         Route::get('/index', [HistoryStokController::class, 'index'])
             ->name('index');
-            });
+    });
+
+    // halaman laporan
+    Route::prefix('laporan')->name('laporan.')->group(function () {
+        Route::get('/index',[LaporanController::class, 'index']
+        )->name('index');
+
+        Route::post('/laporan/pdf',[LaporanController::class, 'exportPdf']
+        )->name('pdf');
+
+        Route::post('/laporan/excel',[LaporanController::class, 'exportExcel']
+        )->name('excel');
+    });
+
+
+
+
+
 });
