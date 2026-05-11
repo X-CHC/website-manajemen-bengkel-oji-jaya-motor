@@ -28,6 +28,7 @@ class TransaksiController extends Controller
     public function store(Request $request)
 {
     $request->validate([
+
         'id_barang'        => 'required|array',
         'id_barang.*'      => 'required|exists:tbl_barang,id_barang',
 
@@ -41,11 +42,15 @@ class TransaksiController extends Controller
         'sub_total.*'      => 'required|integer',
 
         'harga_jasa'       => 'nullable|integer',
+
         'total_harga'      => 'required|integer',
+
         'uang_bayar'       => 'required|integer',
+
         'uang_kembali'     => 'required|integer',
 
         'id_pelanggan'         => 'nullable',
+
         'nama_pelanggan_lain'  => 'nullable|max:100',
     ]);
 
@@ -58,8 +63,10 @@ class TransaksiController extends Controller
         | AUTO NUMBER TRANSAKSI
         |--------------------------------------------------------------------------
         */
-
-        $transaksiTerakhir = Transaksi::orderBy('id_transaksi', 'desc')->first();
+        $transaksiTerakhir = Transaksi::orderBy(
+                                'id_transaksi',
+                                'desc'
+                            )->first();
 
         if (!$transaksiTerakhir) {
 
@@ -73,15 +80,46 @@ class TransaksiController extends Controller
 
             $noUrut++;
 
-            $id_transaksi = 'TRX' . sprintf('%03s', $noUrut);
+            $id_transaksi =
+                'TRX' .
+                sprintf('%03s', $noUrut);
         }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDASI BARANG
+        |--------------------------------------------------------------------------
+        */
+        if(empty($request->id_barang))
+        {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'Barang belum dipilih'
+                );
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDASI UANG BAYAR
+        |--------------------------------------------------------------------------
+        */
+        if($request->uang_bayar < $request->total_harga)
+        {
+            throw new \Exception(
+                'Uang bayar kurang dari total harga'
+            );
+        }
+
 
         /*
         |--------------------------------------------------------------------------
         | SIMPAN TRANSAKSI
         |--------------------------------------------------------------------------
         */
-
         Transaksi::create([
 
             'id_transaksi' => $id_transaksi,
@@ -92,96 +130,154 @@ class TransaksiController extends Controller
 
             'tanggal_transaksi' => now(),
 
-            'total_harga' => str_replace('.', '', $request->total_harga),
+            'total_harga' => str_replace(
+                '.',
+                '',
+                $request->total_harga
+            ),
 
-            'harga_jasa' => str_replace('.', '', $request->harga_jasa ?? 0),
+            'harga_jasa' => str_replace(
+                '.',
+                '',
+                $request->harga_jasa ?? 0
+            ),
 
-            'uang_bayar' => str_replace('.', '', $request->uang_bayar),
+            'uang_bayar' => str_replace(
+                '.',
+                '',
+                $request->uang_bayar
+            ),
 
-            'uang_kembali' => str_replace('.', '', $request->uang_kembali),
+            'uang_kembali' => str_replace(
+                '.',
+                '',
+                $request->uang_kembali
+            ),
         ]);
+
 
         /*
         |--------------------------------------------------------------------------
-        | VALIDASI BARANG
+        | AUTO NUMBER DETAIL TRANSAKSI
         |--------------------------------------------------------------------------
         */
+        $detailTerakhir = DetailTransaksi::orderBy(
+                                'id_detail_transaksi',
+                                'desc'
+                            )->first();
 
-        if(empty($request->id_barang))
+        if(!$detailTerakhir)
         {
-            return back()
-                ->withInput()
-                ->with('error', 'Barang belum dipilih');
+            $nomorDetail = 1;
         }
+        else
+        {
+            $nomorDetail = (int) substr(
+                                $detailTerakhir->id_detail_transaksi,
+                                3
+                            ) + 1;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | AUTO NUMBER HISTORY STOK
+        |--------------------------------------------------------------------------
+        */
+        $historyTerakhir = HistoryStok::orderBy(
+                                'id_history_stok',
+                                'desc'
+                            )->first();
+
+        if(!$historyTerakhir)
+        {
+            $nomorHistory = 1;
+        }
+        else
+        {
+            $nomorHistory = (int) substr( $historyTerakhir->id_history_stok,2) + 1;
+        }
+
 
         /*
         |--------------------------------------------------------------------------
         | LOOP DETAIL TRANSAKSI
         |--------------------------------------------------------------------------
         */
-
         foreach ($request->id_barang as $index => $barangId) {
 
-            // Skip jika kosong
+            /*
+            |--------------------------------------------------------------------------
+            | SKIP JIKA KOSONG
+            |--------------------------------------------------------------------------
+            */
             if(empty($barangId))
             {
                 continue;
             }
 
-            $barang = Barang::where('id_barang', $barangId)->first();
+
+            /*
+            |--------------------------------------------------------------------------
+            | AMBIL DATA BARANG
+            |--------------------------------------------------------------------------
+            */
+            $barang = Barang::where(
+                            'id_barang',
+                            $barangId
+                        )->first();
 
             $jumlah = $request->jumlah_barang[$index];
+
 
             /*
             |--------------------------------------------------------------------------
             | VALIDASI STOK
             |--------------------------------------------------------------------------
             */
-
             if ($barang->jumlah_barang < $jumlah) {
 
                 throw new \Exception(
-                    'Stok barang ' . $barang->nama_barang . ' tidak mencukupi'
+
+                    'Stok barang ' .
+                    $barang->nama_barang .
+                    ' tidak mencukupi'
                 );
             }
 
+
             /*
             |--------------------------------------------------------------------------
-            | AUTO NUMBER DETAIL TRANSAKSI
+            | GENERATE ID DETAIL TRANSAKSI
             |--------------------------------------------------------------------------
             */
+            $id_detail =
+                'DTL' .
+                str_pad(
+                    $nomorDetail,
+                    3,
+                    '0',
+                    STR_PAD_LEFT
+                );
 
-            $detailTerakhir = DetailTransaksi::orderBy('id_detail_transaksi', 'desc')->first();
+            $nomorDetail++;
 
-            if (!$detailTerakhir) {
-
-                $id_detail = 'DTL001';
-
-            } else {
-
-                $kodeDetail = $detailTerakhir->id_detail_transaksi;
-
-                $noUrutDetail = (int) substr($kodeDetail, -3);
-
-                $noUrutDetail++;
-
-                $id_detail = 'DTL' . sprintf('%03s', $noUrutDetail + $index);
-            }
 
             /*
             |--------------------------------------------------------------------------
             | HITUNG SUBTOTAL
             |--------------------------------------------------------------------------
             */
+            $subtotal =
+                $barang->harga_jual *
+                $jumlah;
 
-            $subtotal = $barang->harga_jual * $jumlah;
 
             /*
             |--------------------------------------------------------------------------
             | SIMPAN DETAIL TRANSAKSI
             |--------------------------------------------------------------------------
             */
-
             DetailTransaksi::create([
 
                 'id_detail_transaksi' => $id_detail,
@@ -197,47 +293,44 @@ class TransaksiController extends Controller
                 'sub_total' => $subtotal,
             ]);
 
+
             /*
             |--------------------------------------------------------------------------
             | UPDATE STOK BARANG
             |--------------------------------------------------------------------------
             */
-
-            $stokSisa = $barang->jumlah_barang - $jumlah;
+            $stokSisa =
+                $barang->jumlah_barang -
+                $jumlah;
 
             $barang->update([
+
                 'jumlah_barang' => $stokSisa
             ]);
 
+
             /*
             |--------------------------------------------------------------------------
-            | AUTO NUMBER HISTORY STOK
+            | GENERATE ID HISTORY STOK
             |--------------------------------------------------------------------------
             */
+            $id_history =
+                'HS' .
+                str_pad(
+                    $nomorHistory,
+                    4,
+                    '0',
+                    STR_PAD_LEFT
+                );
 
-            $historyTerakhir = HistoryStok::orderBy('id_history_stok', 'desc')->first();
+            $nomorHistory++;
 
-            if (!$historyTerakhir) {
-
-                $id_history = 'HS0001';
-
-            } else {
-
-                $kodeHistory = $historyTerakhir->id_history_stok;
-
-                $noUrutHistory = (int) substr($kodeHistory, -3);
-
-                $noUrutHistory++;
-
-                $id_history = 'HS' . sprintf('%04s', $noUrutHistory + $index);
-            }
 
             /*
             |--------------------------------------------------------------------------
             | SIMPAN HISTORY STOK
             |--------------------------------------------------------------------------
             */
-
             HistoryStok::create([
 
                 'id_history_stok' => $id_history,
@@ -254,22 +347,15 @@ class TransaksiController extends Controller
             ]);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI UANG BAYAR
-        |--------------------------------------------------------------------------
-        */
-
-        if($request->uang_bayar < $request->total_harga)
-        {
-            throw new \Exception('Uang bayar kurang dari total harga');
-        }
 
         DB::commit();
 
         return redirect()
             ->route('transaksi.create')
-            ->with('success', 'Transaksi berhasil disimpan');
+            ->with(
+                'success',
+                'Transaksi berhasil disimpan'
+            );
 
     } catch (\Exception $e) {
 
@@ -277,7 +363,10 @@ class TransaksiController extends Controller
 
         return back()
             ->withInput()
-            ->with('error', $e->getMessage());
+            ->with(
+                'error',
+                $e->getMessage()
+            );
     }
     }
 }

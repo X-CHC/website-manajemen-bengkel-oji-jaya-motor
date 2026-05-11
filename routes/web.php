@@ -8,7 +8,7 @@ use App\Http\Controllers\PelangganController;
 use App\Http\Controllers\TransaksiController;
 use App\Http\Controllers\PoController;
 use App\Http\Controllers\BarangMasukController;
-
+use App\Http\Controllers\HistoryStokController;
 
 Route::get('/login', function () {
     return view('login');
@@ -103,4 +103,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/', [BarangMasukController::class, 'store'])
             ->name('store');
     });
+
+    // halaman history
+    Route::prefix('history')->name('history.')->group(function () {
+        Route::get('/index', [HistoryStokController::class, 'index'])
+            ->name('index');
+            });
 });

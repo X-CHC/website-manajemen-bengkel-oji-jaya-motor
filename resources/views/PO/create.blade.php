@@ -5,6 +5,45 @@
 <section class="content">
 <div class="container-fluid">
 
+    {{-- ALERT ERROR --}}
+        @if ($errors->any())
+
+            <div class="alert alert-danger">
+
+                <ul class="mb-0">
+
+                    @foreach ($errors->all() as $error)
+
+                        <li>{{ $error }}</li>
+
+                    @endforeach
+
+                </ul>
+
+            </div>
+
+        @endif
+
+
+        {{-- ALERT ERROR SESSION --}}
+        @if(session('error'))
+
+            <div class="alert alert-danger">
+                {{ session('error') }}
+            </div>
+
+        @endif
+
+
+        {{-- ALERT SUCCESS --}}
+        @if(session('success'))
+
+            <div class="alert alert-success">
+                {{ session('success') }}
+            </div>
+
+        @endif
+
     <form action="{{ route('po.store') }}"
           method="POST">
 
@@ -139,7 +178,7 @@
 
             <div class="col-md-4">
 
-                <div class="card card-success">
+                <div class="card card-success sticky-top">
 
                     <div class="card-header">
                         <h3 class="card-title">
@@ -204,6 +243,6 @@ window.barangOptions = `
 
 @push('scripts')
 
-<script src="{{ asset('js/po.js') }}"></script>
+<script src="{{ asset('assets/js/po.js') }}"></script>
 
 @endpush

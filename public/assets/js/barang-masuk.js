@@ -11,6 +11,17 @@ function formatRupiah(angka)
 
 /*
 |--------------------------------------------------------------------------
+| PARSE RUPIAH
+|--------------------------------------------------------------------------
+*/
+function parseRupiah(angka)
+{
+    return angka.replace(/\./g, '');
+}
+
+
+/*
+|--------------------------------------------------------------------------
 | HITUNG TOTAL
 |--------------------------------------------------------------------------
 */
@@ -24,6 +35,9 @@ function hitungTotal()
     });
 
     $('#total_bayar').val(total);
+
+    $('#total_bayar_view')
+        .val(formatRupiah(total));
 }
 
 
@@ -32,19 +46,38 @@ function hitungTotal()
 | UPDATE SUBTOTAL
 |--------------------------------------------------------------------------
 */
-$(document).on('keyup change', '.jumlah-masuk, .harga-beli', function(){
+$(document).on('keyup change', '.jumlah-masuk, .harga-beli-view', function(){
 
     let parent = $(this).closest('.barang-item');
 
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT HARGA BELI
+    |--------------------------------------------------------------------------
+    */
+    let hargaInput =
+        parent.find('.harga-beli-view');
+
+    let hargaAngka =
+        parseRupiah(hargaInput.val()) || 0;
+
+    hargaInput.val(
+        formatRupiah(hargaAngka)
+    );
+
+    parent.find('.harga-beli')
+          .val(hargaAngka);
+
+    /*
+    |--------------------------------------------------------------------------
+    | HITUNG SUBTOTAL
+    |--------------------------------------------------------------------------
+    */
     let qty = parseInt(
         parent.find('.jumlah-masuk').val()
     ) || 0;
 
-    let harga = parseInt(
-        parent.find('.harga-beli').val()
-    ) || 0;
-
-    let subtotal = qty * harga;
+    let subtotal = qty * hargaAngka;
 
     parent.find('.subtotal-view')
           .val(formatRupiah(subtotal));
@@ -156,10 +189,13 @@ $('#id_po').change(function(){
 
                     <label>Harga Beli</label>
 
-                    <input type="number"
-                           name="harga_beli[]"
-                           class="form-control harga-beli"
-                           required>
+                    <input type="text"
+                        class="form-control harga-beli-view"
+                        required>
+
+                    <input type="hidden"
+                        name="harga_beli[]"
+                        class="harga-beli">
 
                 </div>
 

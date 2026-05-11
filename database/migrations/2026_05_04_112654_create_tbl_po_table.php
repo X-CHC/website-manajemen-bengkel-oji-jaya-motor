@@ -15,6 +15,10 @@ return new class extends Migration
         $table->char('id_po', 6)->primary();
         $table->date('tgl_po')->nullable();
         $table->string('mitra_po', 255)->nullable();
+                $table->enum('status_po', [
+            'pending',
+            'selesai'
+        ])->default('pending');
         $table->timestamps();
         $table->softDeletes();
     });

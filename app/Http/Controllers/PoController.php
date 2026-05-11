@@ -50,8 +50,10 @@ class PoController extends Controller
             | AUTO NUMBER PO
             |--------------------------------------------------------------------------
             */
-
-            $poTerakhir = Po::orderBy('id_po', 'desc')->first();
+            $poTerakhir = Po::orderBy(
+                                'id_po',
+                                'desc'
+                            )->first();
 
             if(!$poTerakhir)
             {
@@ -59,19 +61,24 @@ class PoController extends Controller
             }
             else
             {
-                $noUrut = (int) substr($poTerakhir->id_po, -4);
+                $noUrut = (int) substr(
+                                    $poTerakhir->id_po,
+                                    -4
+                                );
 
                 $noUrut++;
 
-                $id_po = 'PO' . sprintf('%04s', $noUrut);
+                $id_po =
+                    'PO' .
+                    sprintf('%04s', $noUrut);
             }
+
 
             /*
             |--------------------------------------------------------------------------
             | SIMPAN PO
             |--------------------------------------------------------------------------
             */
-
             Po::create([
 
                 'id_po' => $id_po,
@@ -79,53 +86,62 @@ class PoController extends Controller
                 'tgl_po' => now(),
 
                 'mitra_po' => $request->mitra_po,
+
+                'status_po' => 'pending',
             ]);
 
 
             /*
             |--------------------------------------------------------------------------
-            | LOOP DETAIL PO
+            | AUTO NUMBER DETAIL PO
             |--------------------------------------------------------------------------
             */
+            $lastDetail = DetailPo::orderBy(
+                                'id_detail_po',
+                                'desc'
+                            )->first();
 
-            foreach($request->id_barang as $key => $barangId)
+            if(!$lastDetail)
             {
-                /*
-                |--------------------------------------------------------------------------
-                | AUTO NUMBER DETAIL PO
-                |--------------------------------------------------------------------------
-                */
+                $numberDetail = 1;
+            }
+            else
+            {
+                $numberDetail = (int) substr(
+                                            $lastDetail->id_detail_po,
+                                            -3
+                                        ) + 1;
+            }
 
-                $detailTerakhir = DetailPo::orderBy('id_detail_po', 'desc')->first();
 
-                if(!$detailTerakhir)
-                {
-                    $id_detail_po = 'DPO001';
-                }
-                else
-                {
-                    $noUrutDetail = (int) substr($detailTerakhir->id_detail_po, -3);
+            /*
+            |--------------------------------------------------------------------------
+            | LOOP DETAIL
+            |--------------------------------------------------------------------------
+            */
+            foreach($request->id_barang as $index => $barangId)
+            {
 
-                    $noUrutDetail++;
+                $id_detail =
+                    'DPO' .
+                    sprintf('%03s', $numberDetail);
 
-                    $id_detail_po = 'DPO' . sprintf('%03s', $noUrutDetail + $key);
-                }
+                $numberDetail++;
 
                 /*
                 |--------------------------------------------------------------------------
                 | SIMPAN DETAIL PO
                 |--------------------------------------------------------------------------
                 */
-
                 DetailPo::create([
 
-                    'id_detail_po' => $id_detail_po,
+                    'id_detail_po' => $id_detail,
 
                     'id_po' => $id_po,
 
                     'id_barang' => $barangId,
 
-                    'jumlah_po' => $request->jumlah_po[$key],
+                    'jumlah_po' => $request->jumlah_po[$index],
                 ]);
             }
 
@@ -133,7 +149,11 @@ class PoController extends Controller
 
             return redirect()
                 ->route('po.index')
-                ->with('success', 'PO berhasil dibuat');
+                ->with(
+                    'success',
+                    'PO berhasil dibuat'
+                );
+
         }
         catch(\Exception $e)
         {
@@ -141,7 +161,10 @@ class PoController extends Controller
 
             return back()
                 ->withInput()
-                ->with('error', $e->getMessage());
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
         }
     }
 }

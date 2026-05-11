@@ -139,7 +139,7 @@
 
             <div class="col-md-4">
 
-                <div class="card card-success">
+                <div class="card card-success sticky-top">
 
                     <div class="card-header">
                         <h3 class="card-title">
@@ -163,11 +163,14 @@
 
                             <label>Total Bayar</label>
 
-                            <input type="number"
-                                name="total_bayar"
-                                id="total_bayar"
+                            <input type="text"
+                                id="total_bayar_view"
                                 class="form-control"
                                 readonly>
+
+                            <input type="hidden"
+                                name="total_bayar"
+                                id="total_bayar">
 
                         </div>
 

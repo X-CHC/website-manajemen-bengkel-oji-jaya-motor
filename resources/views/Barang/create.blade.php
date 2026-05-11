@@ -169,21 +169,6 @@
     </div>
 </section>
 @push('scripts')
-<script>
-
-function formatRupiah(angka) {
-    return angka.replace(/\D/g, '')
-                .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
-document.getElementById('harga_beli').addEventListener('keyup', function() {
-    this.value = formatRupiah(this.value);
-});
-
-document.getElementById('harga_jual').addEventListener('keyup', function() {
-    this.value = formatRupiah(this.value);
-});
-
-</script>
+<script src="{{ asset('assets/js/barang.js') }}"></script>
 @endpush
 @endsection

@@ -50,8 +50,7 @@
 <script src="{{ asset('assets/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 
 
-<!-- fungsi form -->
-<script src="{{ asset('assets/js/po.js') }}"></script>
+
 
 
 

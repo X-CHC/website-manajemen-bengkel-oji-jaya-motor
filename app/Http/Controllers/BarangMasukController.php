@@ -17,7 +17,10 @@ class BarangMasukController extends Controller
     public function create()
     {
         $po = Po::with('detailPo.barang')
-                ->get();
+
+        ->where('status_po', 'pending')
+
+        ->get();
 
         return view('Barang_Masuk.create', compact('po'));
     }
@@ -32,6 +35,21 @@ class BarangMasukController extends Controller
         */
         $po = Po::findOrFail($request->id_po);
 
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDASI STATUS PO
+        |--------------------------------------------------------------------------
+        */
+        if($po->status_po == 'selesai')
+        {
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    'PO ini sudah diproses menjadi barang masuk'
+                );
+        }
+
 
         /*
         |--------------------------------------------------------------------------
@@ -42,7 +60,7 @@ class BarangMasukController extends Controller
 
         [
 
-            'id_po' => 'required',
+            'id_po' => 'required|exists:tbl_po,id_po',
 
             'tanggal_masuk' => 'required|date',
 
@@ -220,6 +238,28 @@ class BarangMasukController extends Controller
 
             /*
             |--------------------------------------------------------------------------
+            | AUTO NUMBER DETAIL MASUK
+            |--------------------------------------------------------------------------
+            */
+            $lastDetail = DetailMasuk::orderBy(
+                                'id_detail_masuk',
+                                'desc'
+                            )->first();
+
+            if(!$lastDetail)
+            {
+                $numberDetail = 1;
+            }
+            else
+            {
+                $numberDetail = (int) substr(
+                                    $lastDetail->id_detail_masuk,
+                                    2
+                                ) + 1;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
             | LOOP DETAIL
             |--------------------------------------------------------------------------
             */
@@ -247,33 +287,19 @@ class BarangMasukController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | AUTO NUMBER DETAIL
+                | GENERATE ID DETAIL MASUK
                 |--------------------------------------------------------------------------
                 */
-                $lastDetail = DetailMasuk::orderBy(
-                                'id_detail_masuk',
-                                'desc'
-                            )->first();
-
-                if(!$lastDetail)
-                {
-                    $idDetail = 'DM0001';
-                }
-                else
-                {
-                    $numberDetail = (int) substr(
-                        $lastDetail->id_detail_masuk,
-                        2
+                $idDetail =
+                    'DM' .
+                    str_pad(
+                        $numberDetail,
+                        4,
+                        '0',
+                        STR_PAD_LEFT
                     );
 
-                    $numberDetail++;
-
-                    $idDetail =
-                        'DM' .
-                        str_pad(
-                            $numberDetail,4,'0',STR_PAD_LEFT
-                        );
-                }
+                $numberDetail++;
 
 
                 /*
@@ -381,6 +407,16 @@ class BarangMasukController extends Controller
                 ]);
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE STATUS PO
+            |--------------------------------------------------------------------------
+            */
+            Po::where('id_po', $request->id_po)
+                ->update([
+
+                    'status_po' => 'selesai'
+                ]);
 
             DB::commit();
 
