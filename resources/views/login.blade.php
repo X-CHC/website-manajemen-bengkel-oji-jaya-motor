@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>AdminLTE 3 | Log in</title>
+  <title>Log in</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
@@ -23,14 +23,20 @@
     <div class="card-body login-card-body">
       <p class="login-box-msg">Sign in to start your session</p>
 
+      @if (session('error'))
+          <div class="alert alert-danger text-center">
+              {{ session('error') }}
+          </div>
+      @endif
+
+      @if ($errors->any())
+          <div class="alert alert-danger text-center">
+              {{ $errors->first() }}
+          </div>
+      @endif
+
       <form action="{{ route('login.post') }}" method="POST">
         @csrf
-
-            @if ($errors->any())
-                <div class="alert alert-danger">
-                    {{ $errors->first() }}
-                </div>
-            @endif
 
         <div class="input-group mb-3">
           <input type="email" name="email" class="form-control" placeholder="Email">

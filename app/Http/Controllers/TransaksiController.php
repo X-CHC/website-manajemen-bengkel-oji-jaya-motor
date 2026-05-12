@@ -8,11 +8,31 @@ use App\Models\Pelanggan;
 use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\HistoryStok;
-
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 
 class TransaksiController extends Controller
 {
+    public function index()
+    {
+
+        // AMBIL DATA TRANSAKSI
+
+        $transaksi = Transaksi::with([
+                            'detailTransaksi.barang'
+                        ])
+                        ->orderBy(
+                            'tanggal_transaksi',
+                            'desc'
+                        )
+                        ->get();
+
+        return view(
+            'transaksi.index',
+            compact('transaksi')
+        );
+    }
+
     public function create()
     {
         $pelanggan = Pelanggan::all();
@@ -26,7 +46,7 @@ class TransaksiController extends Controller
     }
 
     public function store(Request $request)
-{
+    {
     $request->validate([
 
         'id_barang'        => 'required|array',
@@ -58,11 +78,7 @@ class TransaksiController extends Controller
 
     try {
 
-        /*
-        |--------------------------------------------------------------------------
-        | AUTO NUMBER TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
+        // AUTO NUMBER TRANSAKSI
         $transaksiTerakhir = Transaksi::orderBy(
                                 'id_transaksi',
                                 'desc'
@@ -86,11 +102,7 @@ class TransaksiController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI BARANG
-        |--------------------------------------------------------------------------
-        */
+        // VALIDASI BARANG
         if(empty($request->id_barang))
         {
             return back()
@@ -102,11 +114,7 @@ class TransaksiController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI UANG BAYAR
-        |--------------------------------------------------------------------------
-        */
+        // VALIDASI UANG BAYAR
         if($request->uang_bayar < $request->total_harga)
         {
             throw new \Exception(
@@ -115,11 +123,7 @@ class TransaksiController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | SIMPAN TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
+        // SIMPAN TRANSAKSI
         Transaksi::create([
 
             'id_transaksi' => $id_transaksi,
@@ -156,11 +160,7 @@ class TransaksiController extends Controller
         ]);
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | AUTO NUMBER DETAIL TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
+        // AUTO NUMBER DETAIL TRANSAKSI
         $detailTerakhir = DetailTransaksi::orderBy(
                                 'id_detail_transaksi',
                                 'desc'
@@ -179,11 +179,7 @@ class TransaksiController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | AUTO NUMBER HISTORY STOK
-        |--------------------------------------------------------------------------
-        */
+        // AUTO NUMBER HISTORY STOK
         $historyTerakhir = HistoryStok::orderBy(
                                 'id_history_stok',
                                 'desc'
@@ -199,29 +195,25 @@ class TransaksiController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOOP DETAIL TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
+        // LOOP DETAIL TRANSAKSI
         foreach ($request->id_barang as $index => $barangId) {
 
-            /*
-            |--------------------------------------------------------------------------
-            | SKIP JIKA KOSONG
-            |--------------------------------------------------------------------------
-            */
+
+
+            // SKIP JIKA KOSONG
+
+
             if(empty($barangId))
             {
                 continue;
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | AMBIL DATA BARANG
-            |--------------------------------------------------------------------------
-            */
+
+
+            // AMBIL DATA BARANG
+
+
             $barang = Barang::where(
                             'id_barang',
                             $barangId
@@ -230,11 +222,11 @@ class TransaksiController extends Controller
             $jumlah = $request->jumlah_barang[$index];
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | VALIDASI STOK
-            |--------------------------------------------------------------------------
-            */
+
+
+            // VALIDASI STOK
+
+
             if ($barang->jumlah_barang < $jumlah) {
 
                 throw new \Exception(
@@ -246,11 +238,11 @@ class TransaksiController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | GENERATE ID DETAIL TRANSAKSI
-            |--------------------------------------------------------------------------
-            */
+
+
+            // GENERATE ID DETAIL TRANSAKSI
+
+
             $id_detail =
                 'DTL' .
                 str_pad(
@@ -263,21 +255,21 @@ class TransaksiController extends Controller
             $nomorDetail++;
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | HITUNG SUBTOTAL
-            |--------------------------------------------------------------------------
-            */
+
+
+            // HITUNG SUBTOTAL
+
+
             $subtotal =
                 $barang->harga_jual *
                 $jumlah;
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN DETAIL TRANSAKSI
-            |--------------------------------------------------------------------------
-            */
+
+
+            // SIMPAN DETAIL TRANSAKSI
+
+
             DetailTransaksi::create([
 
                 'id_detail_transaksi' => $id_detail,
@@ -294,11 +286,11 @@ class TransaksiController extends Controller
             ]);
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE STOK BARANG
-            |--------------------------------------------------------------------------
-            */
+
+
+            // UPDATE STOK BARANG
+
+
             $stokSisa =
                 $barang->jumlah_barang -
                 $jumlah;
@@ -309,11 +301,11 @@ class TransaksiController extends Controller
             ]);
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | GENERATE ID HISTORY STOK
-            |--------------------------------------------------------------------------
-            */
+
+
+            // GENERATE ID HISTORY STOK
+
+
             $id_history =
                 'HS' .
                 str_pad(
@@ -326,11 +318,11 @@ class TransaksiController extends Controller
             $nomorHistory++;
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN HISTORY STOK
-            |--------------------------------------------------------------------------
-            */
+
+
+            // SIMPAN HISTORY STOK
+
+
             HistoryStok::create([
 
                 'id_history_stok' => $id_history,
@@ -368,5 +360,46 @@ class TransaksiController extends Controller
                 $e->getMessage()
             );
     }
+    }
+
+    public function cetakNota($id)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL DATA TRANSAKSI
+        |--------------------------------------------------------------------------
+        */
+        $transaksi = Transaksi::with([
+
+            'detailTransaksi.barang'
+
+        ])->findOrFail($id);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | LOAD PDF
+        |--------------------------------------------------------------------------
+        */
+        $pdf = Pdf::loadView(
+
+            'transaksi.nota',
+
+            compact('transaksi')
+
+        )->setPaper('A5', 'portrait');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DOWNLOAD PDF
+        |--------------------------------------------------------------------------
+        */
+        return $pdf->stream(
+
+            'nota-' .
+            $transaksi->id_transaksi .
+            '.pdf'
+        );
     }
 }

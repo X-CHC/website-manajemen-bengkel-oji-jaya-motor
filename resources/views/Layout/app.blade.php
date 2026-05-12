@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="{{ asset('assets/adminlte/plugins/select2/css/select2.min.css') }}">
     <link rel="stylesheet" href="https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css">
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
+    <link rel="stylesheet" href="{{ asset('assets/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
 
 
     <!-- Tambahkan CSS DataTables -->
@@ -39,6 +40,9 @@
 <script src="{{ asset('assets/adminlte/plugins/jquery/jquery.min.js') }}"></script>
 
 <script src="{{ asset('assets/adminlte/plugins/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+
+<script src="{{ asset('assets/adminlte/plugins/overlayScrollbars/js/jquery.overlayScrollbars.min.js') }}"></script>
+
 
 <script src="{{ asset('assets/adminlte/dist/js/adminlte.min.js') }}"></script>
 

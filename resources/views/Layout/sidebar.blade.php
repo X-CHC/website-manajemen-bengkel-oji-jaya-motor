@@ -149,6 +149,16 @@
                         </li>
 
                     </ul>
+                    <ul class="nav nav-treeview">
+
+                        <li class="nav-item">
+                            <a href="{{ route('transaksi.index') }}"
+                               class="nav-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>List Transaksi</p>
+                            </a>
+                        </li>
+                    </ul>
                 </li>
 
                 {{-- MENU PO --}}
@@ -161,6 +171,13 @@
 
                     <ul class="nav nav-treeview">
 
+                        <li class="nav-item">
+                            <a href="{{ route('po.index') }}"
+                               class="nav-link {{ request()->routeIs('po.index') ? 'active' : '' }}">
+                                <i class="far fa-circle nav-icon"></i>
+                                <p>List PO</p>
+                            </a>
+                        </li>
                         <li class="nav-item">
                             <a href="{{ route('po.create') }}"
                                class="nav-link {{ request()->routeIs('po.create') ? 'active' : '' }}">
@@ -194,45 +211,20 @@
                 </li>
 
                 {{-- History Stock --}}
-                <li class="nav-item {{ request()->routeIs('history-stock.*') ? 'menu-open' : '' }}">
-
-                    <a href="#" class="nav-link {{ request()->routeIs('history-stock.*') ? 'active' : '' }}">
+                <li class="nav-item ">
+                    <a href="{{ route('history.index') }}" class="nav-link {{ request()->routeIs('history.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-history"></i>
-                        <p>History Stock</p>
+                        <p>Lihat History Stock</p>
                     </a>
-
-                    <ul class="nav nav-treeview">
-
-                        <li class="nav-item">
-                            <a href="{{ route('history.index') }}"
-                               class="nav-link {{ request()->routeIs('history.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Lihat History Stock</p>
-                            </a>
-                        </li>
-
-                    </ul>
                 </li>
 
                 {{-- Laporan --}}
-                <li class="nav-item {{ request()->routeIs('laporan.*') ? 'menu-open' : '' }}">
+                <li class="nav-item ">
 
-                    <a href="#" class="nav-link {{ request()->routeIs('laporan.*') ? 'active' : '' }}">
+                    <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
                         <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>Laporan</p>
+                        <p>Lihat Laporan</p>
                     </a>
-
-                    <ul class="nav nav-treeview">
-
-                        <li class="nav-item">
-                            <a href="{{ route('laporan.index') }}"
-                               class="nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Lihat Laporan</p>
-                            </a>
-                        </li>
-
-                    </ul>
                 </li>
 
 

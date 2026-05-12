@@ -73,9 +73,14 @@ Route::middleware('auth')->group(function () {
     // halaman transaksi
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
 
+        Route::get('/index', [TransaksiController::class, 'index'])
+            ->name('index');
+        Route::get('/cetak/{id}', [TransaksiController::class, 'cetakNota'])
+            ->name('cetak');
+
+
         Route::get('/create', [TransaksiController::class, 'create'])
             ->name('create');
-
         Route::post('/', [TransaksiController::class, 'store'])
             ->name('store');
     });
@@ -85,10 +90,18 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/index', [PoController::class, 'index'])
             ->name('index');
+        Route::get('/{id}/edit',[PoController::class, 'edit']
+            )->name('edit');
+        Route::put('/{id}',[PoController::class, 'update']
+            )->name('update');
+
+        Route::delete('/{id}',[PoController::class, 'destroy']
+            )->name('destroy');
+
+
 
         Route::get('/create', [PoController::class, 'create'])
             ->name('create');
-
         Route::post('/', [PoController::class, 'store'])
             ->name('store');
     });
@@ -96,10 +109,20 @@ Route::middleware('auth')->group(function () {
     // halaman barang masuk
     Route::prefix('barang-masuk')->name('barang-masuk.')->group(function ()
     {
+        Route::get('/index', [BarangMasukController::class, 'index'])
+            ->name('index');
+        Route::get('/{id}/edit',[BarangMasukController::class, 'edit']
+            )->name('edit');
+        Route::put('/{id}',[BarangMasukController::class, 'update']
+            )->name('barang-masuk.update');
+        Route::delete('/barang-masuk/{id}',[BarangMasukController::class, 'destroy']
+            )->name('barang-masuk.destroy');
+
+
+
 
         Route::get('/create', [BarangMasukController::class, 'create'])
             ->name('create');
-
         Route::post('/', [BarangMasukController::class, 'store'])
             ->name('store');
     });

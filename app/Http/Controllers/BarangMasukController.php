@@ -14,6 +14,22 @@ use Illuminate\Support\Facades\DB;
 
 class BarangMasukController extends Controller
 {
+
+    public function index()
+    {
+        $barangMasuk = BarangMasuk::with([
+                            'po',
+                            'detailMasuk.barang'
+                        ])
+                        ->latest()
+                        ->get();
+
+        return view(
+            'barang_masuk.index',
+            compact('barangMasuk')
+        );
+    }
+
     public function create()
     {
         $po = Po::with('detailPo.barang')
@@ -24,8 +40,6 @@ class BarangMasukController extends Controller
 
         return view('Barang_Masuk.create', compact('po'));
     }
-
-
 
     public function store(Request $request)
     {
@@ -438,6 +452,224 @@ class BarangMasukController extends Controller
                     'error',
                     $e->getMessage()
                 );
+        }
+    }
+
+    public function edit($id)
+    {
+        $barangMasuk = BarangMasuk::with([
+                            'detailMasuk.barang'
+                        ])
+                        ->findOrFail($id);
+
+        return view(
+            'barang_masuk.edit',
+            compact('barangMasuk')
+        );
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
+    public function update(Request $request,$id)
+    {
+        $request->validate([
+
+            'harga_beli' => 'required|array',
+
+            'harga_beli.*' =>
+                'required|integer|min:1',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $barangMasuk = BarangMasuk::with(
+                                'detailMasuk'
+                            )
+                            ->findOrFail($id);
+
+            $totalBayar = 0;
+
+            foreach(
+                $barangMasuk->detailMasuk
+                as $index => $detail
+            )
+            {
+                $hargaBeli =
+                    $request->harga_beli[$index];
+
+                $subtotal =
+                    $hargaBeli *
+                    $detail->jumlah_barang;
+
+                $detail->update([
+
+                    'harga_beli' => $hargaBeli,
+
+                    'sub_total' => $subtotal,
+                ]);
+
+                $totalBayar += $subtotal;
+            }
+
+            $barangMasuk->update([
+
+                'total_bayar' => $totalBayar
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('barang-masuk.index')
+                ->with(
+                    'success',
+                    'Barang masuk berhasil diupdate'
+                );
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE
+    |--------------------------------------------------------------------------
+    */
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $barangMasuk = BarangMasuk::with(
+                                'detailMasuk'
+                            )
+                            ->findOrFail($id);
+
+            /*
+            |--------------------------------------------------------------------------
+            | KEMBALIKAN STOK
+            |--------------------------------------------------------------------------
+            */
+            foreach(
+                $barangMasuk->detailMasuk
+                as $detail
+            )
+            {
+                $barang = Barang::find(
+                    $detail->id_barang
+                );
+
+                $stokBaru =
+                    $barang->jumlah_barang -
+                    $detail->jumlah_barang;
+
+                $barang->update([
+
+                    'jumlah_barang' => $stokBaru
+                ]);
+
+
+                /*
+                |--------------------------------------------------------------------------
+                | HISTORY STOK
+                |--------------------------------------------------------------------------
+                */
+                $lastHistory = HistoryStok::orderBy(
+                                    'id_history_stok',
+                                    'desc'
+                                )->first();
+
+                if(!$lastHistory)
+                {
+                    $idHistory = 'HS0001';
+                }
+                else
+                {
+                    $number = (int) substr(
+                        $lastHistory->id_history_stok,
+                        2
+                    );
+
+                    $number++;
+
+                    $idHistory =
+                        'HS' .
+                        str_pad(
+                            $number,
+                            4,
+                            '0',
+                            STR_PAD_LEFT
+                        );
+                }
+
+                HistoryStok::create([
+
+                    'id_history_stok' => $idHistory,
+
+                    'id_barang' => $detail->id_barang,
+
+                    'jumlah_masuk' => 0,
+
+                    'jumlah_keluar' =>
+                        $detail->jumlah_barang,
+
+                    'jumlah_sisa' => $stokBaru,
+
+                    'jumlah_barang' => $stokBaru,
+                ]);
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS DETAIL
+            |--------------------------------------------------------------------------
+            */
+            DetailMasuk::where(
+                'id_barang_masuk',
+                $barangMasuk->id_barang_masuk
+            )->delete();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS HEADER
+            |--------------------------------------------------------------------------
+            */
+            $barangMasuk->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('barang-masuk.index')
+                ->with(
+                    'success',
+                    'Barang masuk berhasil dihapus'
+                );
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return back()->with(
+                'error',
+                $e->getMessage()
+            );
         }
     }
 }

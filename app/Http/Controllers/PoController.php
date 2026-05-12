@@ -12,9 +12,16 @@ class PoController extends Controller
 {
     public function index()
     {
-        $po = Po::latest()->get();
+        $po = Po::with([
+                    'detailPo.barang'
+                ])
+                ->latest()
+                ->get();
 
-        return view('po.index', compact('po'));
+        return view(
+            'po.index',
+            compact('po')
+        );
     }
 
 
@@ -165,6 +172,171 @@ class PoController extends Controller
                     'error',
                     $e->getMessage()
                 );
+        }
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | EDIT
+    |--------------------------------------------------------------------------
+    */
+    public function edit($id)
+    {
+        $po = Po::with([
+                    'detailPo.barang'
+                ])
+                ->findOrFail($id);
+
+        return view(
+            'po.edit',
+            compact('po')
+        );
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE
+    |--------------------------------------------------------------------------
+    */
+    public function update(Request $request,$id)
+    {
+        $request->validate([
+
+            'mitra_po' =>
+                'required|max:255',
+
+            'jumlah_po' =>
+                'required|array',
+
+            'jumlah_po.*' =>
+                'required|integer|min:1',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $po = Po::with(
+                        'detailPo'
+                    )
+                    ->findOrFail($id);
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE HEADER
+            |--------------------------------------------------------------------------
+            */
+            $po->update([
+
+                'mitra_po' =>
+                    $request->mitra_po
+            ]);
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | UPDATE DETAIL
+            |--------------------------------------------------------------------------
+            */
+            foreach(
+                $po->detailPo
+                as $index => $detail
+            )
+            {
+                $detail->update([
+
+                    'jumlah_po' =>
+                        $request->jumlah_po[$index]
+                ]);
+            }
+
+            DB::commit();
+
+            return redirect()
+                ->route('po.index')
+                ->with(
+                    'success',
+                    'PO berhasil diupdate'
+                );
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return back()
+                ->withInput()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
+        }
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | DELETE
+    |--------------------------------------------------------------------------
+    */
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $po = Po::findOrFail($id);
+
+            /*
+            |--------------------------------------------------------------------------
+            | VALIDASI
+            |--------------------------------------------------------------------------
+            */
+            if($po->status_po == 'selesai')
+            {
+                return back()->with(
+
+                    'error',
+                    'PO yang sudah diproses tidak bisa dihapus'
+                );
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS DETAIL
+            |--------------------------------------------------------------------------
+            */
+            DetailPo::where(
+                'id_po',
+                $po->id_po
+            )->delete();
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS HEADER
+            |--------------------------------------------------------------------------
+            */
+            $po->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('po.index')
+                ->with(
+                    'success',
+                    'PO berhasil dihapus'
+                );
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return back()->with(
+
+                'error',
+                $e->getMessage()
+            );
         }
     }
 }
