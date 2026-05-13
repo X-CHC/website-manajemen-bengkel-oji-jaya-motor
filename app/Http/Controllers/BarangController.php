@@ -48,21 +48,16 @@ class BarangController extends Controller
             */
 
             $barangTerakhir = Barang::orderBy('id_barang', 'desc')->first();
+            $nextBarangNumber = 1;
 
-            if (!$barangTerakhir) {
-
-                $id_barang = 'BRG001';
-
-            } else {
-
-                $kode = $barangTerakhir->id_barang;
-
-                $noUrut = (int) substr($kode, -3);
-
-                $noUrut++;
-
-                $id_barang = 'BRG' . sprintf('%03s', $noUrut);
+            if ($barangTerakhir) {
+                $nextBarangNumber =
+                    (int) preg_replace('/\D/', '', $barangTerakhir->id_barang) +
+                    1;
             }
+
+            $id_barang = 'BRG' .
+                str_pad($nextBarangNumber, 3, '0', STR_PAD_LEFT);
 
             /*
             |--------------------------------------------------------------------------
@@ -98,21 +93,16 @@ class BarangController extends Controller
                 'desc'
             )->first();
 
-            if (!$historyTerakhir) {
+            $nextHistoryNumber = 1;
 
-                $id_history_stok = 'HS0001';
-
-            } else {
-
-                $kodeHistory = $historyTerakhir->id_history_stok;
-
-                $noUrutHistory = (int) substr($kodeHistory, -3);
-
-                $noUrutHistory++;
-
-                $id_history_stok = 'HS' .
-                    sprintf('%04s', $noUrutHistory);
+            if ($historyTerakhir) {
+                $nextHistoryNumber =
+                    (int) preg_replace('/\D/', '', $historyTerakhir->id_history_stok) +
+                    1;
             }
+
+            $id_history_stok = 'HS' .
+                str_pad($nextHistoryNumber, 4, '0', STR_PAD_LEFT);
 
             /*
             |--------------------------------------------------------------------------

@@ -37,14 +37,16 @@ class KategoriController extends Controller
             // Auto Number
             $hasil = KategoriBarang::selectRaw('MAX(id_kategori_barang) as max_id')->first();
 
-            if (!$hasil || !$hasil->max_id) {
-                $id_kategori = "KTG001";
-            } else {
-                $kode = $hasil->max_id;
-                $noUrut = (int) substr($kode, -3);
-                $noUrut++;
-                $id_kategori = "KTG" . sprintf("%03s", $noUrut);
+            $nextKategoriNumber = 1;
+
+            if ($hasil && $hasil->max_id) {
+                $nextKategoriNumber =
+                    (int) preg_replace('/\D/', '', $hasil->max_id) +
+                    1;
             }
+
+            $id_kategori = 'KTG' .
+                str_pad($nextKategoriNumber, 3, '0', STR_PAD_LEFT);
 
             // Simpan
             $modelKategori->id_kategori_barang = $id_kategori;

@@ -40,18 +40,16 @@ class PelangganController extends Controller
                 ->orderBy('id_pelanggan', 'desc')
                 ->first();
 
-            if (!$hasil) {
-                $id_pelanggan = 'PLG001';
-            } else {
+            $nextPelangganNumber = 1;
 
-                $kode = $hasil->id_pelanggan;
-
-                $noUrut = (int) substr($kode, -3);
-
-                $noUrut++;
-
-                $id_pelanggan = 'PLG' . sprintf('%03s', $noUrut);
+            if ($hasil) {
+                $nextPelangganNumber =
+                    (int) preg_replace('/\D/', '', $hasil->id_pelanggan) +
+                    1;
             }
+
+            $id_pelanggan = 'PLG' .
+                str_pad($nextPelangganNumber, 3, '0', STR_PAD_LEFT);
 
             $pelanggan->id_pelanggan   = $id_pelanggan;
             $pelanggan->nama_pelanggan = $request->nama_pelanggan;

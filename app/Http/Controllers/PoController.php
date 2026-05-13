@@ -62,23 +62,16 @@ class PoController extends Controller
                                 'desc'
                             )->first();
 
-            if(!$poTerakhir)
-            {
-                $id_po = 'PO0001';
-            }
-            else
-            {
-                $noUrut = (int) substr(
-                                    $poTerakhir->id_po,
-                                    -4
-                                );
+            $nextPoNumber = 1;
 
-                $noUrut++;
-
-                $id_po =
-                    'PO' .
-                    sprintf('%04s', $noUrut);
+            if ($poTerakhir) {
+                $nextPoNumber =
+                    (int) preg_replace('/\D/', '', $poTerakhir->id_po) +
+                    1;
             }
+
+            $id_po = 'PO' .
+                str_pad($nextPoNumber, 4, '0', STR_PAD_LEFT);
 
 
             /*
@@ -108,16 +101,9 @@ class PoController extends Controller
                                 'desc'
                             )->first();
 
-            if(!$lastDetail)
-            {
-                $numberDetail = 1;
-            }
-            else
-            {
-                $numberDetail = (int) substr(
-                                            $lastDetail->id_detail_po,
-                                            -3
-                                        ) + 1;
+            $numberDetail = 1;
+            if ($lastDetail) {
+                $numberDetail = (int) preg_replace('/\D/', '', $lastDetail->id_detail_po) + 1;
             }
 
 

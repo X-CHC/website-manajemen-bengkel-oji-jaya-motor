@@ -1,205 +1,322 @@
 <!DOCTYPE html>
 <html>
 <head>
-
     <meta charset="utf-8">
-
     <title>Nota Transaksi</title>
 
     <style>
-
-        body{
-            font-family: sans-serif;
-            font-size: 12px;
+        @page {
+            margin: 15px;
         }
 
-        .text-center{
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 11px;
+            color: #000;
+        }
+
+        .nota {
+            width: 100%;
+        }
+
+        .header {
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .header td {
+            vertical-align: top;
+        }
+
+        .logo-box {
+            width: 22%;
             text-align: center;
         }
 
-        table{
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            border: 2px solid #000;
+            width: 45px;
+            height: 45px;
+            line-height: 45px;
+            margin: auto;
+        }
+
+        .header-title {
+            width: 48%;
+            text-align: center;
+        }
+
+        .header-title h2 {
+            margin: 0;
+            font-size: 18px;
+            letter-spacing: 1px;
+        }
+
+        .header-title p {
+            margin: 2px 0;
+            font-size: 10px;
+        }
+
+        .header-info {
+            width: 30%;
+            font-size: 10px;
+        }
+
+        .line {
+            border-bottom: 1px dotted #000;
+            display: inline-block;
+            min-width: 90px;
+            height: 12px;
+        }
+
+        .service-info {
+            margin-top: 5px;
+            margin-bottom: 8px;
+            font-size: 10px;
+        }
+
+        .service-info p {
+            margin: 2px 0;
+        }
+
+        .motor-brand {
+            text-align: center;
+            margin-bottom: 5px;
+            font-size: 13px;
+            font-weight: bold;
+            letter-spacing: 10px;
+        }
+
+        table.detail {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 10px;
         }
 
-        table th,
-        table td{
+        table.detail th,
+        table.detail td {
+            border: 1px solid #000;
+            padding: 4px;
+            font-size: 10px;
+        }
+
+        table.detail th {
+            text-align: center;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        .nama-barang {
+            width: 45%;
+        }
+
+        .qty {
+            width: 12%;
+            text-align: center;
+        }
+
+        .harga {
+            width: 20%;
+            text-align: right;
+        }
+
+        .jumlah {
+            width: 23%;
+            text-align: right;
+        }
+
+        .total-table {
+            width: 45%;
+            margin-left: auto;
+            border-collapse: collapse;
+            margin-top: 8px;
+        }
+
+        .total-table td {
             border: 1px solid #000;
             padding: 5px;
+            font-size: 10px;
         }
 
-        .mt{
-            margin-top: 20px;
+        .footer {
+            width: 100%;
+            margin-top: 35px;
+            font-size: 10px;
         }
 
+        .footer td {
+            width: 50%;
+            text-align: center;
+            vertical-align: top;
+        }
+
+        .signature-space {
+            height: 45px;
+        }
     </style>
-
 </head>
 <body>
 
+<div class="nota">
+
     {{-- HEADER --}}
-    <div class="text-center">
-
-        <h2>BENGKEL MOTOR</h2>
-
-        <p>
-            Jl. Contoh Alamat No. 123
-        </p>
-
-        <hr>
-
-    </div>
-
-
-    {{-- INFO TRANSAKSI --}}
-    <table>
-
+    <table class="header">
         <tr>
-
-            <td width="30%">
-                ID Transaksi
+            <td class="logo-box">
+                <div class="logo">B</div>
             </td>
 
-            <td>
-                {{ $transaksi->id_transaksi }}
+            <td class="header-title">
+                <h2>BENGKEL MOTOR</h2>
+                <p>Jl. Contoh Alamat No. 123</p>
+                <p>Telp. 0812 3456 7890</p>
             </td>
 
+            <td class="header-info">
+                <p>
+                    Bogor,
+                    <span class="line">
+                        {{ date('d-m-Y', strtotime($transaksi->tanggal_transaksi)) }}
+                    </span>
+                </p>
+
+                <p>
+                    Tuan
+                    <span class="line">
+                        {{ $transaksi->pelanggan->nama_pelanggan ?? '-' }}
+                    </span>
+                </p>
+
+                <p>
+                    Toko
+                    <span class="line"></span>
+                </p>
+            </td>
         </tr>
-
-        <tr>
-
-            <td>
-                Tanggal
-            </td>
-
-            <td>
-                {{ $transaksi->tanggal_transaksi }}
-            </td>
-
-        </tr>
-
-        <tr>
-
-            <td>
-                Kasir
-            </td>
-
-            <td>
-                {{ $transaksi->nama_kasir }}
-            </td>
-
-        </tr>
-
     </table>
 
 
+    {{-- INFO SERVICE --}}
+    <div class="service-info">
+        <p>Menerima Service, Ganti Oli, Tune Up</p>
+        <p>Menyediakan sparepart dan accessories</p>
+        <p>Berbagai Merk Motor</p>
+    </div>
+
+
+    {{-- NO NOTA --}}
+    <p style="margin: 0 0 5px 0;">
+        <strong>No. Nota :</strong> {{ $transaksi->id_transaksi }}
+    </p>
+
+
+    {{-- MERK MOTOR --}}
+    <div class="motor-brand">
+        HONDA &nbsp; YAMAHA &nbsp; SUZUKI
+    </div>
+
+
     {{-- DETAIL BARANG --}}
-    <table class="mt">
-
+    <table class="detail">
         <thead>
-
             <tr>
-
-                <th>No</th>
-
-                <th>Barang</th>
-
-                <th>Qty</th>
-
-                <th>Harga</th>
-
-                <th>Subtotal</th>
-
+                <th>Banyaknya</th>
+                <th>Nama Barang</th>
+                <th>Harga Satuan</th>
+                <th>Jumlah</th>
             </tr>
-
         </thead>
 
         <tbody>
-
-            @foreach($transaksi->detailTransaksi as $index => $detail)
-
+            @foreach($transaksi->detailTransaksi as $detail)
                 <tr>
-
-                    <td>
-                        {{ $index + 1 }}
-                    </td>
-
-                    <td>
-                        {{ $detail->barang->nama_barang }}
-                    </td>
-
-                    <td>
+                    <td class="qty">
                         {{ $detail->jumlah_barang }}
                     </td>
 
-                    <td>
+                    <td class="nama-barang">
+                        {{ $detail->barang->nama_barang }}
+                    </td>
+
+                    <td class="harga">
                         Rp {{ number_format($detail->harga_barang, 0, ',', '.') }}
                     </td>
 
-                    <td>
+                    <td class="jumlah">
                         Rp {{ number_format($detail->sub_total, 0, ',', '.') }}
                     </td>
-
                 </tr>
-
             @endforeach
 
+            {{-- Baris kosong supaya bentuk nota tetap panjang --}}
+            @for($i = count($transaksi->detailTransaksi); $i < 10; $i++)
+                <tr>
+                    <td style="height: 18px;"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            @endfor
         </tbody>
-
     </table>
 
 
     {{-- TOTAL --}}
-    <table class="mt">
-
+    <table class="total-table">
         <tr>
-
-            <td width="70%">
-                Total
+            <td width="45%">
+                <strong>Jumlah Rp.</strong>
             </td>
-
-            <td>
+            <td class="text-right">
                 Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
             </td>
-
         </tr>
 
         <tr>
-
             <td>
-                Bayar
+                Uang Muka
             </td>
-
-            <td>
+            <td class="text-right">
                 Rp {{ number_format($transaksi->uang_bayar, 0, ',', '.') }}
             </td>
-
         </tr>
 
         <tr>
-
             <td>
-                Kembalian
+                Sisa
             </td>
-
-            <td>
+            <td class="text-right">
                 Rp {{ number_format($transaksi->uang_kembali, 0, ',', '.') }}
             </td>
-
         </tr>
-
     </table>
 
 
     {{-- FOOTER --}}
-    <div class="text-center mt">
+    <table class="footer">
+        <tr>
+            <td>
+                <strong>Tanda Terima,</strong>
+                <div class="signature-space"></div>
+                (.................................)
+            </td>
 
-        <p>
-            Terima kasih telah berbelanja
-        </p>
+            <td>
+                <strong>Hormat kami,</strong>
+                <div class="signature-space"></div>
+                (.................................)
+            </td>
+        </tr>
+    </table>
 
-    </div>
+</div>
 
 </body>
 </html>

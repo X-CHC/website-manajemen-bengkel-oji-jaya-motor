@@ -84,22 +84,16 @@ class TransaksiController extends Controller
                                 'desc'
                             )->first();
 
-        if (!$transaksiTerakhir) {
+        $nextTransaksiNumber = 1;
 
-            $id_transaksi = 'TRX001';
-
-        } else {
-
-            $kode = $transaksiTerakhir->id_transaksi;
-
-            $noUrut = (int) substr($kode, -3);
-
-            $noUrut++;
-
-            $id_transaksi =
-                'TRX' .
-                sprintf('%03s', $noUrut);
+        if ($transaksiTerakhir) {
+            $nextTransaksiNumber =
+                (int) preg_replace('/\D/', '', $transaksiTerakhir->id_transaksi) +
+                1;
         }
+
+        $id_transaksi = 'TRX' .
+            str_pad($nextTransaksiNumber, 3, '0', STR_PAD_LEFT);
 
 
         // VALIDASI BARANG
@@ -159,6 +153,10 @@ class TransaksiController extends Controller
             ),
         ]);
 
+        $barangList = Barang::whereIn('id_barang', $request->id_barang)
+                            ->get()
+                            ->keyBy('id_barang');
+
 
         // AUTO NUMBER DETAIL TRANSAKSI
         $detailTerakhir = DetailTransaksi::orderBy(
@@ -166,16 +164,9 @@ class TransaksiController extends Controller
                                 'desc'
                             )->first();
 
-        if(!$detailTerakhir)
-        {
-            $nomorDetail = 1;
-        }
-        else
-        {
-            $nomorDetail = (int) substr(
-                                $detailTerakhir->id_detail_transaksi,
-                                3
-                            ) + 1;
+        $nomorDetail = 1;
+        if ($detailTerakhir) {
+            $nomorDetail = (int) preg_replace('/\D/', '', $detailTerakhir->id_detail_transaksi) + 1;
         }
 
 
@@ -185,13 +176,9 @@ class TransaksiController extends Controller
                                 'desc'
                             )->first();
 
-        if(!$historyTerakhir)
-        {
-            $nomorHistory = 1;
-        }
-        else
-        {
-            $nomorHistory = (int) substr( $historyTerakhir->id_history_stok,2) + 1;
+        $nomorHistory = 1;
+        if ($historyTerakhir) {
+            $nomorHistory = (int) preg_replace('/\D/', '', $historyTerakhir->id_history_stok) + 1;
         }
 
 
@@ -213,13 +200,14 @@ class TransaksiController extends Controller
 
             // AMBIL DATA BARANG
 
-
-            $barang = Barang::where(
-                            'id_barang',
-                            $barangId
-                        )->first();
-
+            $barang = $barangList->get($barangId);
             $jumlah = $request->jumlah_barang[$index];
+
+            if (!$barang) {
+                throw new \Exception(
+                    'Barang dengan ID ' . $barangId . ' tidak ditemukan'
+                );
+            }
 
 
 
@@ -244,7 +232,7 @@ class TransaksiController extends Controller
 
 
             $id_detail =
-                'DTL' .
+                'DTR' .
                 str_pad(
                     $nomorDetail,
                     3,

@@ -179,23 +179,15 @@ class BarangMasukController extends Controller
                         'desc'
                     )->first();
 
-            if(!$last)
-            {
-                $idBarangMasuk = 'BRM001';
+            $nextBarangMasukNumber = 1;
+            if ($last) {
+                $nextBarangMasukNumber =
+                    (int) preg_replace('/\D/', '', $last->id_barang_masuk) +
+                    1;
             }
-            else
-            {
-                $number = (int) substr(
-                    $last->id_barang_masuk,
-                    2
-                );
 
-                $number++;
-
-                $idBarangMasuk =
-                    'BRM' .
-                    str_pad($number, 3, '0', STR_PAD_LEFT);
-            }
+            $idBarangMasuk = 'BMK' .
+                str_pad($nextBarangMasukNumber, 3, '0', STR_PAD_LEFT);
 
 
             /*
@@ -250,6 +242,13 @@ class BarangMasukController extends Controller
                             $request->id_po
                         )->get();
 
+            $barangList = Barang::whereIn(
+                                'id_barang',
+                                $detailPo->pluck('id_barang')->unique()
+                            )
+                            ->get()
+                            ->keyBy('id_barang');
+
 
             /*
             |--------------------------------------------------------------------------
@@ -261,16 +260,21 @@ class BarangMasukController extends Controller
                                 'desc'
                             )->first();
 
-            if(!$lastDetail)
-            {
-                $numberDetail = 1;
+            $numberDetail = 1;
+            if ($lastDetail) {
+                $numberDetail = (int) preg_replace('/\D/', '', $lastDetail->id_detail_masuk) + 1;
             }
-            else
-            {
-                $numberDetail = (int) substr(
-                                    $lastDetail->id_detail_masuk,
-                                    2
-                                ) + 1;
+
+            $lastHistory = HistoryStok::orderBy(
+                                'id_history_stok',
+                                'desc'
+                            )->first();
+
+            $nextHistoryNumber = 1;
+            if ($lastHistory) {
+                $nextHistoryNumber =
+                    (int) preg_replace('/\D/', '', $lastHistory->id_history_stok) +
+                    1;
             }
 
             /*
@@ -306,7 +310,7 @@ class BarangMasukController extends Controller
                 |--------------------------------------------------------------------------
                 */
                 $idDetail =
-                    'DTM' .
+                    'DMK' .
                     str_pad(
                         $numberDetail,
                         3,
@@ -353,9 +357,12 @@ class BarangMasukController extends Controller
                 | UPDATE STOK
                 |--------------------------------------------------------------------------
                 */
-                $barang = Barang::find(
-                    $item->id_barang
-                );
+                $barang = $barangList->get($item->id_barang);
+                if (!$barang) {
+                    throw new \Exception(
+                        'Barang dengan ID ' . $item->id_barang . ' tidak ditemukan'
+                    );
+                }
 
                 $stokBaru =
                     $barang->jumlah_barang +
@@ -366,39 +373,15 @@ class BarangMasukController extends Controller
                     'jumlah_barang' => $stokBaru
                 ]);
 
-
-                /*
-                |--------------------------------------------------------------------------
-                | AUTO NUMBER HISTORY
-                |--------------------------------------------------------------------------
-                */
-                $lastHistory = HistoryStok::orderBy(
-                                    'id_history_stok',
-                                    'desc'
-                                )->first();
-
-                if(!$lastHistory)
-                {
-                    $idHistory = 'HS0001';
-                }
-                else
-                {
-                    $numberHistory = (int) substr(
-                        $lastHistory->id_history_stok,
-                        2
+                $idHistory = 'HS' .
+                    str_pad(
+                        $nextHistoryNumber,
+                        4,
+                        '0',
+                        STR_PAD_LEFT
                     );
 
-                    $numberHistory++;
-
-                    $idHistory =
-                        'HS' .
-                        str_pad(
-                            $numberHistory,
-                            4,
-                            '0',
-                            STR_PAD_LEFT
-                        );
-                }
+                $nextHistoryNumber++;
 
 
                 /*
@@ -565,14 +548,36 @@ class BarangMasukController extends Controller
             | KEMBALIKAN STOK
             |--------------------------------------------------------------------------
             */
+            $barangList = Barang::whereIn(
+                                'id_barang',
+                                $barangMasuk->detailMasuk->pluck('id_barang')->unique()
+                            )
+                            ->get()
+                            ->keyBy('id_barang');
+
+            $lastHistory = HistoryStok::orderBy(
+                                'id_history_stok',
+                                'desc'
+                            )->first();
+
+            $nextHistoryNumber = 1;
+            if ($lastHistory) {
+                $nextHistoryNumber =
+                    (int) preg_replace('/\D/', '', $lastHistory->id_history_stok) +
+                    1;
+            }
+
             foreach(
                 $barangMasuk->detailMasuk
                 as $detail
             )
             {
-                $barang = Barang::find(
-                    $detail->id_barang
-                );
+                $barang = $barangList->get($detail->id_barang);
+                if (!$barang) {
+                    throw new \Exception(
+                        'Barang dengan ID ' . $detail->id_barang . ' tidak ditemukan'
+                    );
+                }
 
                 $stokBaru =
                     $barang->jumlah_barang -
@@ -589,33 +594,14 @@ class BarangMasukController extends Controller
                 | HISTORY STOK
                 |--------------------------------------------------------------------------
                 */
-                $lastHistory = HistoryStok::orderBy(
-                                    'id_history_stok',
-                                    'desc'
-                                )->first();
-
-                if(!$lastHistory)
-                {
-                    $idHistory = 'HS0001';
-                }
-                else
-                {
-                    $number = (int) substr(
-                        $lastHistory->id_history_stok,
-                        2
+                $idHistory = 'HS' .
+                    str_pad(
+                        $nextHistoryNumber,
+                        4,
+                        '0',
+                        STR_PAD_LEFT
                     );
-
-                    $number++;
-
-                    $idHistory =
-                        'HS' .
-                        str_pad(
-                            $number,
-                            4,
-                            '0',
-                            STR_PAD_LEFT
-                        );
-                }
+                $nextHistoryNumber++;
 
                 HistoryStok::create([
 
