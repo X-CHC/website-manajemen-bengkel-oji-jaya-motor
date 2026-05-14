@@ -6,19 +6,21 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-
 class RoleMiddleware
 {
     public function handle(Request $request, Closure $next, ...$roles)
     {
         if (!Auth::check()) {
-            return redirect('/login');
+            return redirect()->route('login');
         }
 
         $user = Auth::user();
 
-        // contoh pakai relasi role
-        if (!in_array($user->role->tingkat_role, $roles)) {
+        $roleUser = strtolower($user->role->nama_role ?? '');
+
+        $roles = array_map('strtolower', $roles);
+
+        if (!in_array($roleUser, $roles)) {
             abort(403, 'Akses ditolak');
         }
 

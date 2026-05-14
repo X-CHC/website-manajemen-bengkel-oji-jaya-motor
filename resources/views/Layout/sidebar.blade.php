@@ -1,10 +1,30 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
     <a href="{{ url('/') }}" class="brand-link">
-        <img src="{{ asset('assets/img/logo.jpg') }}" alt="Logo"class="brand-image img-circle elevation-3" style="opacity: .8; width: 40px; height: 40px; max-height: none; margin-top: -5px;">
+        <img src="{{ asset('assets/img/logo.jpg') }}"
+             alt="Logo"
+             class="brand-image img-circle elevation-3"
+             style="opacity: .8; width: 40px; height: 40px; max-height: none; margin-top: -5px;">
 
-        <span class="brand-text font-weight-light">Sahabat Selamanya</span>
+        <span class="brand-text font-weight-light">
+            Bengkel Oji Jaya
+        </span>
     </a>
+
+    @php
+        $role = auth()->user()->role->nama_role ?? null;
+
+        $isAdmin = $role === 'admin';
+
+        $canBarang = in_array($role, ['admin', 'gudang']);
+        $canKategori = in_array($role, ['admin', 'gudang']);
+        $canPelanggan = in_array($role, ['admin', 'kasir']);
+        $canTransaksi = in_array($role, ['admin', 'kasir']);
+        $canPo = in_array($role, ['admin', 'gudang']);
+        $canBarangMasuk = in_array($role, ['admin', 'gudang']);
+        $canHistory = in_array($role, ['admin', 'gudang']);
+        $canLaporan = in_array($role, ['admin', 'owner']);
+    @endphp
 
     <div class="sidebar">
 
@@ -17,7 +37,6 @@
 
                 {{-- Dashboard --}}
                 <li class="nav-item">
-
                     <a href="{{ route('dashboard.index') }}"
                        class="nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
 
@@ -26,203 +45,301 @@
                         <p>Dashboard</p>
 
                     </a>
-
                 </li>
 
 
                 {{-- MENU BARANG --}}
-                <li class="nav-item {{ request()->routeIs('barang.*') ? 'menu-open' : '' }}">
+                @if($canBarang)
+                    <li class="nav-item has-treeview {{ request()->routeIs('barang.*') ? 'menu-open' : '' }}">
 
-                    <a href="#" class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-box"></i>
-                        <p>Barang</p>
-                    </a>
+                        <a href="#"
+                           class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
 
-                    <ul class="nav nav-treeview">
+                            <i class="nav-icon fas fa-box"></i>
 
-                        <li class="nav-item">
-                            <a href="{{ route('barang.create') }}"
-                            class="nav-link {{ request()->routeIs('barang.create') ? 'active' : '' }}">
-                                <p>Tambah Barang</p>
-                            </a>
-                        </li>
+                            <p>
+                                Barang
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
 
-                        <li class="nav-item">
-                            <a href="{{ route('barang.index') }}"
-                            class="nav-link {{ request()->routeIs('barang.index') ? 'active' : '' }}">
-                                <p>List Barang</p>
-                            </a>
-                        </li>
+                        </a>
 
+                        <ul class="nav nav-treeview">
 
+                            <li class="nav-item">
+                                <a href="{{ route('barang.create') }}"
+                                   class="nav-link {{ request()->routeIs('barang.create') ? 'active' : '' }}">
 
-                    </ul>
-                </li>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Tambah Barang</p>
+
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('barang.index') }}"
+                                   class="nav-link {{ request()->routeIs('barang.index') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List Barang</p>
+
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+                @endif
+
 
                 {{-- MENU KATEGORI --}}
-                <li class="nav-item {{ request()->routeIs('kategori.*') ? 'menu-open' : '' }}">
+                @if($canKategori)
+                    <li class="nav-item has-treeview {{ request()->routeIs('kategori.*') ? 'menu-open' : '' }}">
 
-                    <a href="#" class="nav-link {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-tags"></i>
-                        <p>Kategori</p>
-                    </a>
+                        <a href="#"
+                           class="nav-link {{ request()->routeIs('kategori.*') ? 'active' : '' }}">
 
-                    <ul class="nav nav-treeview">
+                            <i class="nav-icon fas fa-tags"></i>
 
-                        <li class="nav-item">
+                            <p>
+                                Kategori
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
 
-                            <a href="{{ route('kategori.create') }}"
-                               class="nav-link {{ request()->routeIs('kategori.create') ? 'active' : '' }}">
+                        </a>
 
-                                <i class="far fa-circle nav-icon"></i>
+                        <ul class="nav nav-treeview">
 
-                                <p>Tambah Kategori</p>
+                            <li class="nav-item">
+                                <a href="{{ route('kategori.create') }}"
+                                   class="nav-link {{ request()->routeIs('kategori.create') ? 'active' : '' }}">
 
-                            </a>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Tambah Kategori</p>
 
-                        </li>
+                                </a>
+                            </li>
 
-                        <li class="nav-item">
+                            <li class="nav-item">
+                                <a href="{{ route('kategori.index') }}"
+                                   class="nav-link {{ request()->routeIs('kategori.index') ? 'active' : '' }}">
 
-                            <a href="{{ route('kategori.index') }}"
-                               class="nav-link {{ request()->routeIs('kategori.index') ? 'active' : '' }}">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List Kategori</p>
 
-                                <i class="far fa-circle nav-icon"></i>
+                                </a>
+                            </li>
 
-                                <p>List Kategori</p>
+                        </ul>
 
-                            </a>
+                    </li>
+                @endif
 
-                        </li>
-
-                    </ul>
-
-                </li>
 
                 {{-- MENU PELANGGAN --}}
-                <li class="nav-item {{ request()->routeIs('pelanggan.*') ? 'menu-open' : '' }}">
+                @if($canPelanggan)
+                    <li class="nav-item has-treeview {{ request()->routeIs('pelanggan.*') ? 'menu-open' : '' }}">
 
-                    <a href="#" class="nav-link {{ request()->routeIs('pelanggan.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-users"></i>
-                        <p>Pelanggan</p>
-                    </a>
+                        <a href="#"
+                           class="nav-link {{ request()->routeIs('pelanggan.*') ? 'active' : '' }}">
 
-                    <ul class="nav nav-treeview">
+                            <i class="nav-icon fas fa-users"></i>
 
-                        <li class="nav-item">
-                            <a href="{{ route('pelanggan.create') }}"
-                               class="nav-link {{ request()->routeIs('pelanggan.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Tambah Pelanggan</p>
-                            </a>
-                        </li>
+                            <p>
+                                Pelanggan
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
 
-                        <li class="nav-item">
-                            <a href="{{ route('pelanggan.index') }}"
-                               class="nav-link {{ request()->routeIs('pelanggan.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>List Pelanggan</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                        </a>
+
+                        <ul class="nav nav-treeview">
+
+                            <li class="nav-item">
+                                <a href="{{ route('pelanggan.create') }}"
+                                   class="nav-link {{ request()->routeIs('pelanggan.create') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Tambah Pelanggan</p>
+
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('pelanggan.index') }}"
+                                   class="nav-link {{ request()->routeIs('pelanggan.index') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List Pelanggan</p>
+
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+                @endif
+
 
                 {{-- MENU TRANSAKSI --}}
-                <li class="nav-item {{ request()->routeIs('transaksi.*') ? 'menu-open' : '' }}">
+                @if($canTransaksi)
+                    <li class="nav-item has-treeview {{ request()->routeIs('transaksi.*') ? 'menu-open' : '' }}">
 
-                    <a href="#" class="nav-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-cash-register"></i>
-                        <p>Transaksi</p>
-                    </a>
+                        <a href="#"
+                           class="nav-link {{ request()->routeIs('transaksi.*') ? 'active' : '' }}">
 
-                    <ul class="nav nav-treeview">
+                            <i class="nav-icon fas fa-cash-register"></i>
 
-                        <li class="nav-item">
-                            <a href="{{ route('transaksi.create') }}"
-                               class="nav-link {{ request()->routeIs('transaksi.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Buat Transaksi</p>
-                            </a>
-                        </li>
+                            <p>
+                                Transaksi
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
 
-                    </ul>
-                    <ul class="nav nav-treeview">
+                        </a>
 
-                        <li class="nav-item">
-                            <a href="{{ route('transaksi.index') }}"
-                               class="nav-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>List Transaksi</p>
-                            </a>
-                        </li>
-                    </ul>
-                </li>
+                        <ul class="nav nav-treeview">
+
+                            <li class="nav-item">
+                                <a href="{{ route('transaksi.create') }}"
+                                   class="nav-link {{ request()->routeIs('transaksi.create') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Buat Transaksi</p>
+
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('transaksi.index') }}"
+                                   class="nav-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List Transaksi</p>
+
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+                @endif
+
 
                 {{-- MENU PO --}}
-                <li class="nav-item {{ request()->routeIs('po.*') ? 'menu-open' : '' }}">
+                @if($canPo)
+                    <li class="nav-item has-treeview {{ request()->routeIs('po.*') ? 'menu-open' : '' }}">
 
-                    <a href="#" class="nav-link {{ request()->routeIs('po.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-file-invoice"></i>
-                        <p>Purchase Order</p>
-                    </a>
+                        <a href="#"
+                           class="nav-link {{ request()->routeIs('po.*') ? 'active' : '' }}">
 
-                    <ul class="nav nav-treeview">
+                            <i class="nav-icon fas fa-file-invoice"></i>
 
-                        <li class="nav-item">
-                            <a href="{{ route('po.index') }}"
-                               class="nav-link {{ request()->routeIs('po.index') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>List PO</p>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a href="{{ route('po.create') }}"
-                               class="nav-link {{ request()->routeIs('po.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Buat PO</p>
-                            </a>
-                        </li>
+                            <p>
+                                Purchase Order
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
 
-                    </ul>
-                </li>
+                        </a>
 
-                <!-- MENU BARANG MASUK -->
-                <li class="nav-item {{ request()->routeIs('barang-masuk.*') ? 'menu-open' : '' }}">
+                        <ul class="nav nav-treeview">
 
-                    <a href="#" class="nav-link {{ request()->routeIs('barang-masuk.*') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-truck"></i>
-                        <p>Barang Masuk</p>
-                    </a>
+                            <li class="nav-item">
+                                <a href="{{ route('po.create') }}"
+                                   class="nav-link {{ request()->routeIs('po.create') ? 'active' : '' }}">
 
-                    <ul class="nav nav-treeview">
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Buat PO</p>
 
-                        <li class="nav-item">
-                            <a href="{{ route('barang-masuk.create') }}"
-                               class="nav-link {{ request()->routeIs('barang-masuk.create') ? 'active' : '' }}">
-                                <i class="far fa-circle nav-icon"></i>
-                                <p>Tambah Barang Masuk</p>
-                            </a>
-                        </li>
+                                </a>
+                            </li>
 
-                    </ul>
-                </li>
+                            <li class="nav-item">
+                                <a href="{{ route('po.index') }}"
+                                   class="nav-link {{ request()->routeIs('po.index') ? 'active' : '' }}">
 
-                {{-- History Stock --}}
-                <li class="nav-item ">
-                    <a href="{{ route('history.index') }}" class="nav-link {{ request()->routeIs('history.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-history"></i>
-                        <p>Lihat History Stock</p>
-                    </a>
-                </li>
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List PO</p>
 
-                {{-- Laporan --}}
-                <li class="nav-item ">
+                                </a>
+                            </li>
 
-                    <a href="{{ route('laporan.index') }}" class="nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
-                        <i class="nav-icon fas fa-chart-bar"></i>
-                        <p>Lihat Laporan</p>
-                    </a>
-                </li>
+                        </ul>
+
+                    </li>
+                @endif
+
+
+                {{-- MENU BARANG MASUK --}}
+                @if($canBarangMasuk)
+                    <li class="nav-item has-treeview {{ request()->routeIs('barang-masuk.*') ? 'menu-open' : '' }}">
+
+                        <a href="#"
+                           class="nav-link {{ request()->routeIs('barang-masuk.*') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-truck"></i>
+
+                            <p>
+                                Barang Masuk
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+
+                        </a>
+
+                        <ul class="nav nav-treeview">
+
+                            <li class="nav-item">
+                                <a href="{{ route('barang-masuk.create') }}"
+                                   class="nav-link {{ request()->routeIs('barang-masuk.create') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Tambah Barang Masuk</p>
+
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('barang-masuk.index') }}"
+                                   class="nav-link {{ request()->routeIs('barang-masuk.index') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List Barang Masuk</p>
+
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+                @endif
+
+
+                {{-- HISTORY STOK --}}
+                @if($canHistory)
+                    <li class="nav-item">
+                        <a href="{{ route('history.index') }}"
+                           class="nav-link {{ request()->routeIs('history.index') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-history"></i>
+
+                            <p>Lihat History Stok</p>
+
+                        </a>
+                    </li>
+                @endif
+
+
+                {{-- LAPORAN --}}
+                @if($canLaporan)
+                    <li class="nav-item">
+                        <a href="{{ route('laporan.index') }}"
+                           class="nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-chart-bar"></i>
+
+                            <p>Lihat Laporan</p>
+
+                        </a>
+                    </li>
+                @endif
 
 
                 {{-- Logout --}}
