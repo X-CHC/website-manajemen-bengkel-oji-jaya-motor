@@ -352,42 +352,22 @@ class TransaksiController extends Controller
 
     public function cetakNota($id)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL DATA TRANSAKSI
-        |--------------------------------------------------------------------------
-        */
         $transaksi = Transaksi::with([
-
+            'pelanggan',
             'detailTransaksi.barang'
-
         ])->findOrFail($id);
 
+        $namaPelanggan = $transaksi->pelanggan->nama_pelanggan
+            ?? $transaksi->nama_pelanggan_lain
+            ?? '-';
 
-        /*
-        |--------------------------------------------------------------------------
-        | LOAD PDF
-        |--------------------------------------------------------------------------
-        */
-        $pdf = Pdf::loadView(
+        $pdf = Pdf::loadView('transaksi.nota', [
+            'transaksi' => $transaksi,
+            'namaPelanggan' => $namaPelanggan,
+        ]);
 
-            'transaksi.nota',
+        $pdf->setPaper('A5', 'portrait');
 
-            compact('transaksi')
-
-        )->setPaper('A5', 'portrait');
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DOWNLOAD PDF
-        |--------------------------------------------------------------------------
-        */
-        return $pdf->stream(
-
-            'nota-' .
-            $transaksi->id_transaksi .
-            '.pdf'
-        );
+        return $pdf->stream('nota-' . $transaksi->id_transaksi . '.pdf');
     }
 }

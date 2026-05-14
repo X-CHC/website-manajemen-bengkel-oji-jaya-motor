@@ -1,10 +1,7 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
     <a href="{{ url('/') }}" class="brand-link">
-        <img src="{{ asset('assets/img/logo.jpg') }}"
-            alt="Logo"
-            class="brand-image img-circle elevation-3"
-            style="opacity: .8; width: 40px; height: 40px; max-height: none; margin-top: -5px;">
+        <img src="{{ asset('assets/img/logo.jpg') }}" alt="Logo"class="brand-image img-circle elevation-3" style="opacity: .8; width: 40px; height: 40px; max-height: none; margin-top: -5px;">
 
         <span class="brand-text font-weight-light">Sahabat Selamanya</span>
     </a>

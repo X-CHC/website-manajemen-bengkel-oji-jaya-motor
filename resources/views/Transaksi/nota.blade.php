@@ -6,22 +6,26 @@
 
     <style>
         @page {
-            margin: 15px;
+            margin: 12px;
         }
 
         body {
             font-family: DejaVu Sans, sans-serif;
             font-size: 11px;
-            color: #000;
+            color: #2b62ad;
         }
 
         .nota {
             width: 100%;
         }
 
+        table {
+            border-collapse: collapse;
+        }
+
         .header {
             width: 100%;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
         }
 
         .header td {
@@ -29,64 +33,91 @@
         }
 
         .logo-box {
-            width: 22%;
+            width: 18%;
             text-align: center;
+            padding-top: 8px;
         }
 
-        .logo {
-            font-size: 28px;
-            font-weight: bold;
-            border: 2px solid #000;
-            width: 45px;
-            height: 45px;
-            line-height: 45px;
-            margin: auto;
+        .logo-img {
+            width: 58px;
+            height: auto;
         }
 
         .header-title {
-            width: 48%;
+            width: 52%;
             text-align: center;
+            padding-top: 8px;
         }
 
         .header-title h2 {
             margin: 0;
-            font-size: 18px;
-            letter-spacing: 1px;
+            font-size: 20px;
+            letter-spacing: 2px;
+            font-weight: bold;
         }
 
         .header-title p {
             margin: 2px 0;
-            font-size: 10px;
+            font-size: 11px;
+            font-weight: bold;
         }
 
         .header-info {
             width: 30%;
-            font-size: 10px;
+            font-size: 11px;
+            color: #2b62ad;
+            padding-top: 33px;
+        }
+
+        .header-info p {
+            margin: 0 0 5px 0;
         }
 
         .line {
-            border-bottom: 1px dotted #000;
+            border-bottom: 1px dotted #2b62ad;
             display: inline-block;
-            min-width: 90px;
-            height: 12px;
+            min-width: 95px;
+            height: 13px;
+            color: #000;
+            font-size: 11px;
+            padding-left: 4px;
         }
 
-        .service-info {
-            margin-top: 5px;
-            margin-bottom: 8px;
-            font-size: 10px;
-        }
-
-        .service-info p {
-            margin: 2px 0;
-        }
-
-        .motor-brand {
-            text-align: center;
+        .service-row {
+            width: 100%;
+            margin-top: 2px;
             margin-bottom: 5px;
-            font-size: 13px;
+        }
+
+        .service-left {
+            width: 58%;
+            font-size: 11px;
             font-weight: bold;
-            letter-spacing: 10px;
+        }
+
+        .service-left p {
+            margin: 3px 0;
+        }
+
+        .nota-info {
+            width: 42%;
+            font-size: 11px;
+            vertical-align: bottom;
+        }
+
+        .no-nota {
+            margin-top: 22px;
+            font-weight: bold;
+        }
+
+        .brand-row {
+            width: 100%;
+            text-align: center;
+            margin-bottom: 4px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            white-space: nowrap;
         }
 
         table.detail {
@@ -96,72 +127,106 @@
 
         table.detail th,
         table.detail td {
-            border: 1px solid #000;
+            border: 1px solid #2b62ad;
             padding: 4px;
-            font-size: 10px;
+            font-size: 11px;
         }
 
         table.detail th {
             text-align: center;
-        }
-
-        .text-center {
-            text-align: center;
-        }
-
-        .text-right {
-            text-align: right;
-        }
-
-        .nama-barang {
-            width: 45%;
+            font-weight: bold;
         }
 
         .qty {
             width: 12%;
             text-align: center;
+            color: #000;
+        }
+
+        .nama-barang {
+            width: 43%;
+            color: #000;
         }
 
         .harga {
-            width: 20%;
+            width: 21%;
             text-align: right;
+            color: #000;
         }
 
         .jumlah {
-            width: 23%;
+            width: 24%;
             text-align: right;
+            color: #000;
+        }
+
+        .empty-row td {
+            height: 20px;
+        }
+
+        .bottom-area {
+            width: 100%;
+            margin-top: 0;
+        }
+
+        .bottom-left {
+            width: 67%;
+        }
+
+        .bottom-right {
+            width: 33%;
         }
 
         .total-table {
-            width: 45%;
-            margin-left: auto;
+            width: 100%;
             border-collapse: collapse;
-            margin-top: 8px;
         }
 
         .total-table td {
-            border: 1px solid #000;
+            border: 1px solid #2b62ad;
             padding: 5px;
-            font-size: 10px;
+            font-size: 11px;
+        }
+
+        .total-label {
+            width: 45%;
+            font-weight: bold;
+            color: #2b62ad;
+        }
+
+        .total-value {
+            width: 55%;
+            text-align: right;
+            color: #000;
         }
 
         .footer {
             width: 100%;
-            margin-top: 35px;
-            font-size: 10px;
+            margin-top: 38px;
+            font-size: 11px;
+            color: #2b62ad;
         }
 
         .footer td {
             width: 50%;
-            text-align: center;
             vertical-align: top;
         }
 
+        .footer-left {
+            text-align: left;
+            padding-left: 22px;
+        }
+
+        .footer-right {
+            text-align: center;
+        }
+
         .signature-space {
-            height: 45px;
+            height: 48px;
         }
     </style>
 </head>
+
 <body>
 
 <div class="nota">
@@ -170,27 +235,32 @@
     <table class="header">
         <tr>
             <td class="logo-box">
-                <div class="logo">B</div>
+                <img src="{{ public_path('assets/img/logo-oji.jpeg') }}" class="logo-img">
             </td>
 
             <td class="header-title">
-                <h2>BENGKEL MOTOR</h2>
-                <p>Jl. Contoh Alamat No. 123</p>
-                <p>Telp. 0812 3456 7890</p>
+                <h2>OJI JAYA MOTOR</h2>
+                <p>Arah Perum TOA RT. 02/10</p>
+                <p>Alfalah Cikaret, Cibinong - Bogor</p>
+                <p>Tlp. 0812 8924 1229, 0856 0742 4875</p>
             </td>
 
             <td class="header-info">
                 <p>
                     Bogor,
                     <span class="line">
-                        {{ date('d-m-Y', strtotime($transaksi->tanggal_transaksi)) }}
+                        @if($transaksi->tanggal_transaksi)
+                            {{ date('d-m-Y', strtotime($transaksi->tanggal_transaksi)) }}
+                        @else
+                            -
+                        @endif
                     </span>
                 </p>
 
                 <p>
                     Tuan
                     <span class="line">
-                        {{ $transaksi->pelanggan->nama_pelanggan ?? '-' }}
+                        {{ $namaPelanggan }}
                     </span>
                 </p>
 
@@ -203,23 +273,27 @@
     </table>
 
 
-    {{-- INFO SERVICE --}}
-    <div class="service-info">
-        <p>Menerima Service, Ganti Oli, Tune Up</p>
-        <p>Menyediakan sparepart dan accessories</p>
-        <p>Berbagai Merk Motor</p>
-    </div>
+    {{-- INFO SERVICE DAN NO NOTA --}}
+    <table class="service-row">
+        <tr>
+            <td class="service-left">
+                <p>Menerima Service, Ganti Oli, Tune Up</p>
+                <p>Menyediakan sparepart dan Accessories</p>
+                <p>Berbagai Merk Motor</p>
+            </td>
 
-
-    {{-- NO NOTA --}}
-    <p style="margin: 0 0 5px 0;">
-        <strong>No. Nota :</strong> {{ $transaksi->id_transaksi }}
-    </p>
+            <td class="nota-info">
+                <div class="no-nota">
+                    No. Nota : {{ $transaksi->id_transaksi }}
+                </div>
+            </td>
+        </tr>
+    </table>
 
 
     {{-- MERK MOTOR --}}
-    <div class="motor-brand">
-        HONDA &nbsp; YAMAHA &nbsp; SUZUKI
+    <div class="brand-row">
+        HONDA &nbsp;&nbsp; YAMAHA &nbsp;&nbsp; SUZUKI &nbsp;&nbsp; KAWASAKI
     </div>
 
 
@@ -227,9 +301,9 @@
     <table class="detail">
         <thead>
             <tr>
-                <th>Banyaknya</th>
+                <th>Banyak-<br>nya</th>
                 <th>Nama Barang</th>
-                <th>Harga Satuan</th>
+                <th>Harga<br>Satuan</th>
                 <th>Jumlah</th>
             </tr>
         </thead>
@@ -242,7 +316,7 @@
                     </td>
 
                     <td class="nama-barang">
-                        {{ $detail->barang->nama_barang }}
+                        {{ $detail->barang->nama_barang ?? '-' }}
                     </td>
 
                     <td class="harga">
@@ -255,10 +329,35 @@
                 </tr>
             @endforeach
 
-            {{-- Baris kosong supaya bentuk nota tetap panjang --}}
-            @for($i = count($transaksi->detailTransaksi); $i < 10; $i++)
+            {{-- Harga jasa --}}
+            @if($transaksi->harga_jasa && $transaksi->harga_jasa > 0)
                 <tr>
-                    <td style="height: 18px;"></td>
+                    <td class="qty">1</td>
+                    <td class="nama-barang">Jasa Service</td>
+                    <td class="harga">
+                        Rp {{ number_format($transaksi->harga_jasa, 0, ',', '.') }}
+                    </td>
+                    <td class="jumlah">
+                        Rp {{ number_format($transaksi->harga_jasa, 0, ',', '.') }}
+                    </td>
+                </tr>
+            @endif
+
+            {{-- Hitung jumlah baris --}}
+            @php
+                $jumlahBaris = $transaksi->detailTransaksi->count();
+
+                if ($transaksi->harga_jasa && $transaksi->harga_jasa > 0) {
+                    $jumlahBaris++;
+                }
+
+                $minimalBaris = 10;
+            @endphp
+
+            {{-- Baris kosong supaya mirip nota asli --}}
+            @for($i = $jumlahBaris; $i < $minimalBaris; $i++)
+                <tr class="empty-row">
+                    <td></td>
                     <td></td>
                     <td></td>
                     <td></td>
@@ -269,31 +368,39 @@
 
 
     {{-- TOTAL --}}
-    <table class="total-table">
+    <table class="bottom-area">
         <tr>
-            <td width="45%">
-                <strong>Jumlah Rp.</strong>
-            </td>
-            <td class="text-right">
-                Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
-            </td>
-        </tr>
+            <td class="bottom-left"></td>
 
-        <tr>
-            <td>
-                Uang Muka
-            </td>
-            <td class="text-right">
-                Rp {{ number_format($transaksi->uang_bayar, 0, ',', '.') }}
-            </td>
-        </tr>
+            <td class="bottom-right">
+                <table class="total-table">
+                    <tr>
+                        <td class="total-label">
+                            Jumlah Rp.
+                        </td>
+                        <td class="total-value">
+                            Rp {{ number_format($transaksi->total_harga, 0, ',', '.') }}
+                        </td>
+                    </tr>
 
-        <tr>
-            <td>
-                Sisa
-            </td>
-            <td class="text-right">
-                Rp {{ number_format($transaksi->uang_kembali, 0, ',', '.') }}
+                    <tr>
+                        <td class="total-label">
+                            Uang Muka
+                        </td>
+                        <td class="total-value">
+                            Rp {{ number_format($transaksi->uang_bayar, 0, ',', '.') }}
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td class="total-label">
+                            Sisa
+                        </td>
+                        <td class="total-value">
+                            Rp {{ number_format($transaksi->uang_kembali, 0, ',', '.') }}
+                        </td>
+                    </tr>
+                </table>
             </td>
         </tr>
     </table>
@@ -302,13 +409,13 @@
     {{-- FOOTER --}}
     <table class="footer">
         <tr>
-            <td>
+            <td class="footer-left">
                 <strong>Tanda Terima,</strong>
                 <div class="signature-space"></div>
                 (.................................)
             </td>
 
-            <td>
+            <td class="footer-right">
                 <strong>Hormat kami,</strong>
                 <div class="signature-space"></div>
                 (.................................)
