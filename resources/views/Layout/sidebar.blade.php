@@ -24,6 +24,7 @@
         $canBarangMasuk = in_array($role, ['admin', 'gudang']);
         $canHistory = in_array($role, ['admin', 'gudang']);
         $canLaporan = in_array($role, ['admin', 'owner']);
+        $canStockOpname = in_array($role, ['admin', 'gudang']);
     @endphp
 
     <div class="sidebar">
@@ -336,6 +337,19 @@
                             <i class="nav-icon fas fa-chart-bar"></i>
 
                             <p>Lihat Laporan</p>
+
+                        </a>
+                    </li>
+                @endif
+
+                @if($canHistory)
+                    <li class="nav-item">
+                        <a href="{{ route('stock-opname.create') }}"
+                        class="nav-link {{ request()->routeIs('stock-opname.*') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-clipboard-check"></i>
+
+                            <p>Stock Opname</p>
 
                         </a>
                     </li>

@@ -11,6 +11,7 @@ use App\Http\Controllers\BarangMasukController;
 use App\Http\Controllers\HistoryStokController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\StockOpnameController;
 
 
 //LOGIN / LOGOUT
@@ -211,4 +212,19 @@ Route::middleware('auth')->group(function () {
             Route::post('/excel', [LaporanController::class, 'exportExcel'])
                 ->name('excel');
         });
+
+
+    //STOCK OPNAME
+    //Admin & Gudang
+    Route::middleware(['auth', 'role:admin,gudang'])
+    ->prefix('stock-opname')
+    ->name('stock-opname.')
+    ->group(function () {
+
+        Route::get('/create', [StockOpnameController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [StockOpnameController::class, 'store'])
+            ->name('store');
+    });
 });
