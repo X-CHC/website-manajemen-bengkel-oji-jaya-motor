@@ -29,6 +29,12 @@ class RoleSeeder extends Seeder
                 'tingkat_role' => '3',
                 'created_at' => Carbon::now(),
             ],
+            [
+                'id_role' => 'RL0004',
+                'nama_role' => 'gudang',
+                'tingkat_role' => '3',
+                'created_at' => Carbon::now(),
+            ],
         ]);
     }
 }

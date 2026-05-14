@@ -41,11 +41,8 @@ class BarangController extends Controller
 
         try {
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER BARANG
-            |--------------------------------------------------------------------------
-            */
+            // AUTO NUMBER BARANG
+
 
             $barangTerakhir = Barang::orderBy('id_barang', 'desc')->first();
             $nextBarangNumber = 1;
@@ -59,11 +56,8 @@ class BarangController extends Controller
             $id_barang = 'BRG' .
                 str_pad($nextBarangNumber, 3, '0', STR_PAD_LEFT);
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN BARANG
-            |--------------------------------------------------------------------------
-            */
+            // SIMPAN BARANG
+
 
             Barang::create([
 
@@ -82,11 +76,8 @@ class BarangController extends Controller
                 'alert_jumlah_barang' => $request->alert_jumlah_barang,
             ]);
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER HISTORY STOK
-            |--------------------------------------------------------------------------
-            */
+            // AUTO NUMBER HISTORY STOK
+
 
             $historyTerakhir = HistoryStok::orderBy(
                 'id_history_stok',
@@ -104,11 +95,8 @@ class BarangController extends Controller
             $id_history_stok = 'HS' .
                 str_pad($nextHistoryNumber, 4, '0', STR_PAD_LEFT);
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN HISTORY STOK AWAL
-            |--------------------------------------------------------------------------
-            */
+            // SIMPAN HISTORY STOK AWAL
+
 
             HistoryStok::create([
 

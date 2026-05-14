@@ -43,18 +43,10 @@ class BarangMasukController extends Controller
 
     public function store(Request $request)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | AMBIL DATA PO
-        |--------------------------------------------------------------------------
-        */
+        // AMBIL DATA PO
         $po = Po::findOrFail($request->id_po);
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI STATUS PO
-        |--------------------------------------------------------------------------
-        */
+        // VALIDASI STATUS PO
         if($po->status_po == 'selesai')
         {
             return back()
@@ -66,11 +58,7 @@ class BarangMasukController extends Controller
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI
-        |--------------------------------------------------------------------------
-        */
+        // VALIDASI
         $request->validate(
 
         [
@@ -94,49 +82,29 @@ class BarangMasukController extends Controller
 
         [
 
-        /*
-        |--------------------------------------------------------------------------
-        | TOTAL BAYAR
-        |--------------------------------------------------------------------------
-        */
+        // TOTAL BAYAR
         'total_bayar.required' => 'Total bayar wajib diisi',
 
         'total_bayar.min' => 'Total bayar tidak boleh kurang dari 1',
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | HARGA BELI
-        |--------------------------------------------------------------------------
-        */
+        // HARGA BELI
         'harga_beli.*.required' => 'Harga beli wajib diisi',
 
         'harga_beli.*.min' => 'Harga beli tidak boleh negatif atau 0',
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | JUMLAH BARANG
-        |--------------------------------------------------------------------------
-        */
+        // JUMLAH BARANG
         'jumlah_barang.*.required' => 'Jumlah barang wajib diisi',
 
         'jumlah_barang.*.min' => 'Jumlah barang tidak boleh negatif atau 0',
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | TANGGAL
-        |--------------------------------------------------------------------------
-        */
+        // TANGGAL
         'tanggal_masuk.required' => 'Tanggal masuk wajib diisi',
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | BUKTI BAYAR
-        |--------------------------------------------------------------------------
-        */
+        // BUKTI BAYAR
         'bukti_bayar.required' => 'Bukti bayar wajib diupload',
 
         'bukti_bayar.image' => 'File harus berupa gambar',
@@ -148,12 +116,8 @@ class BarangMasukController extends Controller
 );
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | VALIDASI TANGGAL MASUK
-        |--------------------------------------------------------------------------
-        | Tidak boleh sebelum tanggal PO
-        */
+        // VALIDASI TANGGAL MASUK
+        // Tidak boleh sebelum tanggal PO
         if($request->tanggal_masuk < $po->tgl_po)
         {
             return back()
@@ -169,11 +133,10 @@ class BarangMasukController extends Controller
 
         try {
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER BARANG MASUK
-            |--------------------------------------------------------------------------
-            */
+
+            // AUTO NUMBER BARANG MASUK
+
+
             $last = BarangMasuk::orderBy(
                         'id_barang_masuk',
                         'desc'
@@ -190,11 +153,10 @@ class BarangMasukController extends Controller
                 str_pad($nextBarangMasukNumber, 3, '0', STR_PAD_LEFT);
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPLOAD BUKTI BAYAR
-            |--------------------------------------------------------------------------
-            */
+
+            // UPLOAD BUKTI BAYAR
+
+
             $namaFile = null;
 
             if($request->hasFile('bukti_bayar'))
@@ -213,11 +175,10 @@ class BarangMasukController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN HEADER BARANG MASUK
-            |--------------------------------------------------------------------------
-            */
+
+            // SIMPAN HEADER BARANG MASUK
+
+
             BarangMasuk::create([
 
                 'id_barang_masuk' => $idBarangMasuk,
@@ -232,11 +193,10 @@ class BarangMasukController extends Controller
             ]);
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | AMBIL DETAIL PO
-            |--------------------------------------------------------------------------
-            */
+
+            // AMBIL DETAIL PO
+
+
             $detailPo = DetailPo::where(
                             'id_po',
                             $request->id_po
@@ -250,11 +210,10 @@ class BarangMasukController extends Controller
                             ->keyBy('id_barang');
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER DETAIL MASUK
-            |--------------------------------------------------------------------------
-            */
+
+            // AUTO NUMBER DETAIL MASUK
+
+
             $lastDetail = DetailMasuk::orderBy(
                                 'id_detail_masuk',
                                 'desc'
@@ -277,11 +236,10 @@ class BarangMasukController extends Controller
                     1;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | LOOP DETAIL
-            |--------------------------------------------------------------------------
-            */
+
+            // LOOP DETAIL
+
+
             foreach($detailPo as $index => $item)
             {
                 $jumlahMasuk =
@@ -291,11 +249,11 @@ class BarangMasukController extends Controller
                     $request->harga_beli[$index];
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | VALIDASI QTY
-                |--------------------------------------------------------------------------
-                */
+
+
+                // VALIDASI QTY
+
+
                 if($jumlahMasuk > $item->jumlah_po)
                 {
                     throw new \Exception(
@@ -304,11 +262,11 @@ class BarangMasukController extends Controller
                 }
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | GENERATE ID DETAIL MASUK
-                |--------------------------------------------------------------------------
-                */
+
+
+                // GENERATE ID DETAIL MASUK
+
+
                 $idDetail =
                     'DMK' .
                     str_pad(
@@ -321,21 +279,21 @@ class BarangMasukController extends Controller
                 $numberDetail++;
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | HITUNG SUBTOTAL
-                |--------------------------------------------------------------------------
-                */
+
+
+                // HITUNG SUBTOTAL
+
+
                 $subtotal =
                     $jumlahMasuk *
                     $hargaBeli;
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | SIMPAN DETAIL MASUK
-                |--------------------------------------------------------------------------
-                */
+
+
+                // SIMPAN DETAIL MASUK
+
+
                 DetailMasuk::create([
 
                     'id_detail_masuk' => $idDetail,
@@ -352,11 +310,11 @@ class BarangMasukController extends Controller
                 ]);
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | UPDATE STOK
-                |--------------------------------------------------------------------------
-                */
+
+
+                // UPDATE STOK
+
+
                 $barang = $barangList->get($item->id_barang);
                 if (!$barang) {
                     throw new \Exception(
@@ -384,11 +342,11 @@ class BarangMasukController extends Controller
                 $nextHistoryNumber++;
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | SIMPAN HISTORY STOK
-                |--------------------------------------------------------------------------
-                */
+
+
+                // SIMPAN HISTORY STOK
+
+
                 HistoryStok::create([
 
                     'id_history_stok' => $idHistory,
@@ -405,11 +363,10 @@ class BarangMasukController extends Controller
                 ]);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE STATUS PO
-            |--------------------------------------------------------------------------
-            */
+
+            // UPDATE STATUS PO
+
+
             Po::where('id_po', $request->id_po)
                 ->update([
 
@@ -452,11 +409,8 @@ class BarangMasukController extends Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | UPDATE
-    |--------------------------------------------------------------------------
-    */
+
+    // UPDATE
     public function update(Request $request,$id)
     {
         $request->validate([
@@ -527,11 +481,7 @@ class BarangMasukController extends Controller
         }
     }
 
-    /*
-    |--------------------------------------------------------------------------
-    | DELETE
-    |--------------------------------------------------------------------------
-    */
+    // DELETE
     public function destroy($id)
     {
         DB::beginTransaction();
@@ -543,11 +493,10 @@ class BarangMasukController extends Controller
                             )
                             ->findOrFail($id);
 
-            /*
-            |--------------------------------------------------------------------------
-            | KEMBALIKAN STOK
-            |--------------------------------------------------------------------------
-            */
+
+            // KEMBALIKAN STOK
+
+
             $barangList = Barang::whereIn(
                                 'id_barang',
                                 $barangMasuk->detailMasuk->pluck('id_barang')->unique()
@@ -589,11 +538,11 @@ class BarangMasukController extends Controller
                 ]);
 
 
-                /*
-                |--------------------------------------------------------------------------
-                | HISTORY STOK
-                |--------------------------------------------------------------------------
-                */
+
+
+                // HISTORY STOK
+
+
                 $idHistory = 'HS' .
                     str_pad(
                         $nextHistoryNumber,
@@ -621,22 +570,20 @@ class BarangMasukController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS DETAIL
-            |--------------------------------------------------------------------------
-            */
+
+            // HAPUS DETAIL
+
+
             DetailMasuk::where(
                 'id_barang_masuk',
                 $barangMasuk->id_barang_masuk
             )->delete();
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS HEADER
-            |--------------------------------------------------------------------------
-            */
+
+            // HAPUS HEADER
+
+
             $barangMasuk->delete();
 
             DB::commit();
