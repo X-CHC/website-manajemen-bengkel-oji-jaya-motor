@@ -307,12 +307,7 @@ class BarangMasukController extends Controller
                 // UPDATE STOK
 
 
-                $barang = $barangList->get($item->id_barang);
-                if (!$barang) {
-                    throw new \Exception(
-                        'Barang dengan ID ' . $item->id_barang . ' tidak ditemukan'
-                    );
-                }
+                $barang = Barang::findOrFail($item->id_barang);
 
                 $stokBaru =
                     $barang->jumlah_barang +
@@ -394,9 +389,6 @@ class BarangMasukController extends Controller
         );
     }
 
-
-
-    // UPDATE
     public function update(Request $request,$id)
     {
         $request->validate([
@@ -467,29 +459,20 @@ class BarangMasukController extends Controller
         }
     }
 
-    // DELETE
     public function destroy($id)
     {
         DB::beginTransaction();
 
         try {
 
-            $barangMasuk = BarangMasuk::with(
-                                'detailMasuk'
-                            )
-                            ->findOrFail($id);
+            $barangMasuk = BarangMasuk::with('detailMasuk')
+                ->findOrFail($id);
 
-
-            // KEMBALIKAN STOK
-
-
-            $barangList = Barang::whereIn(
-                                'id_barang',
-                                $barangMasuk->detailMasuk->pluck('id_barang')->unique()
-                            )
-                            ->get()
-                            ->keyBy('id_barang');
-
+            /*
+            |--------------------------------------------------------------------------
+            | AUTO NUMBER HISTORY STOK
+            |--------------------------------------------------------------------------
+            */
             $lastHistory = HistoryStok::withTrashed()
                 ->orderBy('id_history_stok', 'desc')
                 ->first();
@@ -501,36 +484,48 @@ class BarangMasukController extends Controller
                 $nextHistoryNumber = (int) substr($kode, -4) + 1;
             }
 
-            foreach(
-                $barangMasuk->detailMasuk
-                as $detail
-            )
-            {
-                $barang = $barangList->get($detail->id_barang);
-                if (!$barang) {
+            /*
+            |--------------------------------------------------------------------------
+            | KEMBALIKAN STOK BARANG
+            |--------------------------------------------------------------------------
+            */
+            foreach ($barangMasuk->detailMasuk as $detail) {
+
+                $barang = Barang::findOrFail($detail->id_barang);
+
+                $stokBaru = $barang->jumlah_barang - $detail->jumlah_barang;
+
+                /*
+                |--------------------------------------------------------------------------
+                | VALIDASI STOK TIDAK BOLEH MINUS
+                |--------------------------------------------------------------------------
+                */
+                if ($stokBaru < 0) {
                     throw new \Exception(
-                        'Barang dengan ID ' . $detail->id_barang . ' tidak ditemukan'
+                        'Stok barang ' . $barang->nama_barang . ' tidak cukup untuk dikurangi'
                     );
                 }
 
-                $stokBaru =
-                    $barang->jumlah_barang -
-                    $detail->jumlah_barang;
-
                 $barang->update([
-
-                    'jumlah_barang' => $stokBaru
+                    'jumlah_barang' => $stokBaru,
                 ]);
 
-
-
-
-                // HISTORY STOK
-
-
+                /*
+                |--------------------------------------------------------------------------
+                | GENERATE ID HISTORY
+                |--------------------------------------------------------------------------
+                */
                 $idHistory = 'HS' . sprintf('%04s', $nextHistoryNumber);
+
                 $nextHistoryNumber++;
 
+                /*
+                |--------------------------------------------------------------------------
+                | SIMPAN HISTORY STOK
+                |--------------------------------------------------------------------------
+                | Karena barang masuk dihapus, maka stok dikurangi kembali.
+                |--------------------------------------------------------------------------
+                */
                 HistoryStok::create([
 
                     'id_history_stok' => $idHistory,
@@ -539,8 +534,7 @@ class BarangMasukController extends Controller
 
                     'jumlah_masuk' => 0,
 
-                    'jumlah_keluar' =>
-                        $detail->jumlah_barang,
+                    'jumlah_keluar' => $detail->jumlah_barang,
 
                     'jumlah_sisa' => $stokBaru,
 
@@ -548,21 +542,33 @@ class BarangMasukController extends Controller
                 ]);
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | BALIKKAN STATUS PO JADI PENDING
+            |--------------------------------------------------------------------------
+            | Karena barang masuk dihapus, PO bisa diproses ulang.
+            |--------------------------------------------------------------------------
+            */
+            Po::where('id_po', $barangMasuk->id_po)
+                ->update([
+                    'status_po' => 'pending',
+                ]);
 
-
-            // HAPUS DETAIL
-
-
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS DETAIL MASUK
+            |--------------------------------------------------------------------------
+            */
             DetailMasuk::where(
                 'id_barang_masuk',
                 $barangMasuk->id_barang_masuk
             )->delete();
 
-
-
-            // HAPUS HEADER
-
-
+            /*
+            |--------------------------------------------------------------------------
+            | HAPUS HEADER BARANG MASUK
+            |--------------------------------------------------------------------------
+            */
             $barangMasuk->delete();
 
             DB::commit();
@@ -576,12 +582,13 @@ class BarangMasukController extends Controller
 
         } catch (\Exception $e) {
 
-            DB::rollback();
+            DB::rollBack();
 
-            return back()->with(
-                'error',
-                $e->getMessage()
-            );
+            return back()
+                ->with(
+                    'error',
+                    $e->getMessage()
+                );
         }
     }
 }

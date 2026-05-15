@@ -90,6 +90,15 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/', [KategoriController::class, 'store'])
                 ->name('store');
+
+            Route::get('/{id}/edit', [KategoriController::class, 'edit'])
+                ->name('edit');
+
+            Route::put('/{id}', [KategoriController::class, 'update'])
+                ->name('update');
+
+            Route::delete('/{id}', [KategoriController::class, 'destroy'])
+                ->name('destroy');
         });
 
 

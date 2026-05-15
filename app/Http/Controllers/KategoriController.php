@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 use App\Models\KategoriBarang;
+use App\Models\Barang;
 use Illuminate\Support\Facades\DB;
 
 use Illuminate\Http\Request;
@@ -69,6 +70,91 @@ class KategoriController extends Controller
             return back()
                     ->withInput()
                     ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
+    }
+
+    public function edit($id)
+    {
+        $kategori = KategoriBarang::findOrFail($id);
+
+        return view('Kategori.edit', compact('kategori'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_kategori' => 'required|max:255|unique:tbl_kategori_barang,nama_kategori,' . $id . ',id_kategori_barang',
+        ], [
+            'nama_kategori.required' => 'Nama kategori wajib diisi',
+            'nama_kategori.max' => 'Nama kategori maksimal 255 karakter',
+            'nama_kategori.unique' => 'Nama kategori sudah digunakan',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $kategori = KategoriBarang::findOrFail($id);
+
+            $kategori->update([
+                'nama_kategori' => $request->nama_kategori,
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('kategori.index')
+                ->with('success', 'Kategori berhasil diupdate');
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return back()
+                ->withInput()
+                ->with('error', $e->getMessage());
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $kategori = KategoriBarang::findOrFail($id);
+
+            /*
+            |--------------------------------------------------------------------------
+            | CEK APAKAH KATEGORI SUDAH DIPAKAI BARANG
+            |--------------------------------------------------------------------------
+            */
+            $dipakaiBarang = Barang::where('id_kategori_barang', $id)->exists();
+
+            if ($dipakaiBarang) {
+                return redirect()
+                    ->route('kategori.index')
+                    ->with(
+                        'error',
+                        'Kategori tidak bisa dihapus karena sudah dipakai oleh barang'
+                    );
+            }
+
+            $kategori->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('kategori.index')
+                ->with('success', 'Kategori berhasil dihapus');
+
+        } catch (\Exception $e) {
+
+            DB::rollBack();
+
+            return redirect()
+                ->route('kategori.index')
+                ->with('error', $e->getMessage());
         }
     }
 }

@@ -33,6 +33,7 @@
                             <th>ID Kategori</th>
                             <th>Nama Kategori</th>
                             <th>Tanggal Dibuat</th>
+                            <th>Aksi</th>
                         </tr>
                     </thead>
 
@@ -48,6 +49,37 @@
 
                             <td>
                                 {{ $item->created_at->format('d-m-Y H:i') }}
+                            </td>
+
+                            <td>
+                                <div class="d-flex">
+
+                                    {{-- EDIT --}}
+                                    <a href="{{ route('kategori.edit', $item->id_kategori_barang) }}"
+                                    class="btn btn-warning btn-sm mr-1">
+
+                                        <i class="fas fa-edit"></i>
+
+                                    </a>
+
+                                    {{-- HAPUS --}}
+                                    <form action="{{ route('kategori.destroy', $item->id_kategori_barang) }}"
+                                        method="POST">
+
+                                        @csrf
+                                        @method('DELETE')
+
+                                        <button type="submit"
+                                                class="btn btn-danger btn-sm"
+                                                onclick="return confirm('Yakin hapus kategori ini?')">
+
+                                            <i class="fas fa-trash"></i>
+
+                                        </button>
+
+                                    </form>
+
+                                </div>
                             </td>
                         </tr>
                         @endforeach
