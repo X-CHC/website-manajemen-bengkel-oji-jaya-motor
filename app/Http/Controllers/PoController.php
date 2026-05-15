@@ -57,21 +57,22 @@ class PoController extends Controller
             | AUTO NUMBER PO
             |--------------------------------------------------------------------------
             */
-            $poTerakhir = Po::orderBy(
-                                'id_po',
-                                'desc'
-                            )->first();
+            $poTerakhir = Po::withTrashed()
+                ->orderBy('id_po', 'desc')
+                ->first();
 
-            $nextPoNumber = 1;
+            // Ambil 4 digit terakhir lalu increment
+            if (!$poTerakhir) {
+                $id_po = 'PO0001';
+            } else {
+                $kode = $poTerakhir->id_po;
 
-            if ($poTerakhir) {
-                $nextPoNumber =
-                    (int) preg_replace('/\D/', '', $poTerakhir->id_po) +
-                    1;
+                $noUrut = (int) substr($kode, -4);
+
+                $noUrut++;
+
+                $id_po = 'PO' . sprintf('%04s', $noUrut);
             }
-
-            $id_po = 'PO' .
-                str_pad($nextPoNumber, 4, '0', STR_PAD_LEFT);
 
 
             /*
@@ -96,14 +97,15 @@ class PoController extends Controller
             | AUTO NUMBER DETAIL PO
             |--------------------------------------------------------------------------
             */
-            $lastDetail = DetailPo::orderBy(
-                                'id_detail_po',
-                                'desc'
-                            )->first();
+            $lastDetail = DetailPo::withTrashed()
+                ->orderBy('id_detail_po', 'desc')
+                ->first();
 
-            $numberDetail = 1;
-            if ($lastDetail) {
-                $numberDetail = (int) preg_replace('/\D/', '', $lastDetail->id_detail_po) + 1;
+            if (!$lastDetail) {
+                $numberDetail = 1;
+            } else {
+                $kode = $lastDetail->id_detail_po;
+                $numberDetail = (int) substr($kode, -3) + 1;
             }
 
 

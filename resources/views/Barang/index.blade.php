@@ -5,32 +5,20 @@
 <section class="content">
     <div class="container-fluid">
 
-        {{-- Alert Success --}}
         @if(session('success'))
-            <div class="alert alert-success alert-dismissible fade show">
-                {{ session('success') }}
 
-                <button type="button"
-                        class="close"
-                        data-dismiss="alert"
-                        aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="alert alert-success">
+                {{ session('success') }}
             </div>
+
         @endif
 
-        {{-- Alert Error --}}
         @if(session('error'))
-            <div class="alert alert-danger alert-dismissible fade show">
-                {{ session('error') }}
 
-                <button type="button"
-                        class="close"
-                        data-dismiss="alert"
-                        aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+            <div class="alert alert-danger">
+                {{ session('error') }}
             </div>
+
         @endif
 
         <div class="row">
@@ -119,12 +107,12 @@
 
                                         <td>
 
-                                            <a href="{{ route('barang.index', $item->id_barang) }}"
+                                            <a href="{{ route('barang.edit', $item->id_barang) }}"
                                                class="btn btn-warning btn-sm">
                                                 <i class="fas fa-edit"></i>
                                             </a>
 
-                                            <form action="{{ route('barang.index', $item->id_barang) }}"
+                                            <form action="{{ route('barang.destroy', $item->id_barang) }}"
                                                   method="POST"
                                                   style="display:inline-block;">
 

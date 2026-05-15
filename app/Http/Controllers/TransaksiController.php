@@ -79,21 +79,22 @@ class TransaksiController extends Controller
     try {
 
         // AUTO NUMBER TRANSAKSI
-        $transaksiTerakhir = Transaksi::orderBy(
-                                'id_transaksi',
-                                'desc'
-                            )->first();
+        $transaksiTerakhir = Transaksi::withTrashed()
+            ->orderBy('id_transaksi', 'desc')
+            ->first();
 
-        $nextTransaksiNumber = 1;
+        // Ambil 3 digit terakhir lalu increment
+        if (!$transaksiTerakhir) {
+            $id_transaksi = 'TRX001';
+        } else {
+            $kode = $transaksiTerakhir->id_transaksi;
 
-        if ($transaksiTerakhir) {
-            $nextTransaksiNumber =
-                (int) preg_replace('/\D/', '', $transaksiTerakhir->id_transaksi) +
-                1;
+            $noUrut = (int) substr($kode, -3);
+
+            $noUrut++;
+
+            $id_transaksi = 'TRX' . sprintf('%03s', $noUrut);
         }
-
-        $id_transaksi = 'TRX' .
-            str_pad($nextTransaksiNumber, 3, '0', STR_PAD_LEFT);
 
 
         // VALIDASI BARANG
@@ -159,26 +160,28 @@ class TransaksiController extends Controller
 
 
         // AUTO NUMBER DETAIL TRANSAKSI
-        $detailTerakhir = DetailTransaksi::orderBy(
-                                'id_detail_transaksi',
-                                'desc'
-                            )->first();
+        $detailTerakhir = DetailTransaksi::withTrashed()
+            ->orderBy('id_detail_transaksi', 'desc')
+            ->first();
 
-        $nomorDetail = 1;
-        if ($detailTerakhir) {
-            $nomorDetail = (int) preg_replace('/\D/', '', $detailTerakhir->id_detail_transaksi) + 1;
+        if (!$detailTerakhir) {
+            $nomorDetail = 1;
+        } else {
+            $kode = $detailTerakhir->id_detail_transaksi;
+            $nomorDetail = (int) substr($kode, -3) + 1;
         }
 
 
         // AUTO NUMBER HISTORY STOK
-        $historyTerakhir = HistoryStok::orderBy(
-                                'id_history_stok',
-                                'desc'
-                            )->first();
+        $historyTerakhir = HistoryStok::withTrashed()
+            ->orderBy('id_history_stok', 'desc')
+            ->first();
 
-        $nomorHistory = 1;
-        if ($historyTerakhir) {
-            $nomorHistory = (int) preg_replace('/\D/', '', $historyTerakhir->id_history_stok) + 1;
+        if (!$historyTerakhir) {
+            $nomorHistory = 1;
+        } else {
+            $kode = $historyTerakhir->id_history_stok;
+            $nomorHistory = (int) substr($kode, -4) + 1;
         }
 
 
@@ -230,15 +233,7 @@ class TransaksiController extends Controller
 
             // GENERATE ID DETAIL TRANSAKSI
 
-
-            $id_detail =
-                'DTR' .
-                str_pad(
-                    $nomorDetail,
-                    3,
-                    '0',
-                    STR_PAD_LEFT
-                );
+            $id_detail = 'DTR' . sprintf('%03s', $nomorDetail);
 
             $nomorDetail++;
 
@@ -294,14 +289,7 @@ class TransaksiController extends Controller
             // GENERATE ID HISTORY STOK
 
 
-            $id_history =
-                'HS' .
-                str_pad(
-                    $nomorHistory,
-                    4,
-                    '0',
-                    STR_PAD_LEFT
-                );
+            $id_history = 'HS' . sprintf('%04s', $nomorHistory);
 
             $nomorHistory++;
 

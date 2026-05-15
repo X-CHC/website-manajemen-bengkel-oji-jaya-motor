@@ -137,20 +137,19 @@ class BarangMasukController extends Controller
             // AUTO NUMBER BARANG MASUK
 
 
-            $last = BarangMasuk::orderBy(
-                        'id_barang_masuk',
-                        'desc'
-                    )->first();
+            $last = BarangMasuk::withTrashed()
+                ->orderBy('id_barang_masuk', 'desc')
+                ->first();
 
-            $nextBarangMasukNumber = 1;
-            if ($last) {
-                $nextBarangMasukNumber =
-                    (int) preg_replace('/\D/', '', $last->id_barang_masuk) +
-                    1;
+            // Ambil 3 digit terakhir lalu increment
+            if (!$last) {
+                $idBarangMasuk = 'BMK001';
+            } else {
+                $kode = $last->id_barang_masuk;
+                $noUrut = (int) substr($kode, -3);
+                $noUrut++;
+                $idBarangMasuk = 'BMK' . sprintf('%03s', $noUrut);
             }
-
-            $idBarangMasuk = 'BMK' .
-                str_pad($nextBarangMasukNumber, 3, '0', STR_PAD_LEFT);
 
 
 
@@ -214,26 +213,27 @@ class BarangMasukController extends Controller
             // AUTO NUMBER DETAIL MASUK
 
 
-            $lastDetail = DetailMasuk::orderBy(
-                                'id_detail_masuk',
-                                'desc'
-                            )->first();
+            $lastDetail = DetailMasuk::withTrashed()
+                ->orderBy('id_detail_masuk', 'desc')
+                ->first();
 
-            $numberDetail = 1;
-            if ($lastDetail) {
-                $numberDetail = (int) preg_replace('/\D/', '', $lastDetail->id_detail_masuk) + 1;
+            if (!$lastDetail) {
+                $numberDetail = 1;
+            } else {
+                $kode = $lastDetail->id_detail_masuk;
+                $numberDetail = (int) substr($kode, -4) + 1;
             }
 
-            $lastHistory = HistoryStok::orderBy(
-                                'id_history_stok',
-                                'desc'
-                            )->first();
+            $lastHistory = HistoryStok::withTrashed()
+                ->orderBy('id_history_stok', 'desc')
+                ->first();
 
-            $nextHistoryNumber = 1;
-            if ($lastHistory) {
-                $nextHistoryNumber =
-                    (int) preg_replace('/\D/', '', $lastHistory->id_history_stok) +
-                    1;
+            // Ambil 4 digit terakhir lalu increment
+            if (!$lastHistory) {
+                $nextHistoryNumber = 1;
+            } else {
+                $kode = $lastHistory->id_history_stok;
+                $nextHistoryNumber = (int) substr($kode, -4) + 1;
             }
 
 
@@ -264,17 +264,9 @@ class BarangMasukController extends Controller
 
 
 
-                // GENERATE ID DETAIL MASUK
+                // GENERATE ID DETAIL MASUK (DM + 4 digit)
 
-
-                $idDetail =
-                    'DMK' .
-                    str_pad(
-                        $numberDetail,
-                        3,
-                        '0',
-                        STR_PAD_LEFT
-                    );
+                $idDetail = 'DM' . sprintf('%04s', $numberDetail);
 
                 $numberDetail++;
 
@@ -331,13 +323,7 @@ class BarangMasukController extends Controller
                     'jumlah_barang' => $stokBaru
                 ]);
 
-                $idHistory = 'HS' .
-                    str_pad(
-                        $nextHistoryNumber,
-                        4,
-                        '0',
-                        STR_PAD_LEFT
-                    );
+                $idHistory = 'HS' . sprintf('%04s', $nextHistoryNumber);
 
                 $nextHistoryNumber++;
 
@@ -504,16 +490,15 @@ class BarangMasukController extends Controller
                             ->get()
                             ->keyBy('id_barang');
 
-            $lastHistory = HistoryStok::orderBy(
-                                'id_history_stok',
-                                'desc'
-                            )->first();
+            $lastHistory = HistoryStok::withTrashed()
+                ->orderBy('id_history_stok', 'desc')
+                ->first();
 
-            $nextHistoryNumber = 1;
-            if ($lastHistory) {
-                $nextHistoryNumber =
-                    (int) preg_replace('/\D/', '', $lastHistory->id_history_stok) +
-                    1;
+            if (!$lastHistory) {
+                $nextHistoryNumber = 1;
+            } else {
+                $kode = $lastHistory->id_history_stok;
+                $nextHistoryNumber = (int) substr($kode, -4) + 1;
             }
 
             foreach(
@@ -543,13 +528,7 @@ class BarangMasukController extends Controller
                 // HISTORY STOK
 
 
-                $idHistory = 'HS' .
-                    str_pad(
-                        $nextHistoryNumber,
-                        4,
-                        '0',
-                        STR_PAD_LEFT
-                    );
+                $idHistory = 'HS' . sprintf('%04s', $nextHistoryNumber);
                 $nextHistoryNumber++;
 
                 HistoryStok::create([

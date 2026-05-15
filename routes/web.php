@@ -16,9 +16,8 @@ use App\Http\Controllers\StockOpnameController;
 
 //LOGIN / LOGOUT
 
-Route::get('/login', function () {
-    return view('login');
-})->name('login');
+Route::get('/login', function () {return view('login');
+    })->name('login');
 
 Route::post('/login', [AuthController::class, 'login'])
     ->name('login.post');
@@ -63,6 +62,15 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/', [BarangController::class, 'store'])
                 ->name('store');
+
+            Route::get('/{id}/edit', [BarangController::class, 'edit'])
+                ->name('edit');
+
+            Route::put('/{id}', [BarangController::class, 'update'])
+                ->name('update');
+
+            Route::delete('/{id}', [BarangController::class, 'destroy'])
+                ->name('destroy');
         });
 
 
@@ -101,6 +109,15 @@ Route::middleware('auth')->group(function () {
 
             Route::post('/', [PelangganController::class, 'store'])
                 ->name('store');
+
+            Route::get('/{id}/edit', [PelangganController::class, 'edit'])
+                ->name('edit');
+
+            Route::put('/{id}', [PelangganController::class, 'update'])
+                ->name('update');
+
+            Route::delete('/{id}', [PelangganController::class, 'destroy'])
+                ->name('destroy');
         });
 
 

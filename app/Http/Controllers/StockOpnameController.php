@@ -42,10 +42,9 @@ class StockOpnameController extends Controller
             | AUTO NUMBER HISTORY STOK
             |--------------------------------------------------------------------------
             */
-            $lastHistory = HistoryStok::orderBy(
-                'id_history_stok',
-                'desc'
-            )->first();
+            $lastHistory = HistoryStok::withTrashed()
+                ->orderBy('id_history_stok', 'desc')
+                ->first();
 
             if (!$lastHistory) {
                 $numberHistory = 1;
@@ -98,12 +97,7 @@ class StockOpnameController extends Controller
                 | GENERATE ID HISTORY
                 |--------------------------------------------------------------------------
                 */
-                $idHistory = 'HS' . str_pad(
-                    $numberHistory,
-                    4,
-                    '0',
-                    STR_PAD_LEFT
-                );
+                $idHistory = 'HS' . sprintf('%04s', $numberHistory);
 
                 $numberHistory++;
 

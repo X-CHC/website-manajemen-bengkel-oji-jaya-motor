@@ -5,21 +5,18 @@
 <section class="content">
     <div class="container-fluid">
 
-        {{-- ALERT SUCCESS --}}
         @if(session('success'))
 
-            <div class="alert alert-success alert-dismissible fade show">
-
+            <div class="alert alert-success">
                 {{ session('success') }}
+            </div>
 
-                <button type="button"
-                        class="close"
-                        data-dismiss="alert">
+        @endif
 
-                    <span>&times;</span>
+        @if(session('error'))
 
-                </button>
-
+            <div class="alert alert-danger">
+                {{ session('error') }}
             </div>
 
         @endif
@@ -138,7 +135,7 @@
                                             <div class="d-flex">
 
                                                 {{-- EDIT --}}
-                                                <a href="{{ route('pelanggan.index', $item->id_pelanggan) }}"
+                                                <a href="{{ route('pelanggan.edit', $item->id_pelanggan) }}"
                                                    class="btn btn-warning btn-sm mr-1">
 
                                                     <i class="fas fa-edit"></i>
@@ -146,7 +143,7 @@
                                                 </a>
 
                                                 {{-- HAPUS --}}
-                                                <form action="{{ route('pelanggan.index', $item->id_pelanggan) }}"
+                                                <form action="{{ route('pelanggan.destroy', $item->id_pelanggan) }}"
                                                       method="POST">
 
                                                     @csrf

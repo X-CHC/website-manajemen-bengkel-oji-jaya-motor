@@ -36,20 +36,22 @@ class PelangganController extends Controller
             $pelanggan = new Pelanggan();
 
             // AUTO NUMBER
-            $hasil = Pelanggan::select('id_pelanggan')
+            $pelangganTerakhir = Pelanggan::withTrashed()
                 ->orderBy('id_pelanggan', 'desc')
                 ->first();
 
-            $nextPelangganNumber = 1;
+            // Ambil 3 digit terakhir lalu increment
+            if (!$pelangganTerakhir) {
+                $id_pelanggan = 'PLG001';
+            } else {
+                $kode = $pelangganTerakhir->id_pelanggan;
 
-            if ($hasil) {
-                $nextPelangganNumber =
-                    (int) preg_replace('/\D/', '', $hasil->id_pelanggan) +
-                    1;
+                $noUrut = (int) substr($kode, -3);
+
+                $noUrut++;
+
+                $id_pelanggan = 'PLG' . sprintf('%03s', $noUrut);
             }
-
-            $id_pelanggan = 'PLG' .
-                str_pad($nextPelangganNumber, 3, '0', STR_PAD_LEFT);
 
             $pelanggan->id_pelanggan   = $id_pelanggan;
             $pelanggan->nama_pelanggan = $request->nama_pelanggan;
@@ -71,6 +73,82 @@ class PelangganController extends Controller
             return back()
                 ->withInput()
                 ->with('error', 'Data pelanggan gagal disimpan');
+        }
+    }
+
+    public function edit($id)
+    {
+        $pelanggan = Pelanggan::findOrFail($id);
+
+        return view('Pelanggan.edit', compact('pelanggan'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'nama_pelanggan' => 'required|max:255',
+            'plat_nomor'     => 'nullable|max:50',
+            'merek_motor'    => 'nullable|max:100',
+            'warna_motor'    => 'nullable|max:50',
+        ], [
+            'nama_pelanggan.required' => 'Nama pelanggan wajib diisi',
+            'nama_pelanggan.max'      => 'Nama pelanggan maksimal 255 karakter',
+            'plat_nomor.max'          => 'Plat nomor maksimal 50 karakter',
+            'merek_motor.max'         => 'Merek motor maksimal 100 karakter',
+            'warna_motor.max'         => 'Warna motor maksimal 50 karakter',
+        ]);
+
+        DB::beginTransaction();
+
+        try {
+
+            $pelanggan = Pelanggan::findOrFail($id);
+
+            $pelanggan->update([
+                'nama_pelanggan' => $request->nama_pelanggan,
+                'plat_nomor'     => $request->plat_nomor,
+                'merek_motor'    => $request->merek_motor,
+                'warna_motor'    => $request->warna_motor,
+            ]);
+
+            DB::commit();
+
+            return redirect()
+                ->route('pelanggan.index')
+                ->with('success', 'Data pelanggan berhasil diupdate');
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return back()
+                ->withInput()
+                ->with('error', 'Data pelanggan gagal diupdate');
+        }
+    }
+
+    public function destroy($id)
+    {
+        DB::beginTransaction();
+
+        try {
+
+            $pelanggan = Pelanggan::findOrFail($id);
+
+            $pelanggan->delete();
+
+            DB::commit();
+
+            return redirect()
+                ->route('pelanggan.index')
+                ->with('success', 'Data pelanggan berhasil dihapus');
+
+        } catch (\Exception $e) {
+
+            DB::rollback();
+
+            return back()
+                ->with('error', 'Data pelanggan gagal dihapus');
         }
     }
 }
