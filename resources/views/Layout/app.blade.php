@@ -11,7 +11,8 @@
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('assets/adminlte/plugins/overlayScrollbars/css/OverlayScrollbars.min.css') }}">
 
-
+    <!-- CSS Alert -->
+    <link rel="stylesheet" href="{{ asset('assets/adminlte/plugins/toastr/toastr.min.css') }}">
     <!-- Tambahkan CSS DataTables -->
     <link rel="stylesheet" href="{{ asset('assets/adminlte/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
 
@@ -53,9 +54,17 @@
 
 <script src="{{ asset('assets/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 
-
-
-
+<!-- JS Alert -->
+<script src="{{ asset('assets/adminlte/plugins/toastr/toastr.min.js') }}"></script>
+<script>
+    window.flashMessage = {
+        success: @json(session('success')),
+        error: @json(session('error')),
+        warning: @json(session('warning')),
+        info: @json(session('info')),
+    };
+</script>
+<script src="{{ asset('assets/js/flash-message.js') }}"></script>
 
 
 @stack('scripts')

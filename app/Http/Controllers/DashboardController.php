@@ -73,7 +73,7 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
         $pelangganTerbaru = Pelanggan::latest()
-            ->limit(8)
+            ->limit(4)
             ->get();
 
         /*
@@ -82,7 +82,7 @@ class DashboardController extends Controller
         |--------------------------------------------------------------------------
         */
         $barangTerbaru = Barang::latest()
-            ->limit(5)
+            ->limit(3)
             ->get();
 
         /*

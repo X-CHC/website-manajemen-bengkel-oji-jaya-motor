@@ -21,7 +21,9 @@ class RoleMiddleware
         $roles = array_map('strtolower', $roles);
 
         if (!in_array($roleUser, $roles)) {
-            abort(403, 'Akses ditolak');
+            return redirect()
+                ->back()
+                ->with('error', 'Akses ditolak. Kamu tidak memiliki izin untuk membuka halaman tersebut.');
         }
 
         return $next($request);
