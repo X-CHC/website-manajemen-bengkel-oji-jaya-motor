@@ -178,6 +178,7 @@
                         </ul>
 
                     </li>
+
                 @endif
 
 
@@ -353,6 +354,50 @@
 
                         </a>
                     </li>
+                @endif
+
+                @if($role == 'admin')
+
+                    <li class="nav-item has-treeview {{ request()->routeIs('user.*') ? 'menu-open' : '' }}">
+
+                        <a href="#"
+                        class="nav-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-user-cog"></i>
+
+                            <p>
+                                Akun
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+
+                        </a>
+
+                        <ul class="nav nav-treeview">
+
+                            <li class="nav-item">
+                                <a href="{{ route('user.create') }}"
+                                class="nav-link {{ request()->routeIs('user.create') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>Tambah Akun</p>
+
+                                </a>
+                            </li>
+
+                            <li class="nav-item">
+                                <a href="{{ route('user.index') }}"
+                                class="nav-link {{ request()->routeIs('user.index') ? 'active' : '' }}">
+
+                                    <i class="far fa-circle nav-icon"></i>
+                                    <p>List Akun</p>
+
+                                </a>
+                            </li>
+
+                        </ul>
+
+                    </li>
+
                 @endif
 
 

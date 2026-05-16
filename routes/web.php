@@ -12,6 +12,7 @@ use App\Http\Controllers\HistoryStokController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StockOpnameController;
+use App\Http\Controllers\UserController;
 
 
 //LOGIN / LOGOUT
@@ -252,5 +253,27 @@ Route::middleware('auth')->group(function () {
 
         Route::post('/', [StockOpnameController::class, 'store'])
             ->name('store');
+    });
+
+
+    Route::middleware(['auth', 'role:admin'])->prefix('user')->name('user.')->group(function () {
+
+        Route::get('/index', [UserController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [UserController::class, 'create'])
+            ->name('create');
+
+        Route::post('/', [UserController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{id}/edit', [UserController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{id}', [UserController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{id}', [UserController::class, 'destroy'])
+            ->name('destroy');
     });
 });
