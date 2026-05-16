@@ -149,11 +149,8 @@ class BarangController extends Controller
 
     public function update(Request $request, $id)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | HILANGKAN FORMAT RUPIAH
-        |--------------------------------------------------------------------------
-        */
+
+        //HILANGKAN FORMAT RUPIAH
         $request->merge([
             'harga_beli' => str_replace('.', '', $request->harga_beli),
             'harga_jual' => str_replace('.', '', $request->harga_jual),
@@ -223,12 +220,8 @@ class BarangController extends Controller
 
             $barang = Barang::findOrFail($id);
 
-            /*
-            |--------------------------------------------------------------------------
-            | CEK APAKAH BARANG SUDAH DIPAKAI DI TRANSAKSI / PO / BARANG MASUK
-            |--------------------------------------------------------------------------
-            | Jika sudah dipakai di salah satu tabel ini, barang tidak boleh dihapus.
-            */
+            //CEK APAKAH BARANG SUDAH DIPAKAI DI TRANSAKSI / PO / BARANG MASUK
+            //Jika sudah dipakai di salah satu tabel ini, barang tidak boleh dihapus.
             $dipakaiTransaksi = DetailTransaksi::where('id_barang', $id)->exists();
 
             $dipakaiBarangMasuk = DetailMasuk::where('id_barang', $id)->exists();
@@ -248,20 +241,12 @@ class BarangController extends Controller
                     );
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS HISTORY STOK AWAL
-            |--------------------------------------------------------------------------
-            | Karena barang belum dipakai transaksi/PO/barang masuk,
-            | history stok yang ada dianggap history awal saat barang dibuat.
-            */
+            //HAPUS HISTORY STOK AWAL
+            //Karena barang belum dipakai transaksi/PO/barang masuk,
+            //history stok yang ada dianggap history awal saat barang dibuat.
             HistoryStok::where('id_barang', $id)->delete();
 
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS BARANG
-            |--------------------------------------------------------------------------
-            */
+            //HAPUS BARANG
             $barang->delete();
 
             DB::commit();

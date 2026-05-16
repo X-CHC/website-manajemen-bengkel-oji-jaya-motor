@@ -37,11 +37,7 @@ class StockOpnameController extends Controller
 
         try {
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER HISTORY STOK
-            |--------------------------------------------------------------------------
-            */
+            //AUTO NUMBER HISTORY STOK
             $lastHistory = HistoryStok::withTrashed()
                 ->orderBy('id_history_stok', 'desc')
                 ->first();
@@ -56,11 +52,7 @@ class StockOpnameController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | LOOP BARANG
-            |--------------------------------------------------------------------------
-            */
+            //LOOP BARANG
             foreach ($request->id_barang as $index => $idBarang) {
 
                 $barang = Barang::findOrFail($idBarang);
@@ -74,7 +66,7 @@ class StockOpnameController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | JIKA TIDAK ADA SELISIH, LEWATI
+                //JIKA TIDAK ADA SELISIH, LEWATI
                 |--------------------------------------------------------------------------
                 */
                 if ($selisih == 0) {
@@ -84,7 +76,7 @@ class StockOpnameController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | UPDATE STOK DI TABEL BARANG
+                //UPDATE STOK DI TABEL BARANG
                 |--------------------------------------------------------------------------
                 */
                 $barang->update([
@@ -94,7 +86,7 @@ class StockOpnameController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | GENERATE ID HISTORY
+                //GENERATE ID HISTORY
                 |--------------------------------------------------------------------------
                 */
                 $idHistory = 'HS' . sprintf('%04s', $numberHistory);
@@ -104,7 +96,7 @@ class StockOpnameController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | SIMPAN HISTORY STOK
+                //SIMPAN HISTORY STOK
                 |--------------------------------------------------------------------------
                 */
                 HistoryStok::create([

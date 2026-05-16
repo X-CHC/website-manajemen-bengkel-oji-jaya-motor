@@ -124,11 +124,7 @@ class KategoriController extends Controller
 
             $kategori = KategoriBarang::findOrFail($id);
 
-            /*
-            |--------------------------------------------------------------------------
-            | CEK APAKAH KATEGORI SUDAH DIPAKAI BARANG
-            |--------------------------------------------------------------------------
-            */
+            //CEK APAKAH KATEGORI SUDAH DIPAKAI BARANG
             $dipakaiBarang = Barang::where('id_kategori_barang', $id)->exists();
 
             if ($dipakaiBarang) {

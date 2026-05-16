@@ -11,11 +11,7 @@ use Illuminate\Support\Facades\Auth;
 
 class UserController extends Controller
 {
-    /*
-    |--------------------------------------------------------------------------
-    | INDEX USER
-    |--------------------------------------------------------------------------
-    */
+
     public function index()
     {
         $user = User::with('role')
@@ -26,11 +22,6 @@ class UserController extends Controller
     }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | FORM CREATE USER
-    |--------------------------------------------------------------------------
-    */
     public function create()
     {
         $role = Role::orderBy('tingkat_role', 'asc')
@@ -39,12 +30,6 @@ class UserController extends Controller
         return view('User.create', compact('role'));
     }
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | SIMPAN USER
-    |--------------------------------------------------------------------------
-    */
     public function store(Request $request)
     {
         $request->validate([
@@ -69,13 +54,8 @@ class UserController extends Controller
 
         try {
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER USER
-            |--------------------------------------------------------------------------
-            | Pakai withTrashed supaya ID soft delete tetap terbaca.
-            |--------------------------------------------------------------------------
-            */
+            //AUTO NUMBER USER
+            //Pakai withTrashed supaya ID soft delete tetap terbaca.
             $userTerakhir = User::withTrashed()
                 ->orderBy('id_user', 'desc')
                 ->first();
@@ -92,11 +72,7 @@ class UserController extends Controller
                 $id_user = 'USR' . sprintf('%03s', $noUrut);
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN USER
-            |--------------------------------------------------------------------------
-            */
+            //SIMPAN USER
             User::create([
                 'id_user' => $id_user,
                 'id_role' => $request->id_role,
@@ -161,11 +137,7 @@ class UserController extends Controller
                 'email' => $request->email,
             ];
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE PASSWORD JIKA DIISI
-            |--------------------------------------------------------------------------
-            */
+            //UPDATE PASSWORD JIKA DIISI
             if ($request->filled('password')) {
                 $data['password'] = Hash::make($request->password);
             }
@@ -195,11 +167,7 @@ class UserController extends Controller
 
         try {
 
-            /*
-            |--------------------------------------------------------------------------
-            | CEGAH USER MENGHAPUS AKUN SENDIRI
-            |--------------------------------------------------------------------------
-            */
+            // Tidak bisa hapus akun yang sedang login
             if (Auth::user()->id_user == $id) {
                 return redirect()
                     ->route('user.index')

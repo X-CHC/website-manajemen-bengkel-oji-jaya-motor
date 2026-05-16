@@ -255,7 +255,8 @@ Route::middleware('auth')->group(function () {
             ->name('store');
     });
 
-
+    //USER
+    //Admin
     Route::middleware(['auth', 'role:admin'])->prefix('user')->name('user.')->group(function () {
 
         Route::get('/index', [UserController::class, 'index'])

@@ -1,6 +1,6 @@
 <aside class="main-sidebar sidebar-dark-primary elevation-4">
 
-    <a href="{{ url('/') }}" class="brand-link">
+    <a href="{{ url('/dashboard') }}" class="brand-link">
         <img src="{{ asset('assets/img/logo.jpg') }}"
              alt="Logo"
              class="brand-image img-circle elevation-3"
@@ -399,25 +399,6 @@
                     </li>
 
                 @endif
-
-
-                {{-- Logout --}}
-                <li class="nav-item">
-
-                    <form action="{{ route('logout') }}" method="POST">
-
-                        @csrf
-
-                        <button type="submit"
-                                class="btn btn-danger btn-sm ml-3 mt-2">
-
-                            Logout
-
-                        </button>
-
-                    </form>
-
-                </li>
 
             </ul>
 

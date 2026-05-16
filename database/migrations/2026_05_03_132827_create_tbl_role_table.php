@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('tbl_role', function (Blueprint $table) {
         $table->char('id_role', 6)->primary();
         $table->string('nama_role', 100)->nullable();
-        $table->enum('tingkat_role', ['1', '2', '3']);
+        $table->enum('tingkat_role', ['1', '2', '3', '4']);
         $table->timestamps(); // created_at & updated_at
         $table->softDeletes(); // deleted_at
     });

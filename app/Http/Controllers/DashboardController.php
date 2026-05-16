@@ -12,44 +12,33 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        /*
-        |--------------------------------------------------------------------------
-        | ROLE USER
-        |--------------------------------------------------------------------------
-        */
+
+        //ROLE USER
+
         $role = strtolower(Auth::user()->role->nama_role ?? '');
 
-        /*
-        |--------------------------------------------------------------------------
-        | PENDAPATAN HARI INI
-        |--------------------------------------------------------------------------
-        */
+
+        //PENDAPATAN HARI INI
+
         $pendapatanHariIni = Transaksi::whereDate('tanggal_transaksi', today())
             ->sum('total_harga');
 
-        /*
-        |--------------------------------------------------------------------------
-        | JUMLAH TRANSAKSI HARI INI
-        |--------------------------------------------------------------------------
-        */
+
+        //JUMLAH TRANSAKSI HARI INI
+
         $transaksiHariIni = Transaksi::whereDate('tanggal_transaksi', today())
             ->count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | TOTAL PELANGGAN
-        |--------------------------------------------------------------------------
-        */
+
+        //TOTAL PELANGGAN
+
         $totalPelanggan = Pelanggan::count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | BARANG STOK MENIPIS
-        |--------------------------------------------------------------------------
-        | Stok menipis jika:
-        | jumlah_barang <= alert_jumlah_barang
-        |--------------------------------------------------------------------------
-        */
+
+        //BARANG STOK MENIPIS
+        //Stok menipis jika:
+        //jumlah_barang <= alert_jumlah_barang
+
         $barangStokMenipis = Barang::with('kategori')
             ->whereColumn('jumlah_barang', '<=', 'alert_jumlah_barang')
             ->orderBy('jumlah_barang', 'asc')
@@ -57,39 +46,31 @@ class DashboardController extends Controller
 
         $stokMenipis = $barangStokMenipis->count();
 
-        /*
-        |--------------------------------------------------------------------------
-        | TRANSAKSI TERBARU
-        |--------------------------------------------------------------------------
-        */
+
+        //TRANSAKSI TERBARU
+
         $transaksiTerbaru = Transaksi::with('pelanggan')
             ->latest()
             ->limit(5)
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | PELANGGAN TERBARU
-        |--------------------------------------------------------------------------
-        */
+
+        //PELANGGAN TERBARU
+
         $pelangganTerbaru = Pelanggan::latest()
             ->limit(4)
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | BARANG TERBARU
-        |--------------------------------------------------------------------------
-        */
+
+        //BARANG TERBARU
+
         $barangTerbaru = Barang::latest()
             ->limit(3)
             ->get();
 
-        /*
-        |--------------------------------------------------------------------------
-        | GRAFIK PENDAPATAN BULAN INI
-        |--------------------------------------------------------------------------
-        */
+
+        //GRAFIK PENDAPATAN BULAN INI
+
         $awalBulan = Carbon::now()->startOfMonth();
         $akhirBulan = Carbon::now()->endOfMonth();
 

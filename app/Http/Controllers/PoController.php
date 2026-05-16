@@ -52,11 +52,7 @@ class PoController extends Controller
 
         try {
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER PO
-            |--------------------------------------------------------------------------
-            */
+            //AUTO NUMBER PO
             $poTerakhir = Po::withTrashed()
                 ->orderBy('id_po', 'desc')
                 ->first();
@@ -75,11 +71,7 @@ class PoController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | SIMPAN PO
-            |--------------------------------------------------------------------------
-            */
+            //SIMPAN PO
             Po::create([
 
                 'id_po' => $id_po,
@@ -92,11 +84,7 @@ class PoController extends Controller
             ]);
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | AUTO NUMBER DETAIL PO
-            |--------------------------------------------------------------------------
-            */
+            //AUTO NUMBER DETAIL PO
             $lastDetail = DetailPo::withTrashed()
                 ->orderBy('id_detail_po', 'desc')
                 ->first();
@@ -109,11 +97,7 @@ class PoController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | LOOP DETAIL
-            |--------------------------------------------------------------------------
-            */
+            //LOOP DETAIL
             foreach($request->id_barang as $index => $barangId)
             {
 
@@ -125,7 +109,7 @@ class PoController extends Controller
 
                 /*
                 |--------------------------------------------------------------------------
-                | SIMPAN DETAIL PO
+                //SIMPAN DETAIL PO
                 |--------------------------------------------------------------------------
                 */
                 DetailPo::create([
@@ -199,11 +183,7 @@ class PoController extends Controller
                     )
                     ->findOrFail($id);
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE HEADER
-            |--------------------------------------------------------------------------
-            */
+            //UPDATE HEADER
             $po->update([
 
                 'mitra_po' =>
@@ -211,11 +191,7 @@ class PoController extends Controller
             ]);
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | UPDATE DETAIL
-            |--------------------------------------------------------------------------
-            */
+            //UPDATE DETAIL
             foreach(
                 $po->detailPo
                 as $index => $detail
@@ -258,11 +234,7 @@ class PoController extends Controller
 
             $po = Po::findOrFail($id);
 
-            /*
-            |--------------------------------------------------------------------------
-            | VALIDASI
-            |--------------------------------------------------------------------------
-            */
+            //VALIDASI
             if($po->status_po == 'selesai')
             {
                 return back()->with(
@@ -273,22 +245,14 @@ class PoController extends Controller
             }
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS DETAIL
-            |--------------------------------------------------------------------------
-            */
+            //HAPUS DETAIL
             DetailPo::where(
                 'id_po',
                 $po->id_po
             )->delete();
 
 
-            /*
-            |--------------------------------------------------------------------------
-            | HAPUS HEADER
-            |--------------------------------------------------------------------------
-            */
+            //HAPUS HEADER
             $po->delete();
 
             DB::commit();
