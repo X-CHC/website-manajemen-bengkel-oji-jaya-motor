@@ -97,33 +97,41 @@
                         </td>
 
                         <td>
+                            @if($item->status_po == 'pending')
 
-                            <a
-                                href="{{ route('po.edit', $item->id_po) }}"
+                                <a href="{{ route('po.edit', $item->id_po) }}"
                                 class="btn btn-warning btn-sm">
 
-                                Edit
+                                    <i class="fas fa-edit"></i>
+                                    Edit
 
-                            </a>
+                                </a>
 
-                            <form
-                                action="{{ route('po.destroy', $item->id_po) }}"
-                                method="POST"
-                                class="d-inline">
+                                <form action="{{ route('po.destroy', $item->id_po) }}"
+                                    method="POST"
+                                    class="d-inline">
 
-                                @csrf
-                                @method('DELETE')
+                                    @csrf
+                                    @method('DELETE')
 
-                                <button
-                                    type="submit"
-                                    class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Hapus PO ini?')">
+                                    <button type="submit"
+                                            class="btn btn-danger btn-sm"
+                                            onclick="return confirm('Hapus PO ini?')">
 
-                                    Hapus
+                                        <i class="fas fa-trash"></i>
+                                        Hapus
 
-                                </button>
+                                    </button>
 
-                            </form>
+                                </form>
+
+                            @else
+
+                                <span class="badge badge-secondary">
+                                    Terkunci
+                                </span>
+
+                            @endif
 
                         </td>
 

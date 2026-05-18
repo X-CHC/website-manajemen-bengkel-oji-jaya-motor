@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Pelanggan;
+use App\Models\Transaksi;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -135,6 +136,19 @@ class PelangganController extends Controller
 
             $pelanggan = Pelanggan::findOrFail($id);
 
+            // CEK APAKAH PELANGGAN SUDAH DIPAKAI TRANSAKSI
+            $dipakaiTransaksi = Transaksi::where('id_pelanggan', $id)->exists();
+
+            if ($dipakaiTransaksi) {
+                return redirect()
+                    ->route('pelanggan.index')
+                    ->with(
+                        'error',
+                        'Pelanggan tidak bisa dihapus karena sudah pernah dipakai transaksi'
+                    );
+            }
+
+            // HAPUS PELANGGAN
             $pelanggan->delete();
 
             DB::commit();
@@ -147,7 +161,8 @@ class PelangganController extends Controller
 
             DB::rollback();
 
-            return back()
+            return redirect()
+                ->route('pelanggan.index')
                 ->with('error', 'Data pelanggan gagal dihapus');
         }
     }

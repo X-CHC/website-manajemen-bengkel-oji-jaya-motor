@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 use App\Models\KategoriBarang;
 use App\Models\Barang;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Validation\Rule;
 use Illuminate\Http\Request;
 
 class KategoriController extends Controller
@@ -25,20 +25,26 @@ class KategoriController extends Controller
 
     public function store(Request $request)
     {
+        $request->validate([
+            'nama_kategori' => [
+                'required',
+                'max:100',
+                Rule::unique('tbl_kategori_barang', 'nama_kategori')->whereNull('deleted_at')
+            ],
+        ], [
+            'nama_kategori.required' => 'Nama kategori wajib diisi.',
+            'nama_kategori.max' => 'Nama kategori maksimal 100 karakter.',
+            'nama_kategori.unique' => 'Nama kategori sudah digunakan.',
+        ]);
+
         DB::beginTransaction();
 
         try {
 
-            $request->validate([
-                'nama_kategori' => 'required|max:100|unique:tbl_kategori_barang,nama_kategori',
-            ]);
-
-            $modelKategori = new KategoriBarang();
-
-            // Auto Number
+            //AUTO NUMBER KATEGORI
             $kategoriTerakhir = KategoriBarang::withTrashed()
-                                ->orderBy('id_kategori_barang', 'desc')
-                                ->first();
+                ->orderBy('id_kategori_barang', 'desc')
+                ->first();
 
             if (!$kategoriTerakhir) {
                 $id_kategori = 'KTG001';
@@ -52,24 +58,25 @@ class KategoriController extends Controller
                 $id_kategori = 'KTG' . sprintf('%03s', $noUrut);
             }
 
-            // Simpan
-            $modelKategori->id_kategori_barang = $id_kategori;
-            $modelKategori->nama_kategori = $request->nama_kategori;
-
-            $modelKategori->save();
+            //SIMPAN KATEGORI
+            KategoriBarang::create([
+                'id_kategori_barang' => $id_kategori,
+                'nama_kategori' => $request->nama_kategori,
+            ]);
 
             DB::commit();
 
-            return redirect()->route('kategori.index')
-                            ->with('success', 'Kategori berhasil ditambahkan');
+            return redirect()
+                ->route('kategori.index')
+                ->with('success', 'Kategori berhasil ditambahkan');
 
         } catch (\Exception $e) {
 
             DB::rollBack();
 
             return back()
-                    ->withInput()
-                    ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+                ->withInput()
+                ->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
 

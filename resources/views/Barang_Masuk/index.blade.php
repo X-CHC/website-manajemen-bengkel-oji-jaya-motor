@@ -36,7 +36,7 @@
 
                         <th>Detail</th>
 
-                        <th>Aksi</th>
+                        <th>Bukti Bayar</th>
 
                     </tr>
 
@@ -83,32 +83,24 @@
 
                         <td>
 
-                            <a
-                                href="{{ route('barang-masuk.edit', $item->id_barang_masuk) }}"
-                                class="btn btn-warning btn-sm">
+                            @if($item->bukti_bayar)
 
-                                Edit
+                                <a href="{{ asset('assets/bukti_bayar/' . $item->bukti_bayar) }}"
+                                target="_blank"
+                                class="btn btn-secondary btn-sm">
 
-                            </a>
+                                    <i class="fas fa-image"></i>
+                                    Lihat Bukti
 
-                            <form
-                                action="{{ route('barang-masuk.destroy', $item->id_barang_masuk) }}"
-                                method="POST"
-                                class="d-inline">
+                                </a>
 
-                                @csrf
-                                @method('DELETE')
+                            @else
 
-                                <button
-                                    type="submit"
-                                    class="btn btn-danger btn-sm"
-                                    onclick="return confirm('Hapus data ini?')">
+                                <span class="badge badge-secondary">
+                                    Tidak ada
+                                </span>
 
-                                    Hapus
-
-                                </button>
-
-                            </form>
+                            @endif
 
                         </td>
 

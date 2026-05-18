@@ -12,17 +12,57 @@ class AuthController extends Controller
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
+        ], [
+            'email.required' => 'Email wajib diisi',
+            'email.email' => 'Format email tidak valid',
+            'password.required' => 'Password wajib diisi',
         ]);
 
         if (Auth::attempt($credentials)) {
+
             $request->session()->regenerate();
 
-            return redirect()->intended('/dashboard');
+            /*
+            |--------------------------------------------------------------------------
+            | AMBIL ROLE USER
+            |--------------------------------------------------------------------------
+            */
+            $role = strtolower(Auth::user()->role->nama_role ?? '');
+
+            /*
+            |--------------------------------------------------------------------------
+            | REDIRECT BERDASARKAN ROLE
+            |--------------------------------------------------------------------------
+            */
+            if ($role == 'admin') {
+                return redirect()->route('dashboard.index');
+            }
+
+            if ($role == 'owner') {
+                return redirect()->route('laporan.index');
+            }
+
+            if ($role == 'kasir') {
+                return redirect()->route('transaksi.create');
+            }
+
+            if ($role == 'gudang') {
+                return redirect()->route('barang.index');
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | FALLBACK
+            |--------------------------------------------------------------------------
+            */
+            return redirect()->route('dashboard.index');
         }
 
-        return back()->withErrors([
-            'email' => 'Email atau password salah',
-        ]);
+        return back()
+            ->withInput()
+            ->withErrors([
+                'email' => 'Email atau password salah',
+            ]);
     }
 
 

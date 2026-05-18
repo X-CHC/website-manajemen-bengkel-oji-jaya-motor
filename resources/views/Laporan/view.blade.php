@@ -34,6 +34,13 @@
     </h2>
 
     <p>
+        Periode:
+        {{ \Carbon\Carbon::parse($request->tanggal_awal)->format('d-m-Y') }}
+        sampai
+        {{ \Carbon\Carbon::parse($request->tanggal_akhir)->format('d-m-Y') }}
+    </p>
+
+    <p>
         Total Pendapatan :
         Rp {{ number_format($totalPendapatan,0,',','.') }}
     </p>

@@ -16,6 +16,7 @@
 
         $isAdmin = $role === 'admin';
 
+        $canDashboard = in_array($role, ['admin', 'owner']);
         $canBarang = in_array($role, ['admin', 'gudang']);
         $canKategori = in_array($role, ['admin', 'gudang']);
         $canPelanggan = in_array($role, ['admin', 'kasir']);
@@ -37,6 +38,7 @@
                 data-accordion="false">
 
                 {{-- Dashboard --}}
+                @if($canDashboard)
                 <li class="nav-item">
                     <a href="{{ route('dashboard.index') }}"
                        class="nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
@@ -47,6 +49,8 @@
 
                     </a>
                 </li>
+                @endif
+
 
 
                 {{-- MENU BARANG --}}
