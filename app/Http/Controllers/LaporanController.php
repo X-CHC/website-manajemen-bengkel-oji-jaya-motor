@@ -41,6 +41,7 @@ class LaporanController extends Controller
     //EXPORT PDF
     //PDF hanya untuk laporan transaksi / penjualan.
     //Isinya rekap, bukan tabel mentah.
+
     public function exportPdf(Request $request)
     {
         if ($request->jenis_laporan != 'transaksi') {
@@ -117,9 +118,34 @@ class LaporanController extends Controller
     //EXPORT EXCEL
     //Excel bisa untuk transaksi, barang masuk, dan history stok.
     //Isinya tabel detail.
+
     public function exportExcel(Request $request)
     {
-        //TRANSAKSI
+        /*
+        |--------------------------------------------------------------------------
+        | FORMAT PERIODE
+        |--------------------------------------------------------------------------
+        */
+        $tanggalAwal = $request->tanggal_awal;
+        $tanggalAkhir = $request->tanggal_akhir;
+
+        if ($tanggalAwal && $tanggalAkhir) {
+            $periode = date('d-m-Y', strtotime($tanggalAwal)) .
+                ' sampai ' .
+                date('d-m-Y', strtotime($tanggalAkhir));
+
+            $periodeFile = $tanggalAwal . '-sampai-' . $tanggalAkhir;
+        } else {
+            $periode = 'Semua Periode';
+            $periodeFile = 'semua-periode';
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSAKSI
+        |--------------------------------------------------------------------------
+        */
         if ($request->jenis_laporan == 'transaksi') {
             $query = DetailTransaksi::with([
                 'barang',
@@ -157,8 +183,10 @@ class LaporanController extends Controller
                 );
             }
 
-            $data = $query->get()->map(function ($item) {
+            $data = $query->get()->map(function ($item) use ($periode) {
                 return [
+                    'Periode' => $periode,
+
                     'Tanggal' => date(
                         'd-m-Y',
                         strtotime($item->transaksi->tanggal_transaksi)
@@ -177,10 +205,15 @@ class LaporanController extends Controller
             });
 
             return (new FastExcel($data))
-                ->download('laporan-transaksi.xlsx');
+                ->download('laporan-transaksi-' . $periodeFile . '.xlsx');
         }
 
-        //BARANG MASUK
+
+        /*
+        |--------------------------------------------------------------------------
+        | BARANG MASUK
+        |--------------------------------------------------------------------------
+        */
         if ($request->jenis_laporan == 'barang_masuk') {
             $query = DetailMasuk::with([
                 'barang',
@@ -218,8 +251,10 @@ class LaporanController extends Controller
                 );
             }
 
-            $data = $query->get()->map(function ($item) {
+            $data = $query->get()->map(function ($item) use ($periode) {
                 return [
+                    'Periode' => $periode,
+
                     'Tanggal Masuk' => date(
                         'd-m-Y',
                         strtotime($item->barangMasuk->tanggal_masuk)
@@ -238,10 +273,15 @@ class LaporanController extends Controller
             });
 
             return (new FastExcel($data))
-                ->download('laporan-barang-masuk.xlsx');
+                ->download('laporan-barang-masuk-' . $periodeFile . '.xlsx');
         }
 
-        //HISTORY STOK
+
+        /*
+        |--------------------------------------------------------------------------
+        | HISTORY STOK
+        |--------------------------------------------------------------------------
+        */
         if ($request->jenis_laporan == 'history_stok') {
             $query = HistoryStok::with('barang');
 
@@ -274,8 +314,10 @@ class LaporanController extends Controller
                 );
             }
 
-            $data = $query->get()->map(function ($item) {
+            $data = $query->get()->map(function ($item) use ($periode) {
                 return [
+                    'Periode' => $periode,
+
                     'Tanggal' => date(
                         'd-m-Y H:i',
                         strtotime($item->created_at)
@@ -294,7 +336,7 @@ class LaporanController extends Controller
             });
 
             return (new FastExcel($data))
-                ->download('laporan-history-stok.xlsx');
+                ->download('laporan-history-stok-' . $periodeFile . '.xlsx');
         }
 
         return back()->with(
