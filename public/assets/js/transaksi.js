@@ -39,8 +39,8 @@ function initSelect2()
 |--------------------------------------------------------------------------
 | UPDATE OPTION BARANG
 |--------------------------------------------------------------------------
-| Barang yang sudah dipilih
-| tidak bisa dipilih lagi
+| Barang yang sudah dipilih tidak bisa dipilih lagi.
+| Barang dengan stok 0 tetap tampil, tapi disabled.
 */
 function updateBarangOptions()
 {
@@ -58,7 +58,7 @@ function updateBarangOptions()
 
     });
 
-    // Disable duplicate option
+    // Disable duplicate option dan stok habis
     $('.barang-select').each(function(){
 
         let currentSelect = $(this);
@@ -69,11 +69,29 @@ function updateBarangOptions()
 
             let optionValue = $(this).val();
 
+            let stok = parseInt($(this).data('stok')) || 0;
+
             if(optionValue == '')
             {
                 return;
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | DISABLE JIKA STOK HABIS
+            |--------------------------------------------------------------------------
+            */
+            if(stok <= 0)
+            {
+                $(this).prop('disabled', true);
+                return;
+            }
+
+            /*
+            |--------------------------------------------------------------------------
+            | DISABLE JIKA SUDAH DIPILIH DI ROW LAIN
+            |--------------------------------------------------------------------------
+            */
             if(
                 selectedBarang.includes(optionValue) &&
                 optionValue != currentValue
@@ -90,7 +108,7 @@ function updateBarangOptions()
 
     });
 
-    // Refresh select2
+    // Refresh Select2
     $('.barang-select').trigger('change.select2');
 }
 
@@ -184,16 +202,45 @@ function hitungSemuaTotal()
 | EVENT PILIH BARANG
 |--------------------------------------------------------------------------
 */
+
 $(document).on('change', '.barang-select', function(){
 
     let harga =
         $(this).find(':selected').data('harga') || 0;
 
     let stok =
-        $(this).find(':selected').data('stok') || 0;
+        parseInt($(this).find(':selected').data('stok')) || 0;
 
     let parent =
         $(this).closest('.barang-item');
+
+    /*
+    |--------------------------------------------------------------------------
+    | JIKA STOK HABIS
+    |--------------------------------------------------------------------------
+    | Ini pengaman tambahan jika option disabled berhasil dibypass.
+    */
+    if(stok <= 0 && $(this).val() != '')
+    {
+        alert('Barang ini stoknya habis dan tidak bisa dipilih.');
+
+        $(this).val('').trigger('change.select2');
+
+        parent.find('.harga-input').val('');
+        parent.find('.harga-view').val('');
+
+        parent.find('.subtotal-input').val('');
+        parent.find('.subtotal-view').val('');
+
+        parent.find('.jumlah-barang')
+              .val(1)
+              .removeAttr('max')
+              .removeAttr('placeholder');
+
+        hitungSemuaTotal();
+
+        return;
+    }
 
     parent.find('.harga-input')
           .val(harga);

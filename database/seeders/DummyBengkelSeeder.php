@@ -380,39 +380,147 @@ class DummyBengkelSeeder extends Seeder
         | TRANSAKSI & DETAIL TRANSAKSI
         |--------------------------------------------------------------------------
         */
+
         $transaksiData = [];
         $detailTransaksiData = [];
 
         $idTransaksiCounter = 1;
         $idDetailTransaksiCounter = 1;
 
+        /*
+        |--------------------------------------------------------------------------
+        | STOK AWAL
+        |--------------------------------------------------------------------------
+        */
+        $stokAwal = [
+            'BRG001' => 50,
+            'BRG002' => 5,
+            'BRG003' => 100,
+            'BRG004' => 30,
+            'BRG005' => 8,
+            'BRG006' => 6,
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | BARANG MASUK
+        |--------------------------------------------------------------------------
+        */
+        $barangMasukHistory = [
+            ['id_barang' => 'BRG001', 'jumlah' => 10],
+            ['id_barang' => 'BRG003', 'jumlah' => 20],
+            ['id_barang' => 'BRG004', 'jumlah' => 10],
+            ['id_barang' => 'BRG005', 'jumlah' => 5],
+            ['id_barang' => 'BRG006', 'jumlah' => 3],
+        ];
+
+        /*
+        |--------------------------------------------------------------------------
+        | STOK TERSEDIA UNTUK TRANSAKSI
+        |--------------------------------------------------------------------------
+        | Stok ini dipakai untuk memastikan transaksi dummy tidak membuat stok minus.
+        |--------------------------------------------------------------------------
+        */
+        $stokTersedia = $stokAwal;
+
+        foreach ($barangMasukHistory as $masuk) {
+            $stokTersedia[$masuk['id_barang']] += $masuk['jumlah'];
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | BUAT TRANSAKSI RANDOM
+        |--------------------------------------------------------------------------
+        */
         for ($i = 30; $i >= 0; $i--) {
+
             $tanggal = Carbon::now()->subDays($i);
+
             $jumlahTransaksiPerHari = rand(1, 3);
 
             for ($j = 0; $j < $jumlahTransaksiPerHari; $j++) {
-                $idTransaksi = 'TRX' . str_pad($idTransaksiCounter, 3, '0', STR_PAD_LEFT);
+
+                /*
+                |--------------------------------------------------------------------------
+                | CEK BARANG YANG MASIH PUNYA STOK
+                |--------------------------------------------------------------------------
+                */
+                $barangBisaDijual = collect($barang)->filter(function ($item) use ($stokTersedia) {
+                    return isset($stokTersedia[$item['id_barang']])
+                        && $stokTersedia[$item['id_barang']] > 0;
+                });
+
+                /*
+                |--------------------------------------------------------------------------
+                | JIKA STOK SEMUA HABIS, STOP BUAT TRANSAKSI
+                |--------------------------------------------------------------------------
+                */
+                if ($barangBisaDijual->isEmpty()) {
+                    break 2;
+                }
+
+                $idTransaksi = 'TRX' . str_pad(
+                    $idTransaksiCounter,
+                    3,
+                    '0',
+                    STR_PAD_LEFT
+                );
 
                 $pakaiMember = rand(0, 1);
-                $idPelanggan = $pakaiMember ? 'PLG00' . rand(1, 3) : null;
-                $namaPelangganLain = $pakaiMember ? null : 'Pelanggan Umum ' . rand(1, 99);
 
-                $jumlahDetail = rand(1, 2);
+                $idPelanggan = $pakaiMember
+                    ? 'PLG00' . rand(1, 3)
+                    : null;
+
+                $namaPelangganLain = $pakaiMember
+                    ? null
+                    : 'Pelanggan Umum ' . rand(1, 99);
+
                 $totalBarang = 0;
 
-                $barangTerpilih = collect($barang)->random($jumlahDetail);
+                /*
+                |--------------------------------------------------------------------------
+                | JUMLAH DETAIL TRANSAKSI
+                |--------------------------------------------------------------------------
+                */
+                $jumlahDetail = rand(1, min(2, $barangBisaDijual->count()));
+
+                $barangTerpilih = $barangBisaDijual
+                    ->shuffle()
+                    ->take($jumlahDetail);
 
                 foreach ($barangTerpilih as $barangItem) {
-                    $idDetailTransaksi = 'DTR' . str_pad($idDetailTransaksiCounter, 3, '0', STR_PAD_LEFT);
 
-                    $qty = rand(1, 2);
+                    $idBarang = $barangItem['id_barang'];
+
+                    /*
+                    |--------------------------------------------------------------------------
+                    | QTY TIDAK BOLEH LEBIH DARI STOK TERSEDIA
+                    |--------------------------------------------------------------------------
+                    */
+                    $qtyMaksimal = min(2, $stokTersedia[$idBarang]);
+
+                    if ($qtyMaksimal <= 0) {
+                        continue;
+                    }
+
+                    $qty = rand(1, $qtyMaksimal);
+
+                    $idDetailTransaksi = 'DTR' . str_pad(
+                        $idDetailTransaksiCounter,
+                        3,
+                        '0',
+                        STR_PAD_LEFT
+                    );
+
                     $subTotal = $barangItem['harga_jual'] * $qty;
+
                     $totalBarang += $subTotal;
 
                     $detailTransaksiData[] = [
                         'id_detail_transaksi' => $idDetailTransaksi,
                         'id_transaksi' => $idTransaksi,
-                        'id_barang' => $barangItem['id_barang'],
+                        'id_barang' => $idBarang,
                         'jumlah_barang' => $qty,
                         'harga_barang' => $barangItem['harga_jual'],
                         'sub_total' => $subTotal,
@@ -420,10 +528,27 @@ class DummyBengkelSeeder extends Seeder
                         'updated_at' => $tanggal,
                     ];
 
+                    /*
+                    |--------------------------------------------------------------------------
+                    | KURANGI STOK TERSEDIA
+                    |--------------------------------------------------------------------------
+                    */
+                    $stokTersedia[$idBarang] -= $qty;
+
                     $idDetailTransaksiCounter++;
                 }
 
+                /*
+                |--------------------------------------------------------------------------
+                | JIKA TIDAK ADA DETAIL, JANGAN BUAT TRANSAKSI
+                |--------------------------------------------------------------------------
+                */
+                if ($totalBarang <= 0) {
+                    continue;
+                }
+
                 $hargaJasa = rand(2, 5) * 10000;
+
                 $totalHarga = $totalBarang + $hargaJasa;
 
                 $transaksiData[] = [
@@ -443,6 +568,11 @@ class DummyBengkelSeeder extends Seeder
             }
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | INSERT TRANSAKSI
+        |--------------------------------------------------------------------------
+        */
         foreach (array_chunk($transaksiData, 50) as $chunk) {
             DB::table('tbl_transaksi')->insert($chunk);
         }
@@ -451,6 +581,21 @@ class DummyBengkelSeeder extends Seeder
             DB::table('tbl_detail_transaksi')->insert($chunk);
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | UPDATE STOK AKHIR DI TABEL BARANG
+        |--------------------------------------------------------------------------
+        | Supaya tbl_barang.jumlah_barang sesuai dengan history stok.
+        |--------------------------------------------------------------------------
+        */
+        foreach ($stokTersedia as $idBarang => $stokAkhir) {
+            DB::table('tbl_barang')
+                ->where('id_barang', $idBarang)
+                ->update([
+                    'jumlah_barang' => $stokAkhir,
+                    'updated_at' => $now,
+                ]);
+        }
 
         /*
         |--------------------------------------------------------------------------
@@ -463,19 +608,15 @@ class DummyBengkelSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | STOK AWAL
+        | HISTORY STOK AWAL
         |--------------------------------------------------------------------------
         */
-        $stokAwal = [
-            'BRG001' => 50,
-            'BRG002' => 5,
-            'BRG003' => 100,
-            'BRG004' => 30,
-            'BRG005' => 8,
-            'BRG006' => 6,
-        ];
+        $stokBerjalan = [];
 
         foreach ($stokAwal as $idBarang => $jumlahAwal) {
+
+            $stokBerjalan[$idBarang] = $jumlahAwal;
+
             $history[] = [
                 'id_history_stok' => 'HS' . str_pad($historyCounter, 4, '0', STR_PAD_LEFT),
                 'id_barang' => $idBarang,
@@ -495,17 +636,8 @@ class DummyBengkelSeeder extends Seeder
         | HISTORY BARANG MASUK
         |--------------------------------------------------------------------------
         */
-        $stokBerjalan = $stokAwal;
-
-        $barangMasukHistory = [
-            ['id_barang' => 'BRG001', 'jumlah' => 10],
-            ['id_barang' => 'BRG003', 'jumlah' => 20],
-            ['id_barang' => 'BRG004', 'jumlah' => 10],
-            ['id_barang' => 'BRG005', 'jumlah' => 5],
-            ['id_barang' => 'BRG006', 'jumlah' => 3],
-        ];
-
         foreach ($barangMasukHistory as $masuk) {
+
             $stokBerjalan[$masuk['id_barang']] += $masuk['jumlah'];
 
             $history[] = [
@@ -528,6 +660,18 @@ class DummyBengkelSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         foreach ($detailTransaksiData as $detail) {
+
+            /*
+            |--------------------------------------------------------------------------
+            | SAFETY CHECK
+            |--------------------------------------------------------------------------
+            | Seharusnya tidak minus karena transaksi sudah divalidasi dari stokTersedia.
+            |--------------------------------------------------------------------------
+            */
+            if ($stokBerjalan[$detail['id_barang']] < $detail['jumlah_barang']) {
+                continue;
+            }
+
             $stokBerjalan[$detail['id_barang']] -= $detail['jumlah_barang'];
 
             $history[] = [
@@ -544,6 +688,11 @@ class DummyBengkelSeeder extends Seeder
             $historyCounter++;
         }
 
+        /*
+        |--------------------------------------------------------------------------
+        | INSERT HISTORY STOK
+        |--------------------------------------------------------------------------
+        */
         foreach (array_chunk($history, 50) as $chunk) {
             DB::table('tbl_history_stok')->insert($chunk);
         }

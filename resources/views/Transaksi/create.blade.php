@@ -158,16 +158,17 @@
                                                     </option>
 
                                                     @foreach($barang as $item)
-
                                                         <option
                                                             value="{{ $item->id_barang }}"
                                                             data-harga="{{ $item->harga_jual }}"
-                                                            data-stok="{{ $item->jumlah_barang }}">
+                                                            data-stok="{{ $item->jumlah_barang }}"
+                                                            {{ $item->jumlah_barang <= 0 ? 'disabled' : '' }}>
 
                                                             {{ $item->nama_barang }}
                                                             -
                                                             Stok:
                                                             {{ $item->jumlah_barang }}
+                                                            {{ $item->jumlah_barang <= 0 ? '(Habis)' : '' }}
 
                                                         </option>
 
