@@ -5,6 +5,130 @@
 <section class="content">
     <div class="container-fluid">
 
+        @php
+            $barangMenipis = $barang->filter(function ($item) {
+                return $item->jumlah_barang > 0 &&
+                       $item->jumlah_barang <= $item->alert_jumlah_barang;
+            });
+
+            $barangHabis = $barang->filter(function ($item) {
+                return $item->jumlah_barang <= 0;
+            });
+
+            $totalPerluRestock = $barangMenipis->count() + $barangHabis->count();
+
+            $listPeringatan = $barangHabis->merge($barangMenipis);
+        @endphp
+
+
+        {{-- NOTIF STOK MENIPIS / HABIS --}}
+        @if($totalPerluRestock > 0)
+
+            <div class="card card-danger collapsed-card">
+
+                <div class="card-header">
+
+                    <h3 class="card-title">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Peringatan Stok Menipis
+                    </h3>
+
+                    <div class="card-tools">
+                        <button type="button"
+                                class="btn btn-tool"
+                                data-card-widget="collapse">
+
+                            <i class="fas fa-plus"></i>
+
+                        </button>
+                    </div>
+
+                </div>
+
+                <div class="card-body p-0">
+
+                    <div class="table-responsive">
+
+                        <table class="table table-hover mb-0">
+
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Nama Barang</th>
+                                    <th>Kategori</th>
+                                    <th>Stok Sekarang</th>
+                                    <th>Batas Alert</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+
+                                @foreach($listPeringatan as $item)
+
+                                    <tr class="{{ $item->jumlah_barang <= 0 ? 'stok-habis' : 'stok-menipis' }}">
+
+                                        <td>
+                                            {{ $loop->iteration }}
+                                        </td>
+
+                                        <td>
+                                            {{ $item->nama_barang }}
+                                        </td>
+
+                                        <td>
+                                            {{ $item->kategori->nama_kategori ?? '-' }}
+                                        </td>
+
+                                        <td>
+                                            {{ $item->jumlah_barang }}
+                                        </td>
+
+                                        <td>
+                                            {{ $item->alert_jumlah_barang }}
+                                        </td>
+
+                                        <td>
+                                            @if($item->jumlah_barang <= 0)
+
+                                                <span class="badge badge-danger">
+                                                    Habis
+                                                </span>
+
+                                            @else
+
+                                                <span class="badge badge-warning">
+                                                    Menipis
+                                                </span>
+
+                                            @endif
+                                        </td>
+
+                                    </tr>
+
+                                @endforeach
+
+                            </tbody>
+
+                        </table>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        @else
+
+            <div class="alert alert-success">
+                <i class="fas fa-check-circle"></i>
+                Semua stok barang masih aman.
+            </div>
+
+        @endif
+
+
+        {{-- TABLE BARANG --}}
         <div class="row">
 
             <div class="col-12">
@@ -12,6 +136,7 @@
                 <div class="card">
 
                     <div class="card-header d-flex justify-content-between align-items-center">
+
                         <h3 class="card-title">
                             Data Barang
                         </h3>
@@ -21,6 +146,7 @@
                             <i class="fas fa-plus"></i>
                             Tambah Barang
                         </a>
+
                     </div>
 
                     <div class="card-body">
@@ -30,13 +156,14 @@
 
                             <thead>
                                 <tr>
-                                    <th width="10%">NO</th>
+                                    <th width="5%">NO</th>
                                     <th>Kategori</th>
                                     <th>Nama Barang</th>
                                     <th>Harga Beli</th>
                                     <th>Harga Jual</th>
                                     <th>Stok</th>
                                     <th>Alert</th>
+                                    <th>Status Stok</th>
                                     <th>Dibuat</th>
                                     <th width="15%">Action</th>
                                 </tr>
@@ -45,9 +172,18 @@
                             <tbody>
 
                                 @forelse($barang as $item)
-                                    <tr>
 
-                                        <td>{{ $loop->iteration }}</td>
+                                    <tr class="
+                                        @if($item->jumlah_barang <= 0)
+                                            stok-habis
+                                        @elseif($item->jumlah_barang <= $item->alert_jumlah_barang)
+                                            stok-menipis
+                                        @endif
+                                    ">
+
+                                        <td>
+                                            {{ $loop->iteration }}
+                                        </td>
 
                                         <td>
                                             {{ $item->kategori->nama_kategori ?? '-' }}
@@ -70,16 +206,26 @@
                                         </td>
 
                                         <td>
-                                            @if($item->jumlah_barang <= $item->alert_jumlah_barang)
+                                            {{ $item->alert_jumlah_barang }}
+                                        </td>
+
+                                        <td>
+                                            @if($item->jumlah_barang <= 0)
 
                                                 <span class="badge badge-danger">
-                                                    {{ $item->alert_jumlah_barang }}
+                                                    Habis
+                                                </span>
+
+                                            @elseif($item->jumlah_barang <= $item->alert_jumlah_barang)
+
+                                                <span class="badge badge-warning">
+                                                    Menipis
                                                 </span>
 
                                             @else
 
                                                 <span class="badge badge-success">
-                                                    {{ $item->alert_jumlah_barang }}
+                                                    Aman
                                                 </span>
 
                                             @endif
@@ -116,10 +262,11 @@
                                         </td>
 
                                     </tr>
+
                                 @empty
 
                                     <tr>
-                                        <td colspan="9" class="text-center">
+                                        <td colspan="10" class="text-center">
                                             Data barang belum tersedia
                                         </td>
                                     </tr>
@@ -144,10 +291,22 @@
 @endsection
 
 
+@push('styles')
+
+<style>
+    .stok-habis td {
+        background-color: #f8d7da !important;
+    }
+
+    .stok-menipis td {
+        background-color: #fff3cd !important;
+    }
+</style>
+
+@endpush
 
 
 @push('scripts')
-
 
 <script>
 $(function () {

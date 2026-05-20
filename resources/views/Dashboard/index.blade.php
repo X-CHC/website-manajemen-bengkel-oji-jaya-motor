@@ -76,8 +76,8 @@
             </div>
 
 
-            {{-- Stok Menipis - hanya Admin & Gudang --}}
-            @if(in_array($role, ['admin', 'gudang']))
+            {{-- Stok Menipis - hanya Adming --}}
+            @if(in_array($role, ['admin']))
 
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
