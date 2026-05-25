@@ -53,6 +53,15 @@ class User extends Authenticatable
         return $this->belongsTo(Role::class, 'id_role', 'id_role');
     }
 
+    public function stockOpname()
+    {
+        return $this->hasMany(
+            StockOpname::class,
+            'id_user',
+            'id_user'
+        );
+    }
+
     /**
      * Untuk login pakai username, apa yakin? Kalau pakai email kan lebih umum, tapi kalau memang mau pakai username, bisa tambahkan method ini:
      *

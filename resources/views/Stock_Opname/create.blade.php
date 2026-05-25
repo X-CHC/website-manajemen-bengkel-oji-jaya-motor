@@ -24,22 +24,81 @@
     @endif
 
 
-    @if(session('error'))
 
-        <div class="alert alert-danger">
-            {{ session('error') }}
+    {{-- CARD MODE STOCK OPNAME --}}
+    <div class="card {{ $modeStockOpname ? 'card-danger' : 'card-secondary' }}">
+
+        <div class="card-header">
+
+            <h3 class="card-title">
+                Mode Stock Opname
+            </h3>
+
         </div>
 
-    @endif
+        <div class="card-body">
 
+            @if($modeStockOpname)
 
-    @if(session('success'))
+                <div class="alert alert-danger mb-3">
 
-        <div class="alert alert-success">
-            {{ session('success') }}
+                    <i class="fas fa-exclamation-triangle"></i>
+
+                    Mode stock opname sedang aktif.
+                    Semua fitur selain stock opname sementara dinonaktifkan.
+
+                </div>
+
+                <form action="{{ route('stock-opname.mode-off') }}"
+                      method="POST"
+                      class="d-inline">
+
+                    @csrf
+
+                    <button type="submit"
+                            class="btn btn-secondary"
+                            onclick="return confirm('Matikan mode stock opname?')">
+
+                        <i class="fas fa-power-off"></i>
+                        Matikan Mode Stock Opname
+
+                    </button>
+
+                </form>
+
+            @else
+
+                <div class="alert alert-info mb-3">
+
+                    <i class="fas fa-info-circle"></i>
+
+                    Mode stock opname sedang mati.
+                    Aktifkan mode ini jika ingin melakukan pengecekan stok fisik.
+
+                </div>
+
+                <form action="{{ route('stock-opname.mode-on') }}"
+                      method="POST"
+                      class="d-inline">
+
+                    @csrf
+
+                    <button type="submit"
+                            class="btn btn-danger"
+                            onclick="return confirm('Aktifkan mode stock opname? Fitur lain akan dinonaktifkan sementara.')">
+
+                        <i class="fas fa-power-off"></i>
+                        Aktifkan Mode Stock Opname
+
+                    </button>
+
+                </form>
+
+            @endif
+
         </div>
 
-    @endif
+    </div>
 
 
     <form action="{{ route('stock-opname.store') }}"
@@ -49,13 +108,7 @@
 
         <div class="card card-primary">
 
-            <div class="card-header">
 
-                <h3 class="card-title">
-                    Stock Opname
-                </h3>
-
-            </div>
 
             <div class="card-body">
 
@@ -117,7 +170,8 @@
                                            class="form-control stok-fisik"
                                            value="{{ old('stok_fisik.' . $loop->index, $item->jumlah_barang) }}"
                                            min="0"
-                                           required>
+                                           required
+                                           {{ !$modeStockOpname ? 'readonly' : '' }}>
                                 </td>
 
                                 <td>
@@ -140,7 +194,9 @@
             <div class="card-footer">
 
                 <button type="submit"
-                        class="btn btn-primary">
+                        class="btn btn-primary"
+                        {{ !$modeStockOpname ? 'disabled' : '' }}
+                        onclick="return confirm('Simpan hasil stock opname? Mode stock opname akan dimatikan setelah data disimpan.')">
 
                     Simpan Stock Opname
 

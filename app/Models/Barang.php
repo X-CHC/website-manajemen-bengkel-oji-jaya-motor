@@ -28,4 +28,13 @@ class Barang extends Model
     {
         return $this->belongsTo(KategoriBarang::class, 'id_kategori_barang', 'id_kategori_barang');
     }
+
+    public function detailStockOpname()
+    {
+        return $this->hasMany(
+            DetailStockOpname::class,
+            'id_barang',
+            'id_barang'
+        );
+    }
 }

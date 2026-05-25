@@ -14,6 +14,9 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\UserController;
 
+use App\Http\Middleware\CheckStockOpnameMode;
+
+
 
 //LOGIN / LOGOUT
 
@@ -38,7 +41,7 @@ Route::get('/', function () {
 
 //SEMUA ROUTE YANG BUTUH LOGIN
 
-Route::middleware('auth')->group(function () {
+Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
 
     //DASHBOARD
@@ -69,7 +72,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [BarangController::class, 'create'])
                 ->name('create');
 
-            Route::post('/', [BarangController::class, 'store'])
+            Route::post('/store', [BarangController::class, 'store'])
                 ->name('store');
 
             Route::get('/{id}/edit', [BarangController::class, 'edit'])
@@ -97,7 +100,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [KategoriController::class, 'create'])
                 ->name('create');
 
-            Route::post('/', [KategoriController::class, 'store'])
+            Route::post('/store', [KategoriController::class, 'store'])
                 ->name('store');
 
             Route::get('/{id}/edit', [KategoriController::class, 'edit'])
@@ -125,7 +128,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [PelangganController::class, 'create'])
                 ->name('create');
 
-            Route::post('/', [PelangganController::class, 'store'])
+            Route::post('/store', [PelangganController::class, 'store'])
                 ->name('store');
 
             Route::get('/{id}/edit', [PelangganController::class, 'edit'])
@@ -153,7 +156,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [TransaksiController::class, 'create'])
                 ->name('create');
 
-            Route::post('/', [TransaksiController::class, 'store'])
+            Route::post('/store', [TransaksiController::class, 'store'])
                 ->name('store');
 
             Route::get('/cetak/{id}', [TransaksiController::class, 'cetakNota'])
@@ -175,7 +178,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [PoController::class, 'create'])
                 ->name('create');
 
-            Route::post('/', [PoController::class, 'store'])
+            Route::post('/store', [PoController::class, 'store'])
                 ->name('store');
 
             Route::get('/{id}/edit', [PoController::class, 'edit'])
@@ -203,7 +206,7 @@ Route::middleware('auth')->group(function () {
             Route::get('/create', [BarangMasukController::class, 'create'])
                 ->name('create');
 
-            Route::post('/', [BarangMasukController::class, 'store'])
+            Route::post('/store', [BarangMasukController::class, 'store'])
                 ->name('store');
 
             Route::get('/{id}/edit', [BarangMasukController::class, 'edit'])
@@ -259,8 +262,14 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [StockOpnameController::class, 'create'])
             ->name('create');
 
-        Route::post('/', [StockOpnameController::class, 'store'])
+        Route::post('/store', [StockOpnameController::class, 'store'])
             ->name('store');
+
+        Route::post('/mode-on', [StockOpnameController::class, 'modeOn'])
+            ->name('mode-on');
+
+        Route::post('/mode-off', [StockOpnameController::class, 'modeOff'])
+            ->name('mode-off');
     });
 
     //USER
@@ -273,7 +282,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/create', [UserController::class, 'create'])
             ->name('create');
 
-        Route::post('/', [UserController::class, 'store'])
+        Route::post('/store', [UserController::class, 'store'])
             ->name('store');
 
         Route::get('/{id}/edit', [UserController::class, 'edit'])

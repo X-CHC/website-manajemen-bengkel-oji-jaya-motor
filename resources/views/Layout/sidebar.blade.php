@@ -12,7 +12,9 @@
     </a>
 
     @php
-        $role = auth()->user()->role->nama_role ?? null;
+        $role = strtolower(auth()->user()->role->nama_role ?? '');
+
+        $modeStockOpname = \Illuminate\Support\Facades\Cache::get('stock_opname_mode', false);
 
         $isAdmin = $role === 'admin';
 
@@ -32,10 +34,14 @@
 
         <nav>
 
-            <ul class="nav nav-pills nav-sidebar flex-column"
-                data-widget="treeview"
-                role="menu"
-                data-accordion="false">
+            <ul class="nav nav-pills nav-sidebar flex-column"data-widget="treeview"role="menu"data-accordion="false">
+                @if($modeStockOpname)
+
+                    <li class="nav-header text-danger">
+                        MODE STOCK OPNAME AKTIF
+                    </li>
+
+                @endif
 
                 {{-- Dashboard --}}
                 @if($canDashboard)
@@ -358,7 +364,8 @@
                     </li>
                 @endif
 
-                @if($canHistory)
+                {{-- STOCK OPNAME --}}
+                @if($canStockOpname)
                     <li class="nav-item">
                         <a href="{{ route('stock-opname.create') }}"
                         class="nav-link {{ request()->routeIs('stock-opname.*') ? 'active' : '' }}">
@@ -371,6 +378,7 @@
                     </li>
                 @endif
 
+                {{-- MENU AKUN (HANYA UNTUK ADMIN) --}}
                 @if($role == 'admin')
 
                     <li class="nav-item has-treeview {{ request()->routeIs('user.*') ? 'menu-open' : '' }}">
