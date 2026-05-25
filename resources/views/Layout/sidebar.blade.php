@@ -49,6 +49,17 @@
 
                     </a>
                 </li>
+
+                <li class="nav-item">
+                    <a href="{{ route('dashboard.index2') }}"
+                       class="nav-link {{ request()->routeIs('dashboard.index2') ? 'active' : '' }}">
+
+                        <i class="nav-icon fas fa-home"></i>
+
+                        <p>Dashboard 2</p>
+
+                    </a>
+                </li>
                 @endif
 
 

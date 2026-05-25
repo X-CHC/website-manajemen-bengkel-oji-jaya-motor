@@ -34,6 +34,8 @@ class RoleSeeder extends Seeder
                 'nama_role' => 'gudang',
                 'tingkat_role' => '4',
                 'created_at' => Carbon::now(),
+
+
             ],
         ]);
     }

@@ -243,6 +243,7 @@
                         </h5>
 
                         <div class="card-tools">
+
                             <button type="button"
                                     class="btn btn-tool"
                                     data-card-widget="collapse">
@@ -250,127 +251,58 @@
                                 <i class="fas fa-minus"></i>
 
                             </button>
+
                         </div>
 
                     </div>
 
                     <div class="card-body">
 
-                        {{-- FILTER BULAN --}}
-                        <form action="{{ route('dashboard.index') }}"
-                            method="GET"
-                            class="mb-3">
+                        {{-- NAVIGASI BULAN TANPA REFRESH --}}
+                        <div class="d-flex justify-content-between align-items-center mb-3">
 
-                            <div class="row">
+                            <button type="button"
+                                    id="btnBulanSebelumnya"
+                                    class="btn btn-outline-primary btn-sm">
 
-                                <div class="col-md-4">
+                                <i class="fas fa-chevron-left"></i>
 
-                                    <label>Bulan</label>
-
-                                    <select name="bulan"
-                                            class="form-control">
-
-                                        <option value="1" {{ $bulanDipilih == 1 ? 'selected' : '' }}>
-                                            Januari
-                                        </option>
-
-                                        <option value="2" {{ $bulanDipilih == 2 ? 'selected' : '' }}>
-                                            Februari
-                                        </option>
-
-                                        <option value="3" {{ $bulanDipilih == 3 ? 'selected' : '' }}>
-                                            Maret
-                                        </option>
-
-                                        <option value="4" {{ $bulanDipilih == 4 ? 'selected' : '' }}>
-                                            April
-                                        </option>
-
-                                        <option value="5" {{ $bulanDipilih == 5 ? 'selected' : '' }}>
-                                            Mei
-                                        </option>
-
-                                        <option value="6" {{ $bulanDipilih == 6 ? 'selected' : '' }}>
-                                            Juni
-                                        </option>
-
-                                        <option value="7" {{ $bulanDipilih == 7 ? 'selected' : '' }}>
-                                            Juli
-                                        </option>
-
-                                        <option value="8" {{ $bulanDipilih == 8 ? 'selected' : '' }}>
-                                            Agustus
-                                        </option>
-
-                                        <option value="9" {{ $bulanDipilih == 9 ? 'selected' : '' }}>
-                                            September
-                                        </option>
-
-                                        <option value="10" {{ $bulanDipilih == 10 ? 'selected' : '' }}>
-                                            Oktober
-                                        </option>
-
-                                        <option value="11" {{ $bulanDipilih == 11 ? 'selected' : '' }}>
-                                            November
-                                        </option>
-
-                                        <option value="12" {{ $bulanDipilih == 12 ? 'selected' : '' }}>
-                                            Desember
-                                        </option>
-
-                                    </select>
-
-                                </div>
+                            </button>
 
 
-                                <div class="col-md-4">
+                            <div class="text-center">
 
-                                    <label>Tahun</label>
+                                <h5 class="mb-0"
+                                    id="namaPeriodeGrafik">
 
-                                    <select name="tahun"
-                                            class="form-control">
+                                    {{ \Carbon\Carbon::create($tahunDipilih, $bulanDipilih, 1)->translatedFormat('F Y') }}
 
-                                        @for($tahun = now()->year; $tahun >= now()->year - 5; $tahun--)
+                                </h5>
 
-                                            <option value="{{ $tahun }}"
-                                                {{ $tahunDipilih == $tahun ? 'selected' : '' }}>
+                                <small class="text-muted"
+                                    id="teksPeriodeGrafik">
 
-                                                {{ $tahun }}
+                                    Periode: {{ $teksPeriode }}
 
-                                            </option>
-
-                                        @endfor
-
-                                    </select>
-
-                                </div>
-
-
-                                <div class="col-md-4 d-flex align-items-end">
-
-                                    <button type="submit"
-                                            class="btn btn-primary">
-
-                                        <i class="fas fa-filter"></i>
-                                        Tampilkan
-
-                                    </button>
-
-                                </div>
+                                </small>
 
                             </div>
 
-                        </form>
+
+                            <button type="button"
+                                    id="btnBulanBerikutnya"
+                                    class="btn btn-outline-primary btn-sm">
+
+                                <i class="fas fa-chevron-right"></i>
+
+                            </button>
+
+                        </div>
 
 
+                        {{-- CHART --}}
                         <div class="row">
                             <div class="col-md-12">
-
-                                <p class="text-center">
-                                    <strong>
-                                        Periode: {{ $teksPeriode }}
-                                    </strong>
-                                </p>
 
                                 <div class="chart">
                                     <canvas id="salesChart"
@@ -671,90 +603,216 @@
 
 $(function () {
 
-    var areaChartCanvas = $('#salesChart').get(0).getContext('2d');
+    /*
+    |--------------------------------------------------------------------------
+    | DATA AWAL DARI CONTROLLER
+    |--------------------------------------------------------------------------
+    */
+    let bulanAktif = Number(@json($bulanDipilih));
 
-    var labelTanggal = {!! json_encode($chartLabels) !!};
+    let tahunAktif = Number(@json($tahunDipilih));
 
-    var dataPendapatan = {!! json_encode($chartData) !!};
+    let labelTanggal = @json($chartLabels);
 
-    var areaChartData = {
-        labels: labelTanggal,
-        datasets: [
-            {
-                label               : 'Pendapatan (Rp)',
-                type                : 'line',
-                tension             : 0.4,
-                fill                : true,
-                backgroundColor     : 'rgba(60,141,188,0.4)',
-                borderColor         : 'rgba(60,141,188,1)',
-                pointRadius         : 3,
-                pointBackgroundColor: 'rgba(60,141,188,1)',
-                data                : dataPendapatan
-            }
-        ]
-    };
+    let dataPendapatan = @json($chartData);
 
-    var areaChartOptions = {
-        maintainAspectRatio : false,
-        responsive : true,
+    let routeGrafik = "{{ route('dashboard.grafik') }}";
 
-        plugins: {
-            legend: {
-                display: false
-            },
+    let chartPendapatan = null;
 
-            tooltip: {
-                callbacks: {
-                    label: function(context) {
-                        let label = context.dataset.label || '';
 
-                        if (label) {
-                            label += ': ';
-                        }
+    /*
+    |--------------------------------------------------------------------------
+    | FORMAT RUPIAH
+    |--------------------------------------------------------------------------
+    */
+    function formatRupiah(angka)
+    {
+        return 'Rp ' + angka
+            .toString()
+            .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
 
-                        if (context.parsed.y !== null) {
-                            label += 'Rp ' + context.parsed.y
-                                .toString()
-                                .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-                        }
 
-                        return label;
-                    }
+    /*
+    |--------------------------------------------------------------------------
+    | BUAT / RENDER CHART
+    |--------------------------------------------------------------------------
+    */
+    function renderChart(labels, data)
+    {
+        let areaChartCanvas = $('#salesChart').get(0).getContext('2d');
+
+        let areaChartData = {
+            labels: labels,
+            datasets: [
+                {
+                    label               : 'Pendapatan (Rp)',
+                    type                : 'line',
+                    tension             : 0.4,
+                    fill                : true,
+                    backgroundColor     : 'rgba(60,141,188,0.4)',
+                    borderColor         : 'rgba(60,141,188,1)',
+                    pointRadius         : 3,
+                    pointBackgroundColor: 'rgba(60,141,188,1)',
+                    data                : data
                 }
-            }
-        },
+            ]
+        };
 
-        scales: {
-            x: {
-                grid: {
+        let areaChartOptions = {
+            maintainAspectRatio : false,
+            responsive : true,
+
+            plugins: {
+                legend: {
                     display: false
+                },
+
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            let label = context.dataset.label || '';
+
+                            if (label) {
+                                label += ': ';
+                            }
+
+                            if (context.parsed.y !== null) {
+                                label += formatRupiah(context.parsed.y);
+                            }
+
+                            return label;
+                        }
+                    }
                 }
             },
 
-            y: {
-                beginAtZero: true,
+            scales: {
+                x: {
+                    grid: {
+                        display: false
+                    }
+                },
 
-                ticks: {
-                    callback: function(value) {
+                y: {
+                    beginAtZero: true,
 
-                        if(parseInt(value) >= 1000) {
-                            return 'Rp ' + value
-                                .toString()
-                                .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+                    ticks: {
+                        callback: function(value) {
+                            return formatRupiah(value);
                         }
-
-                        return 'Rp ' + value;
                     }
                 }
             }
-        }
-    };
+        };
 
-    new Chart(areaChartCanvas, {
-        type: 'line',
-        data: areaChartData,
-        options: areaChartOptions
+        if(chartPendapatan !== null)
+        {
+            chartPendapatan.destroy();
+        }
+
+        chartPendapatan = new Chart(areaChartCanvas, {
+            type: 'line',
+            data: areaChartData,
+            options: areaChartOptions
+        });
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | AMBIL DATA GRAFIK TANPA REFRESH
+    |--------------------------------------------------------------------------
+    */
+    function ambilDataGrafik(bulan, tahun)
+    {
+        $('#btnBulanSebelumnya').prop('disabled', true);
+
+        $('#btnBulanBerikutnya').prop('disabled', true);
+
+        fetch(routeGrafik + '?bulan=' + bulan + '&tahun=' + tahun, {
+            method: 'GET',
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        })
+        .then(function(result) {
+
+            bulanAktif = Number(result.bulan);
+
+            tahunAktif = Number(result.tahun);
+
+            $('#namaPeriodeGrafik').text(result.namaPeriode);
+
+            $('#teksPeriodeGrafik').text('Periode: ' + result.teksPeriode);
+
+            renderChart(result.labels, result.data);
+        })
+        .catch(function(error) {
+
+            alert('Gagal mengambil data grafik');
+
+            console.log(error);
+        })
+        .finally(function() {
+
+            $('#btnBulanSebelumnya').prop('disabled', false);
+
+            $('#btnBulanBerikutnya').prop('disabled', false);
+        });
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOMBOL BULAN SEBELUMNYA
+    |--------------------------------------------------------------------------
+    */
+    $('#btnBulanSebelumnya').click(function(){
+
+        bulanAktif--;
+
+        if(bulanAktif < 1)
+        {
+            bulanAktif = 12;
+
+            tahunAktif--;
+        }
+
+        ambilDataGrafik(bulanAktif, tahunAktif);
     });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | TOMBOL BULAN BERIKUTNYA
+    |--------------------------------------------------------------------------
+    */
+    $('#btnBulanBerikutnya').click(function(){
+
+        bulanAktif++;
+
+        if(bulanAktif > 12)
+        {
+            bulanAktif = 1;
+
+            tahunAktif++;
+        }
+
+        ambilDataGrafik(bulanAktif, tahunAktif);
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | RENDER CHART PERTAMA
+    |--------------------------------------------------------------------------
+    */
+    renderChart(labelTanggal, dataPendapatan);
 
 });
 

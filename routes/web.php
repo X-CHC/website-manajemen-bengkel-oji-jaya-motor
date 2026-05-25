@@ -46,6 +46,14 @@ Route::middleware('auth')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->name('dashboard.index');
 
+    // dashboard 2
+    Route::get('/dashboard2', [DashboardController::class, 'index2'])
+        ->name('dashboard.index2');
+
+    // data grafik pendapatan dashboard tanpa refresh
+    Route::get('/dashboard/grafik', [DashboardController::class, 'grafikPendapatan2'])
+        ->name('dashboard.grafik');
+
 
 
     //BARANG
