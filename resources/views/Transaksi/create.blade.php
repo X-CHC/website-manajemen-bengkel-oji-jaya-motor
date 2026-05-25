@@ -188,10 +188,12 @@
                                                 <label>Jumlah</label>
 
                                                 <input type="number"
-                                                       name="jumlah_barang[]"
-                                                       class="form-control jumlah-barang"
-                                                       min="1"
-                                                       value="1">
+                                                    name="jumlah_barang[]"
+                                                    class="form-control jumlah-barang"
+                                                    min="1"
+                                                    value="1"
+                                                    inputmode="numeric"
+                                                    pattern="[0-9]*">
                                             </div>
 
                                         </div>

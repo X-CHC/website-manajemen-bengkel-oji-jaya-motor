@@ -1,23 +1,133 @@
-
 /*
 |--------------------------------------------------------------------------
-| FORMAT RUPIAH
+| FORMAT RUPIAH UNTUK TAMPILAN READONLY
 |--------------------------------------------------------------------------
 */
 function formatRupiah(angka)
 {
+    angka = parseInt(angka) || 0;
+
     return new Intl.NumberFormat('id-ID').format(angka);
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| PARSE RUPIAH
+| AMBIL ANGKA DARI INPUT
+|--------------------------------------------------------------------------
+| Jika Inputmask aktif, ambil unmaskedvalue.
+| Jika Inputmask tidak aktif, fallback ambil angka manual.
 |--------------------------------------------------------------------------
 */
-function parseRupiah(angka)
+function getAngka(selector)
 {
-    return angka.toString().replace(/\./g, '');
+    let element = $(selector);
+
+    if(
+        typeof $.fn.inputmask !== 'undefined' &&
+        element.data('_inputmask')
+    )
+    {
+        let value = element.inputmask('unmaskedvalue');
+
+        return parseInt(value) || 0;
+    }
+
+    let value = element.val() || '0';
+
+    value = value.toString().replace(/[^0-9]/g, '');
+
+    return parseInt(value) || 0;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| AKTIFKAN INPUTMASK RUPIAH
+|--------------------------------------------------------------------------
+*/
+function initRupiahMask()
+{
+    if(typeof $.fn.inputmask === 'undefined')
+    {
+        console.log('Inputmask belum ter-load. Cek path script inputmask di layout.');
+
+        return;
+    }
+
+    $('#harga_jasa_view, #uang_bayar_view').inputmask({
+        alias: 'numeric',
+        groupSeparator: '.',
+        radixPoint: ',',
+        digits: 0,
+        autoGroup: true,
+        rightAlign: false,
+        allowMinus: false,
+        min: 0,
+        placeholder: '0',
+        removeMaskOnSubmit: false
+    });
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| HANYA IZINKAN ANGKA UNTUK INPUT ANGKA
+|--------------------------------------------------------------------------
+*/
+function blokHurufInputAngka()
+{
+    $(document).on(
+        'keydown',
+        '#harga_jasa_view, #uang_bayar_view, .jumlah-barang',
+        function(e)
+        {
+            let tombolDilarang = [
+                'e',
+                'E',
+                '+',
+                '-',
+                ',',
+                '.'
+            ];
+
+            if(tombolDilarang.includes(e.key))
+            {
+                e.preventDefault();
+            }
+        }
+    );
+
+    $(document).on(
+        'input',
+        '#harga_jasa_view, #uang_bayar_view',
+        function()
+        {
+            if(typeof $.fn.inputmask === 'undefined')
+            {
+                let angka = $(this)
+                    .val()
+                    .toString()
+                    .replace(/[^0-9]/g, '');
+
+                $(this).val(formatRupiah(angka));
+            }
+        }
+    );
+
+    $(document).on(
+        'input',
+        '.jumlah-barang',
+        function()
+        {
+            let angka = $(this)
+                .val()
+                .toString()
+                .replace(/[^0-9]/g, '');
+
+            $(this).val(angka);
+        }
+    );
 }
 
 
@@ -41,12 +151,12 @@ function initSelect2()
 |--------------------------------------------------------------------------
 | Barang yang sudah dipilih tidak bisa dipilih lagi.
 | Barang dengan stok 0 tetap tampil, tapi disabled.
+|--------------------------------------------------------------------------
 */
 function updateBarangOptions()
 {
     let selectedBarang = [];
 
-    // Ambil semua barang terpilih
     $('.barang-select').each(function(){
 
         let value = $(this).val();
@@ -58,7 +168,6 @@ function updateBarangOptions()
 
     });
 
-    // Disable duplicate option dan stok habis
     $('.barang-select').each(function(){
 
         let currentSelect = $(this);
@@ -76,22 +185,12 @@ function updateBarangOptions()
                 return;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | DISABLE JIKA STOK HABIS
-            |--------------------------------------------------------------------------
-            */
             if(stok <= 0)
             {
                 $(this).prop('disabled', true);
                 return;
             }
 
-            /*
-            |--------------------------------------------------------------------------
-            | DISABLE JIKA SUDAH DIPILIH DI ROW LAIN
-            |--------------------------------------------------------------------------
-            */
             if(
                 selectedBarang.includes(optionValue) &&
                 optionValue != currentValue
@@ -108,7 +207,6 @@ function updateBarangOptions()
 
     });
 
-    // Refresh Select2
     $('.barang-select').trigger('change.select2');
 }
 
@@ -153,8 +251,9 @@ function hitungSemuaTotal()
         grandTotal += subtotal;
     });
 
-    let jasa =
-        parseInt($('#harga_jasa').val()) || 0;
+    let jasa = getAngka('#harga_jasa_view');
+
+    $('#harga_jasa').val(jasa);
 
     let total = grandTotal + jasa;
 
@@ -163,8 +262,9 @@ function hitungSemuaTotal()
     $('#total_harga_view')
         .val(formatRupiah(total));
 
-    let bayar =
-        parseInt($('#uang_bayar').val()) || 0;
+    let bayar = getAngka('#uang_bayar_view');
+
+    $('#uang_bayar').val(bayar);
 
     let kembali = bayar - total;
 
@@ -173,11 +273,6 @@ function hitungSemuaTotal()
     $('#uang_kembali_view')
         .val(formatRupiah(kembali));
 
-    /*
-    |--------------------------------------------------------------------------
-    | VALIDASI UANG KURANG
-    |--------------------------------------------------------------------------
-    */
     if(kembali < 0)
     {
         $('#uang_kembali_view')
@@ -202,7 +297,6 @@ function hitungSemuaTotal()
 | EVENT PILIH BARANG
 |--------------------------------------------------------------------------
 */
-
 $(document).on('change', '.barang-select', function(){
 
     let harga =
@@ -214,12 +308,6 @@ $(document).on('change', '.barang-select', function(){
     let parent =
         $(this).closest('.barang-item');
 
-    /*
-    |--------------------------------------------------------------------------
-    | JIKA STOK HABIS
-    |--------------------------------------------------------------------------
-    | Ini pengaman tambahan jika option disabled berhasil dibypass.
-    */
     if(stok <= 0 && $(this).val() != '')
     {
         alert('Barang ini stoknya habis dan tidak bisa dipilih.');
@@ -265,7 +353,7 @@ $(document).on('change', '.barang-select', function(){
 | EVENT JUMLAH BARANG
 |--------------------------------------------------------------------------
 */
-$(document).on('keyup change', '.jumlah-barang', function(){
+$(document).on('keyup change input', '.jumlah-barang', function(){
 
     let jumlah =
         parseInt($(this).val()) || 0;
@@ -289,13 +377,7 @@ $(document).on('keyup change', '.jumlah-barang', function(){
 | HARGA JASA
 |--------------------------------------------------------------------------
 */
-$(document).on('keyup', '#harga_jasa_view', function(){
-
-    let angka = parseRupiah($(this).val());
-
-    $('#harga_jasa').val(angka);
-
-    $(this).val(formatRupiah(angka));
+$(document).on('keyup change input', '#harga_jasa_view', function(){
 
     hitungSemuaTotal();
 });
@@ -306,13 +388,7 @@ $(document).on('keyup', '#harga_jasa_view', function(){
 | UANG BAYAR
 |--------------------------------------------------------------------------
 */
-$(document).on('keyup', '#uang_bayar_view', function(){
-
-    let angka = parseRupiah($(this).val());
-
-    $('#uang_bayar').val(angka);
-
-    $(this).val(formatRupiah(angka));
+$(document).on('keyup change input', '#uang_bayar_view', function(){
 
     hitungSemuaTotal();
 });
@@ -325,35 +401,27 @@ $(document).on('keyup', '#uang_bayar_view', function(){
 */
 $(document).on('click', '#tambahBarang', function(){
 
-    // Destroy select2 sementara
     $('.barang-select').select2('destroy');
 
-    // Clone item pertama
     let item =
         $('.barang-item:first').clone();
 
-    // Reset select
     item.find('.barang-select').val('');
 
-    // Reset harga
     item.find('.harga-view').val('');
     item.find('.harga-input').val('');
 
-    // Reset subtotal
     item.find('.subtotal-view').val('');
     item.find('.subtotal-input').val('');
 
-    // Reset jumlah
     item.find('.jumlah-barang').val(1);
 
-    // Reset max
     item.find('.jumlah-barang')
-        .removeAttr('max');
+        .removeAttr('max')
+        .removeAttr('placeholder');
 
-    // Tambah item
     $('#listBarang').append(item);
 
-    // Aktifkan select2 lagi
     initSelect2();
 
     updateJumlahItemBarang();
@@ -393,6 +461,10 @@ $(document).on('click', '.hapusBarang', function(){
 |--------------------------------------------------------------------------
 */
 $(document).ready(function(){
+
+    initRupiahMask();
+
+    blokHurufInputAngka();
 
     initSelect2();
 

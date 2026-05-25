@@ -16,6 +16,9 @@ function initSelect2()
 |--------------------------------------------------------------------------
 | UPDATE OPTION BARANG
 |--------------------------------------------------------------------------
+| Barang yang sudah dipilih tidak bisa dipilih lagi.
+| Barang stok 0 tetap boleh dipilih untuk PO.
+|--------------------------------------------------------------------------
 */
 function updateBarangOptions()
 {
@@ -30,6 +33,7 @@ function updateBarangOptions()
             selectedBarang.push(value);
         }
     });
+
 
     $('.barang-select').each(function(){
 
@@ -46,6 +50,13 @@ function updateBarangOptions()
                 return;
             }
 
+            /*
+            |--------------------------------------------------------------------------
+            | DISABLE HANYA JIKA BARANG SUDAH DIPILIH DI ROW LAIN
+            |--------------------------------------------------------------------------
+            | Stok 0 tidak didisable karena PO dipakai untuk restock.
+            |--------------------------------------------------------------------------
+            */
             if(
                 selectedBarang.includes(optionValue)
                 &&
@@ -60,6 +71,8 @@ function updateBarangOptions()
             }
         });
     });
+
+    $('.barang-select').trigger('change.select2');
 }
 
 
@@ -74,10 +87,14 @@ function updatePreviewBarangPo()
 
     $('.barang-item').each(function(){
 
-        let namaBarang = $(this)
-            .find('.barang-select option:selected')
+        let optionSelected = $(this)
+            .find('.barang-select option:selected');
+
+        let namaBarang = optionSelected
             .text()
             .trim();
+
+        let stok = parseInt(optionSelected.data('stok')) || 0;
 
         let jumlah = $(this)
             .find('input[name="jumlah_po[]"]')
@@ -96,6 +113,13 @@ function updatePreviewBarangPo()
             <div class="border rounded p-2 mb-2">
 
                 <strong>${namaBarang}</strong>
+
+                <br>
+
+                Stok Sekarang :
+                <span class="${stok <= 0 ? 'text-danger' : 'text-success'}">
+                    ${stok}
+                </span>
 
                 <br>
 
@@ -149,6 +173,8 @@ $(document).on('input', 'input[name="jumlah_po[]"]', function(){
 |--------------------------------------------------------------------------
 */
 $('#tambahBarang').click(function(){
+
+    $('.barang-select').select2('destroy');
 
     let newItem = `
 
@@ -249,6 +275,8 @@ $(document).on('click', '.hapusBarang', function(){
 $(document).ready(function(){
 
     initSelect2();
+
+    updateBarangOptions();
 
     updatePreviewBarangPo();
 });

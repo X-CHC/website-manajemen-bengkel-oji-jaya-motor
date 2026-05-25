@@ -119,9 +119,13 @@
 
                                                 @foreach($barang as $item)
 
-                                                    <option value="{{ $item->id_barang }}">
+                                                    <option value="{{ $item->id_barang }}"
+                                                            data-stok="{{ $item->jumlah_barang }}">
 
                                                         {{ $item->nama_barang }}
+                                                        -
+                                                        Stok:
+                                                        {{ $item->jumlah_barang }}
 
                                                     </option>
 
@@ -225,19 +229,19 @@
 
 
 <script>
+    window.barangOptions = `
+        @foreach($barang as $item)
+            <option value="{{ $item->id_barang }}"
+                    data-stok="{{ $item->jumlah_barang }}">
 
-window.barangOptions = `
-    @foreach($barang as $item)
+                {{ $item->nama_barang }}
+                -
+                Stok:
+                {{ $item->jumlah_barang }}
 
-        <option value="{{ $item->id_barang }}">
-
-            {{ $item->nama_barang }}
-
-        </option>
-
-    @endforeach
-`;
-
+            </option>
+        @endforeach
+    `;
 </script>
 
 
