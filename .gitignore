@@ -24,3 +24,5 @@ Homestead.yaml
 Thumbs.db
 resources/views/Layout/tetis.blade.php
 public/assets/bukti_bayar/
+public/assets/nota_supplier/
+
