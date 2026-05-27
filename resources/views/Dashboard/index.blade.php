@@ -153,7 +153,7 @@
 
                                         <tbody>
 
-                                            @foreach($barangStokMenipis as $item)
+                                            @foreach($barangStokMenipis->take(5) as $item)
 
                                                 <tr>
                                                     <td>
@@ -203,17 +203,17 @@
 
                             </div>
 
-                            <div class="card-footer text-right">
+                            <div class="card-footer clearfix">
 
-                                <a href="{{ route('barang.index') }}"
-                                   class="btn btn-sm btn-danger">
+                                <div class="float-left text-muted mt-1">
+                                    Menampilkan 5 dari {{ $stokMenipis }} barang yang stoknya menipis/habis.
+                                </div>
 
+                                <a href="{{ route('barang.index') }}" class="btn btn-sm btn-danger float-right">
                                     Lihat Data Barang
-
                                 </a>
 
                             </div>
-
                         </div>
 
                     </div>

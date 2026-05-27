@@ -77,8 +77,8 @@ class StockOpnameController extends Controller
             'id_barang' => 'required|array',
             'id_barang.*' => 'required|exists:tbl_barang,id_barang',
 
-            'stok_fisik' => 'required|array',
-            'stok_fisik.*' => 'required|integer|min:0',
+            'stok_toko' => 'required|array',
+            'stok_toko.*' => 'required|integer|min:0',
 
         ], [
             'id_barang.required' => 'Data barang wajib ada.',
@@ -86,11 +86,11 @@ class StockOpnameController extends Controller
             'id_barang.*.required' => 'Barang wajib dipilih.',
             'id_barang.*.exists' => 'Barang tidak ditemukan.',
 
-            'stok_fisik.required' => 'Stok fisik wajib diisi.',
-            'stok_fisik.array' => 'Format stok fisik tidak valid.',
-            'stok_fisik.*.required' => 'Stok fisik wajib diisi.',
-            'stok_fisik.*.integer' => 'Stok fisik harus berupa angka.',
-            'stok_fisik.*.min' => 'Stok fisik tidak boleh negatif.',
+            'stok_toko.required' => 'Stok toko wajib diisi.',
+            'stok_toko.array' => 'Format stok toko tidak valid.',
+            'stok_toko.*.required' => 'Stok toko wajib diisi.',
+            'stok_toko.*.integer' => 'Stok toko harus berupa angka.',
+            'stok_toko.*.min' => 'Stok toko tidak boleh negatif.',
 
         ]);
 
@@ -187,9 +187,9 @@ class StockOpnameController extends Controller
 
                 $stokSistem = (int) $barang->jumlah_barang;
 
-                $stokFisik = (int) $request->stok_fisik[$index];
+                $stokToko = (int) $request->stok_toko[$index];
 
-                $selisih = $stokFisik - $stokSistem;
+                $selisih = $stokToko - $stokSistem;
 
 
                 /*
@@ -222,7 +222,7 @@ class StockOpnameController extends Controller
 
                     'stok_sistem' => $stokSistem,
 
-                    'stok_fisik' => $stokFisik,
+                    'stok_toko' => $stokToko,
 
                     'selisih' => $selisih,
                 ]);
@@ -246,7 +246,7 @@ class StockOpnameController extends Controller
                 |--------------------------------------------------------------------------
                 */
                 $barang->update([
-                    'jumlah_barang' => $stokFisik,
+                    'jumlah_barang' => $stokToko,
                 ]);
 
 
@@ -274,9 +274,9 @@ class StockOpnameController extends Controller
 
                     'jumlah_keluar' => $selisih < 0 ? abs($selisih) : 0,
 
-                    'jumlah_sisa' => $stokFisik,
+                    'jumlah_sisa' => $stokToko,
 
-                    'jumlah_barang' => $stokFisik,
+                    'jumlah_barang' => $stokToko,
                 ]);
             }
 

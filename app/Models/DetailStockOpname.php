@@ -22,7 +22,7 @@ class DetailStockOpname extends Model
         'id_stock_opname',
         'id_barang',
         'stok_sistem',
-        'stok_fisik',
+        'stok_toko',
         'selisih',
     ];
 

@@ -30,10 +30,15 @@
 
                     <h3 class="card-title">
                         <i class="fas fa-exclamation-triangle"></i>
-                        Peringatan Stok Menipis
+                        Peringatan Stok Menipis / Habis
                     </h3>
 
                     <div class="card-tools">
+
+                        <span class="badge badge-light mr-2">
+                            {{ $totalPerluRestock }} Barang
+                        </span>
+
                         <button type="button"
                                 class="btn btn-tool"
                                 data-card-widget="collapse">
@@ -41,19 +46,21 @@
                             <i class="fas fa-plus"></i>
 
                         </button>
+
                     </div>
 
                 </div>
 
                 <div class="card-body p-0">
 
-                    <div class="table-responsive">
+                    <div class="table-responsive p-3">
 
-                        <table class="table table-hover mb-0">
+                        <table id="tablePeringatanStok"
+                            class="table table-bordered table-hover mb-0">
 
                             <thead>
                                 <tr>
-                                    <th>No</th>
+                                    <th width="5%">No</th>
                                     <th>Nama Barang</th>
                                     <th>Kategori</th>
                                     <th>Stok Sekarang</th>
@@ -311,6 +318,17 @@
 <script>
 $(function () {
 
+    $('#tablePeringatanStok').DataTable({
+        responsive: true,
+        autoWidth: false,
+        pageLength: 5,
+        lengthChange: false,
+        searching: false,
+        ordering: false,
+        info: true,
+    });
+
+
     $('#tableBarang').DataTable({
         responsive: true,
         autoWidth: false,
@@ -320,3 +338,4 @@ $(function () {
 </script>
 
 @endpush
+

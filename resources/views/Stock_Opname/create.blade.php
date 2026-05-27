@@ -31,7 +31,7 @@
         <div class="card-header">
 
             <h3 class="card-title">
-                Mode Stock Opname
+                Stock Opname
             </h3>
 
         </div>
@@ -40,7 +40,7 @@
 
             @if($modeStockOpname)
 
-                <div class="alert alert-danger mb-3">
+                <div class="alert alert-warning mb-3">
 
                     <i class="fas fa-exclamation-triangle"></i>
 
@@ -112,8 +112,7 @@
 
             <div class="card-body">
 
-                <table id="tableStockOpname"
-                       class="table table-bordered table-striped">
+                <table id="example1" class="table table-bordered table-striped">
 
                     <thead>
 
@@ -127,7 +126,7 @@
 
                             <th>Stok Sistem</th>
 
-                            <th>Stok Fisik</th>
+                            <th>Stok Toko</th>
 
                             <th>Selisih</th>
 
@@ -166,9 +165,9 @@
 
                                 <td>
                                     <input type="number"
-                                           name="stok_fisik[]"
-                                           class="form-control stok-fisik"
-                                           value="{{ old('stok_fisik.' . $loop->index, $item->jumlah_barang) }}"
+                                           name="stok_toko[]"
+                                           class="form-control stok-toko"
+                                           value="{{ old('stok_toko.' . $loop->index, $item->jumlah_barang) }}"
                                            min="0"
                                            required
                                            {{ !$modeStockOpname ? 'readonly' : '' }}>
@@ -224,11 +223,11 @@ function hitungSelisih(row)
         row.find('.stok-sistem').val()
     ) || 0;
 
-    let stokFisik = parseInt(
-        row.find('.stok-fisik').val()
+    let stokToko = parseInt(
+        row.find('.stok-toko').val()
     ) || 0;
 
-    let selisih = stokFisik - stokSistem;
+    let selisih = stokToko - stokSistem;
 
     row.find('.selisih').val(selisih);
 
@@ -252,11 +251,11 @@ function hitungSelisih(row)
 }
 
 
-$(document).on('input', '.stok-fisik', function(){
+$(document).on('input', '.stok-toko', function(){
 
     if(parseInt($(this).val()) < 0)
     {
-        alert('Stok fisik tidak boleh negatif');
+        alert('Stok toko tidak boleh negatif');
 
         $(this).val(0);
     }
@@ -267,20 +266,21 @@ $(document).on('input', '.stok-fisik', function(){
 });
 
 
-$(document).ready(function(){
+$(function () {
 
-    $('#tableStockOpname').DataTable({
+    $("#example1").DataTable({
         responsive: true,
         autoWidth: false,
-        paging: false,
     });
 
-    $('.stok-fisik').each(function(){
+
+    $('.stok-toko').each(function(){
 
         let row = $(this).closest('tr');
 
         hitungSelisih(row);
     });
+
 });
 
 </script>
