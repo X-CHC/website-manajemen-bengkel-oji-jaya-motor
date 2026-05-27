@@ -38,6 +38,8 @@
 
                         <th>Bukti Bayar</th>
 
+                        <th>Nota Supplier</th>
+
                     </tr>
 
                 </thead>
@@ -86,11 +88,47 @@
                             @if($item->bukti_bayar)
 
                                 <a href="{{ asset('assets/bukti_bayar/' . $item->bukti_bayar) }}"
-                                target="_blank"
-                                class="btn btn-secondary btn-sm">
+                                   target="_blank"
+                                   class="btn btn-secondary btn-sm">
 
                                     <i class="fas fa-image"></i>
                                     Lihat Bukti
+
+                                </a>
+
+                            @else
+
+                                <span class="badge badge-secondary">
+                                    Tidak ada
+                                </span>
+
+                            @endif
+
+                        </td>
+
+                        <td>
+
+                            @if($item->nota_supplier)
+
+                                @php
+                                    $extNota = strtolower(pathinfo($item->nota_supplier, PATHINFO_EXTENSION));
+                                @endphp
+
+                                <a href="{{ asset('assets/nota_supplier/' . $item->nota_supplier) }}"
+                                   target="_blank"
+                                   class="btn btn-secondary btn-sm">
+
+                                    @if($extNota == 'pdf')
+
+                                        <i class="fas fa-file-pdf"></i>
+                                        Lihat Nota
+
+                                    @else
+
+                                        <i class="fas fa-image"></i>
+                                        Lihat Nota
+
+                                    @endif
 
                                 </a>
 
@@ -190,6 +228,7 @@
 $(function(){
 
     $('#tableBarangMasuk').DataTable();
+
 });
 
 

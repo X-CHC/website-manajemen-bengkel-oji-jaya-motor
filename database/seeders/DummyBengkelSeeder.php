@@ -234,7 +234,7 @@ class DummyBengkelSeeder extends Seeder
                 'harga_beli' => 15000,
                 'harga_jual' => 20000,
                 'jumlah_barang' => $stokAwal['BRG003'],
-                'alert_jumlah_barang' => 20,
+                'alert_jumlah_barang' => 10,
                 'created_at' => $now,
                 'updated_at' => $now,
             ],
@@ -555,9 +555,9 @@ class DummyBengkelSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         $targetStokAkhir = [
-            'BRG001' => 0,
+            'BRG001' => 2,
             'BRG002' => 0,
-            'BRG003' => 0,
+            'BRG003' => 15,
             'BRG004' => 0,
             'BRG005' => 3,
             'BRG006' => 2,

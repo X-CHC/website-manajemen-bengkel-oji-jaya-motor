@@ -1,22 +1,131 @@
 /*
 |--------------------------------------------------------------------------
-| FORMAT RUPIAH
+| FORMAT RUPIAH UNTUK TAMPILAN READONLY
 |--------------------------------------------------------------------------
 */
 function formatRupiah(angka)
 {
+    angka = parseInt(angka) || 0;
+
     return new Intl.NumberFormat('id-ID').format(angka);
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| PARSE RUPIAH
+| AMBIL ANGKA DARI INPUT
+|--------------------------------------------------------------------------
+| Jika Inputmask aktif, ambil unmaskedvalue.
+| Jika Inputmask tidak aktif, fallback ambil angka manual.
 |--------------------------------------------------------------------------
 */
-function parseRupiah(angka)
+function getAngka(element)
 {
-    return angka.replace(/\./g, '');
+    if(
+        typeof $.fn.inputmask !== 'undefined' &&
+        element.data('_inputmask')
+    )
+    {
+        let value = element.inputmask('unmaskedvalue');
+
+        return parseInt(value) || 0;
+    }
+
+    let value = element.val() || '0';
+
+    value = value.toString().replace(/[^0-9]/g, '');
+
+    return parseInt(value) || 0;
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| AKTIFKAN INPUTMASK RUPIAH
+|--------------------------------------------------------------------------
+*/
+function initRupiahMask()
+{
+    if(typeof $.fn.inputmask === 'undefined')
+    {
+        console.log('Inputmask belum ter-load. Cek path script inputmask di layout.');
+
+        return;
+    }
+
+    $('.harga-beli-view').inputmask({
+        alias: 'numeric',
+        groupSeparator: '.',
+        radixPoint: ',',
+        digits: 0,
+        autoGroup: true,
+        rightAlign: false,
+        allowMinus: false,
+        min: 0,
+        placeholder: '0',
+        removeMaskOnSubmit: false
+    });
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| BLOK HURUF DI INPUT ANGKA
+|--------------------------------------------------------------------------
+*/
+function blokHurufInputAngka()
+{
+    $(document).on(
+        'keydown',
+        '.jumlah-masuk, .harga-beli-view',
+        function(e)
+        {
+            let tombolDilarang = [
+                'e',
+                'E',
+                '+',
+                '-',
+                ',',
+                '.'
+            ];
+
+            if(tombolDilarang.includes(e.key))
+            {
+                e.preventDefault();
+            }
+        }
+    );
+
+    $(document).on(
+        'input',
+        '.jumlah-masuk',
+        function()
+        {
+            let angka = $(this)
+                .val()
+                .toString()
+                .replace(/[^0-9]/g, '');
+
+            $(this).val(angka);
+        }
+    );
+
+    $(document).on(
+        'input',
+        '.harga-beli-view',
+        function()
+        {
+            if(typeof $.fn.inputmask === 'undefined')
+            {
+                let angka = $(this)
+                    .val()
+                    .toString()
+                    .replace(/[^0-9]/g, '');
+
+                $(this).val(formatRupiah(angka));
+            }
+        }
+    );
 }
 
 
@@ -43,39 +152,34 @@ function hitungTotal()
 
 /*
 |--------------------------------------------------------------------------
-| UPDATE SUBTOTAL
+| HITUNG SUBTOTAL PER BARANG
 |--------------------------------------------------------------------------
 */
-$(document).on('keyup change', '.jumlah-masuk, .harga-beli-view', function(){
+function hitungSubtotal(parent)
+{
+    let hargaInput = parent.find('.harga-beli-view');
 
-    let parent = $(this).closest('.barang-item');
-
-    /*
-    |--------------------------------------------------------------------------
-    | FORMAT HARGA BELI
-    |--------------------------------------------------------------------------
-    */
-    let hargaInput =
-        parent.find('.harga-beli-view');
-
-    let hargaAngka =
-        parseRupiah(hargaInput.val()) || 0;
-
-    hargaInput.val(
-        formatRupiah(hargaAngka)
-    );
+    let hargaAngka = getAngka(hargaInput);
 
     parent.find('.harga-beli')
           .val(hargaAngka);
 
-    /*
-    |--------------------------------------------------------------------------
-    | HITUNG SUBTOTAL
-    |--------------------------------------------------------------------------
-    */
     let qty = parseInt(
         parent.find('.jumlah-masuk').val()
     ) || 0;
+
+    let max = parseInt(
+        parent.find('.jumlah-masuk').attr('max')
+    ) || 0;
+
+    if(qty > max)
+    {
+        alert('Jumlah masuk tidak boleh melebihi jumlah PO');
+
+        qty = max;
+
+        parent.find('.jumlah-masuk').val(max);
+    }
 
     let subtotal = qty * hargaAngka;
 
@@ -86,6 +190,19 @@ $(document).on('keyup change', '.jumlah-masuk, .harga-beli-view', function(){
           .val(subtotal);
 
     hitungTotal();
+}
+
+
+/*
+|--------------------------------------------------------------------------
+| UPDATE SUBTOTAL
+|--------------------------------------------------------------------------
+*/
+$(document).on('keyup change input', '.jumlah-masuk, .harga-beli-view', function(){
+
+    let parent = $(this).closest('.barang-item');
+
+    hitungSubtotal(parent);
 });
 
 
@@ -105,11 +222,6 @@ $('#id_po').change(function(){
 
     let html = '';
 
-    /*
-    |--------------------------------------------------------------------------
-    | JIKA PO BELUM DIPILIH
-    |--------------------------------------------------------------------------
-    */
     if(!selectedPo)
     {
         $('#detailBarang').html(`
@@ -117,6 +229,10 @@ $('#id_po').change(function(){
                 Pilih PO terlebih dahulu
             </div>
         `);
+
+        $('#total_bayar').val(0);
+
+        $('#total_bayar_view').val('0');
 
         return;
     }
@@ -180,6 +296,8 @@ $('#id_po').change(function(){
                            min="1"
                            max="${detail.jumlah_po}"
                            value="${detail.jumlah_po}"
+                           inputmode="numeric"
+                           pattern="[0-9]*"
                            required>
 
                 </div>
@@ -190,12 +308,13 @@ $('#id_po').change(function(){
                     <label>Harga Beli</label>
 
                     <input type="text"
-                        class="form-control harga-beli-view"
-                        required>
+                           class="form-control harga-beli-view"
+                           inputmode="numeric"
+                           required>
 
                     <input type="hidden"
-                        name="harga_beli[]"
-                        class="harga-beli">
+                           name="harga_beli[]"
+                           class="harga-beli">
 
                 </div>
 
@@ -206,11 +325,13 @@ $('#id_po').change(function(){
 
                     <input type="text"
                            class="form-control subtotal-view"
+                           value="0"
                            readonly>
 
                     <input type="hidden"
                            class="subtotal-input"
-                           name="sub_total[]">
+                           name="sub_total[]"
+                           value="0">
 
                 </div>
 
@@ -224,8 +345,35 @@ $('#id_po').change(function(){
 
     /*
     |--------------------------------------------------------------------------
-    | TRIGGER HITUNG PERTAMA
+    | AKTIFKAN INPUTMASK SETELAH HTML BARU DIBUAT
     |--------------------------------------------------------------------------
     */
-    $('.harga-beli').trigger('keyup');
+    initRupiahMask();
+
+    /*
+    |--------------------------------------------------------------------------
+    | HITUNG AWAL
+    |--------------------------------------------------------------------------
+    */
+    $('.barang-item').each(function(){
+
+        let parent = $(this);
+
+        hitungSubtotal(parent);
+    });
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| INIT AWAL
+|--------------------------------------------------------------------------
+*/
+$(document).ready(function(){
+
+    blokHurufInputAngka();
+
+    initRupiahMask();
+
+    hitungTotal();
 });

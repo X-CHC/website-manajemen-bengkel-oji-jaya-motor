@@ -1,40 +1,70 @@
-function formatRupiah(angka)
-{
-    return angka
-        .replace(/\D/g, '')
-        .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-}
-
-
 /*
 |--------------------------------------------------------------------------
-| HARGA BELI
+| AKTIFKAN INPUTMASK RUPIAH
 |--------------------------------------------------------------------------
 */
-const hargaBeli =
-    document.getElementById('harga_beli');
-
-if(hargaBeli)
+function initRupiahMask()
 {
-    hargaBeli.addEventListener('keyup', function(){
+    if(typeof $.fn.inputmask === 'undefined')
+    {
+        console.log('Inputmask belum ter-load. Cek path inputmask di layout.');
 
-        this.value = formatRupiah(this.value);
+        return;
+    }
+
+    $('#harga_beli, #harga_jual').inputmask({
+        alias: 'numeric',
+        groupSeparator: '.',
+        radixPoint: ',',
+        digits: 0,
+        autoGroup: true,
+        rightAlign: false,
+        allowMinus: false,
+        min: 0,
+        placeholder: '0',
+        removeMaskOnSubmit: false
     });
 }
 
 
 /*
 |--------------------------------------------------------------------------
-| HARGA JUAL
+| BLOK INPUT HURUF
+|--------------------------------------------------------------------------
+| Supaya input harga tidak bisa diisi huruf, e, +, -, koma, titik manual.
 |--------------------------------------------------------------------------
 */
-const hargaJual =
-    document.getElementById('harga_jual');
-
-if(hargaJual)
+function blokHurufHarga()
 {
-    hargaJual.addEventListener('keyup', function(){
+    $(document).on('keydown', '#harga_beli, #harga_jual', function(e){
 
-        this.value = formatRupiah(this.value);
+        let tombolDilarang = [
+            'e',
+            'E',
+            '+',
+            '-',
+            ',',
+            '.'
+        ];
+
+        if(tombolDilarang.includes(e.key))
+        {
+            e.preventDefault();
+        }
+
     });
 }
+
+
+/*
+|--------------------------------------------------------------------------
+| INIT
+|--------------------------------------------------------------------------
+*/
+$(document).ready(function(){
+
+    initRupiahMask();
+
+    blokHurufHarga();
+
+});

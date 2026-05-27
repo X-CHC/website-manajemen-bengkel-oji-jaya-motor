@@ -21,7 +21,8 @@ class BarangMasuk extends Model
         'id_po',
         'tanggal_masuk',
         'total_bayar',
-        'bukti_bayar'
+        'bukti_bayar',
+        'nota_supplier'
     ];
 
     public function po()

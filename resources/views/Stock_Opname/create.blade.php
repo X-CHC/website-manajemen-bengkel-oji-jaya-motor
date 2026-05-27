@@ -112,7 +112,7 @@
 
             <div class="card-body">
 
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="tableStockOpname" class="table table-bordered table-striped">
 
                     <thead>
 
@@ -268,7 +268,7 @@ $(document).on('input', '.stok-toko', function(){
 
 $(function () {
 
-    $("#example1").DataTable({
+    $("#tableStockOpname").DataTable({
         responsive: true,
         autoWidth: false,
     });

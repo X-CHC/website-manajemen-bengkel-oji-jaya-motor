@@ -13,7 +13,7 @@
             </div>
 
             <div class="card-body">
-                <table id="example1" class="table table-bordered table-striped">
+                <table id="tableKategori" class="table table-bordered table-striped">
 
                     <thead>
                         <tr>
@@ -87,7 +87,7 @@
 
 <script>
 $(function () {
-    $("#example1").DataTable({
+    $("#tableKategori").DataTable({
         responsive: true,
         autoWidth: false,
     });

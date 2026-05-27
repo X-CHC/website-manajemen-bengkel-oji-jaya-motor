@@ -78,6 +78,8 @@ class BarangMasukController extends Controller
             'jumlah_barang.*' => 'required|integer|min:1',
 
             'bukti_bayar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+
+            'nota_supplier' => 'nullable|mimes:jpg,jpeg,png,pdf|max:5120',
         ],
 
         [
@@ -112,6 +114,11 @@ class BarangMasukController extends Controller
         'bukti_bayar.mimes' => 'Format gambar harus JPG, JPEG, atau PNG',
 
         'bukti_bayar.max' => 'Ukuran gambar maksimal 2MB',
+
+        // NOTA SUPPLIER
+        'nota_supplier.mimes' => 'Format nota supplier harus JPG, JPEG, PNG, atau PDF',
+
+        'nota_supplier.max' => 'Ukuran nota supplier maksimal 5MB',
     ]
 );
 
@@ -155,7 +162,6 @@ class BarangMasukController extends Controller
 
             // UPLOAD BUKTI BAYAR
 
-
             $namaFile = null;
 
             if($request->hasFile('bukti_bayar'))
@@ -170,6 +176,26 @@ class BarangMasukController extends Controller
                 $file->move(
                     public_path('assets/bukti_bayar'),
                     $namaFile
+                );
+            }
+
+
+            // UPLOAD NOTA SUPPLIER
+
+            $namaNotaSupplier = null;
+
+            if($request->hasFile('nota_supplier'))
+            {
+                $fileNota = $request->file('nota_supplier');
+
+                $namaNotaSupplier =
+                    time() .
+                    '_' .
+                    $fileNota->getClientOriginalName();
+
+                $fileNota->move(
+                    public_path('assets/nota_supplier'),
+                    $namaNotaSupplier
                 );
             }
 
@@ -189,6 +215,8 @@ class BarangMasukController extends Controller
                 'total_bayar' => $request->total_bayar,
 
                 'bukti_bayar' => $namaFile,
+
+                'nota_supplier' => $namaNotaSupplier,
             ]);
 
 

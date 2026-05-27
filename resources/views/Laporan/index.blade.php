@@ -48,10 +48,6 @@
                             Barang Masuk
                         </option>
 
-                        <option value="history_stok">
-                            History Stok
-                        </option>
-
                     </select>
 
                     <small class="text-muted">

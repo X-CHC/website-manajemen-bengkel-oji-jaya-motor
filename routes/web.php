@@ -61,9 +61,7 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //BARANG
     //Admin & Gudang
-    Route::middleware('role:admin,gudang')
-        ->prefix('barang')
-        ->name('barang.')
+    Route::middleware('role:admin,gudang')->prefix('barang')->name('barang.')
         ->group(function () {
 
             Route::get('/index', [BarangController::class, 'index'])
@@ -89,9 +87,7 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //KATEGORI
     //Admin & Gudang
-    Route::middleware('role:admin,gudang')
-        ->prefix('kategori')
-        ->name('kategori.')
+    Route::middleware('role:admin,gudang')->prefix('kategori')->name('kategori.')
         ->group(function () {
 
             Route::get('/index', [KategoriController::class, 'index'])
@@ -117,9 +113,7 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //PELANGGAN
     //Admin & Kasir
-    Route::middleware('role:admin,kasir')
-        ->prefix('pelanggan')
-        ->name('pelanggan.')
+    Route::middleware('role:admin,kasir')->prefix('pelanggan')->name('pelanggan.')
         ->group(function () {
 
             Route::get('/index', [PelangganController::class, 'index'])
@@ -145,9 +139,7 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //TRANSAKSI
     //Admin & Kasir
-    Route::middleware('role:admin,kasir')
-        ->prefix('transaksi')
-        ->name('transaksi.')
+    Route::middleware('role:admin,kasir')->prefix('transaksi')->name('transaksi.')
         ->group(function () {
 
             Route::get('/index', [TransaksiController::class, 'index'])
@@ -167,9 +159,7 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //PO
     //Admin & Gudang
-    Route::middleware('role:admin,gudang')
-        ->prefix('po')
-        ->name('po.')
+    Route::middleware('role:admin,gudang')->prefix('po')->name('po.')
         ->group(function () {
 
             Route::get('/index', [PoController::class, 'index'])
@@ -195,9 +185,7 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //BARANG MASUK
     //Admin & Gudang
-    Route::middleware('role:admin,gudang')
-        ->prefix('barang-masuk')
-        ->name('barang-masuk.')
+    Route::middleware('role:admin,gudang') ->prefix('barang-masuk')->name('barang-masuk.')
         ->group(function () {
 
             Route::get('/index', [BarangMasukController::class, 'index'])
@@ -223,23 +211,21 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //HISTORY STOK
     //Admin & Gudang
-    Route::middleware('role:admin,gudang')
-        ->prefix('history')
-        ->name('history.')
+    Route::middleware('role:admin,gudang')->prefix('history')->name('history.')
         ->group(function () {
 
             Route::get('/index', [HistoryStokController::class, 'index'])
                 ->name('index');
+            Route::get('/export-excel', [HistoryStokController::class, 'exportExcel'])
+                ->name('export-excel');
         });
 
 
 
     //LAPORAN
     //Admin & Owner
-    Route::middleware('role:admin,owner')
-        ->prefix('laporan')
-        ->name('laporan.')
-        ->group(function () {
+    Route::middleware('role:admin,owner')->prefix('laporan')->name('laporan.')
+    ->group(function () {
 
             Route::get('/index', [LaporanController::class, 'index'])
                 ->name('index');
@@ -254,9 +240,7 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //STOCK OPNAME
     //Admin & Gudang
-    Route::middleware(['auth', 'role:admin,gudang'])
-    ->prefix('stock-opname')
-    ->name('stock-opname.')
+    Route::middleware(['auth', 'role:admin,gudang'])->prefix('stock-opname')->name('stock-opname.')
     ->group(function () {
 
         Route::get('/create', [StockOpnameController::class, 'create'])
@@ -274,7 +258,8 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
 
     //USER
     //Admin
-    Route::middleware(['auth', 'role:admin'])->prefix('user')->name('user.')->group(function () {
+    Route::middleware(['auth', 'role:admin'])->prefix('user')->name('user.')
+    ->group(function () {
 
         Route::get('/index', [UserController::class, 'index'])
             ->name('index');

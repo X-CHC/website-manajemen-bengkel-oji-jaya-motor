@@ -156,9 +156,30 @@
                             <input type="file"
                                 name="bukti_bayar"
                                 class="form-control"
+                                accept="image/*"
                                 required>
 
+                            <small class="text-muted">
+                                Format: JPG, JPEG, PNG. Maksimal 2MB.
+                            </small>
+
                         </div>
+
+                        <div class="form-group">
+
+                            <label>Nota Supplier</label>
+
+                            <input type="file"
+                                name="nota_supplier"
+                                class="form-control"
+                                accept="image/*,.pdf">
+
+                            <small class="text-muted">
+                                Format: JPG, JPEG, PNG, atau PDF. Maksimal 5MB.
+                            </small>
+
+                        </div>
+
                         <div class="form-group">
 
                             <label>Total Bayar</label>
@@ -166,11 +187,13 @@
                             <input type="text"
                                 id="total_bayar_view"
                                 class="form-control"
+                                value="0"
                                 readonly>
 
                             <input type="hidden"
                                 name="total_bayar"
-                                id="total_bayar">
+                                id="total_bayar"
+                                value="0">
 
                         </div>
 

@@ -7,11 +7,19 @@
 
     <div class="card">
 
-        <div class="card-header">
+        <div class="card-header d-flex align-items-center">
 
             <h3 class="card-title">
                 History Stok Barang
             </h3>
+
+            <a href="{{ route('history.export-excel') }}"
+               class="btn btn-success btn-sm ml-auto">
+
+                <i class="fas fa-file-excel"></i>
+                Cetak Excel
+
+            </a>
 
         </div>
 
@@ -108,13 +116,17 @@
 
                         <td>
 
-                            @if($item->jumlah_masuk > 0)
+                            @if($item->jumlah_masuk > 0 && $item->jumlah_keluar == 0)
 
-                                Barang Masuk
+                                Barang Masuk / Penambahan Stok
+
+                            @elseif($item->jumlah_keluar > 0 && $item->jumlah_masuk == 0)
+
+                                Penjualan / Pengurangan Stok
 
                             @else
 
-                                Penjualan
+                                Stock Opname / Penyesuaian Stok
 
                             @endif
 
