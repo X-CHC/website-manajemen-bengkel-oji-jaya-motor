@@ -16,12 +16,14 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Middleware\CheckStockOpnameMode;
 
-
-
-//LOGIN / LOGOUT
-
-Route::get('/login', function () {return view('login');
-    })->name('login');
+/*
+|--------------------------------------------------------------------------
+| LOGIN / LOGOUT
+|--------------------------------------------------------------------------
+*/
+Route::get('/login', function () {
+    return view('login');
+})->name('login');
 
 Route::post('/login', [AuthController::class, 'login'])
     ->name('login.post');
@@ -30,218 +32,242 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
 
-
-//HALAMAN BEBAS
-
+/*
+|--------------------------------------------------------------------------
+| HALAMAN BEBAS
+|--------------------------------------------------------------------------
+*/
 Route::get('/', function () {
     return view('welcome');
 });
 
 
+/*
+|--------------------------------------------------------------------------
+| ROUTE YANG BUTUH LOGIN + AKSES MENU DATABASE
+|--------------------------------------------------------------------------
+| Akses tidak lagi hardcode berdasarkan role di route.
+| Semua akses dicek lewat tbl_menu, tbl_role_menu, dan tbl_user_menu.
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(function () {
 
-//SEMUA ROUTE YANG BUTUH LOGIN
+    /*
+    |--------------------------------------------------------------------------
+    | DASHBOARD
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('dashboard')->name('dashboard.')->group(function () {
 
-Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
+        Route::get('/', [DashboardController::class, 'index'])
+            ->middleware('akses.menu')
+            ->name('index');
 
+        Route::get('/2', [DashboardController::class, 'index2'])
+            ->middleware('akses.menu:dashboard.index')
+            ->name('index2');
 
-    //DASHBOARD
-    //Semua role yang login boleh masuk dashboard
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard.index');
+        Route::get('/grafik', [DashboardController::class, 'grafikPendapatan2'])
+            ->middleware('akses.menu:dashboard.index')
+            ->name('grafik');
+    });
 
-    // dashboard 2
-    Route::get('/dashboard2', [DashboardController::class, 'index2'])
-        ->name('dashboard.index2');
 
-    // data grafik pendapatan dashboard tanpa refresh
-    Route::get('/dashboard/grafik', [DashboardController::class, 'grafikPendapatan2'])
-        ->name('dashboard.grafik');
+    /*
+    |--------------------------------------------------------------------------
+    | BARANG
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('barang')->name('barang.')->group(function () {
 
+        Route::get('/index', [BarangController::class, 'index'])
+            ->name('index');
 
+        Route::get('/create', [BarangController::class, 'create'])
+            ->name('create');
 
-    //BARANG
-    //Admin & Gudang
-    Route::middleware('role:admin,gudang')->prefix('barang')->name('barang.')
-        ->group(function () {
+        Route::post('/store', [BarangController::class, 'store'])
+            ->name('store');
 
-            Route::get('/index', [BarangController::class, 'index'])
-                ->name('index');
+        Route::get('/{id}/edit', [BarangController::class, 'edit'])
+            ->name('edit');
 
-            Route::get('/create', [BarangController::class, 'create'])
-                ->name('create');
+        Route::put('/{id}', [BarangController::class, 'update'])
+            ->name('update');
 
-            Route::post('/store', [BarangController::class, 'store'])
-                ->name('store');
+        Route::delete('/{id}', [BarangController::class, 'destroy'])
+            ->name('destroy');
+    });
 
-            Route::get('/{id}/edit', [BarangController::class, 'edit'])
-                ->name('edit');
 
-            Route::put('/{id}', [BarangController::class, 'update'])
-                ->name('update');
+    /*
+    |--------------------------------------------------------------------------
+    | KATEGORI
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('kategori')->name('kategori.')->group(function () {
 
-            Route::delete('/{id}', [BarangController::class, 'destroy'])
-                ->name('destroy');
-        });
+        Route::get('/index', [KategoriController::class, 'index'])
+            ->name('index');
 
+        Route::get('/create', [KategoriController::class, 'create'])
+            ->name('create');
 
+        Route::post('/store', [KategoriController::class, 'store'])
+            ->name('store');
 
-    //KATEGORI
-    //Admin & Gudang
-    Route::middleware('role:admin,gudang')->prefix('kategori')->name('kategori.')
-        ->group(function () {
+        Route::get('/{id}/edit', [KategoriController::class, 'edit'])
+            ->name('edit');
 
-            Route::get('/index', [KategoriController::class, 'index'])
-                ->name('index');
+        Route::put('/{id}', [KategoriController::class, 'update'])
+            ->name('update');
 
-            Route::get('/create', [KategoriController::class, 'create'])
-                ->name('create');
+        Route::delete('/{id}', [KategoriController::class, 'destroy'])
+            ->name('destroy');
+    });
 
-            Route::post('/store', [KategoriController::class, 'store'])
-                ->name('store');
 
-            Route::get('/{id}/edit', [KategoriController::class, 'edit'])
-                ->name('edit');
+    /*
+    |--------------------------------------------------------------------------
+    | PELANGGAN
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
 
-            Route::put('/{id}', [KategoriController::class, 'update'])
-                ->name('update');
+        Route::get('/index', [PelangganController::class, 'index'])
+            ->name('index');
 
-            Route::delete('/{id}', [KategoriController::class, 'destroy'])
-                ->name('destroy');
-        });
+        Route::get('/create', [PelangganController::class, 'create'])
+            ->name('create');
 
+        Route::post('/store', [PelangganController::class, 'store'])
+            ->name('store');
 
+        Route::get('/{id}/edit', [PelangganController::class, 'edit'])
+            ->name('edit');
 
-    //PELANGGAN
-    //Admin & Kasir
-    Route::middleware('role:admin,kasir')->prefix('pelanggan')->name('pelanggan.')
-        ->group(function () {
+        Route::put('/{id}', [PelangganController::class, 'update'])
+            ->name('update');
 
-            Route::get('/index', [PelangganController::class, 'index'])
-                ->name('index');
+        Route::delete('/{id}', [PelangganController::class, 'destroy'])
+            ->name('destroy');
+    });
 
-            Route::get('/create', [PelangganController::class, 'create'])
-                ->name('create');
 
-            Route::post('/store', [PelangganController::class, 'store'])
-                ->name('store');
+    /*
+    |--------------------------------------------------------------------------
+    | TRANSAKSI
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('transaksi')->name('transaksi.')->group(function () {
 
-            Route::get('/{id}/edit', [PelangganController::class, 'edit'])
-                ->name('edit');
+        Route::get('/index', [TransaksiController::class, 'index'])
+            ->name('index');
 
-            Route::put('/{id}', [PelangganController::class, 'update'])
-                ->name('update');
+        Route::get('/create', [TransaksiController::class, 'create'])
+            ->name('create');
 
-            Route::delete('/{id}', [PelangganController::class, 'destroy'])
-                ->name('destroy');
-        });
+        Route::post('/store', [TransaksiController::class, 'store'])
+            ->name('store');
 
+        Route::get('/cetak/{id}', [TransaksiController::class, 'cetakNota'])
+            ->name('cetak');
+    });
 
 
-    //TRANSAKSI
-    //Admin & Kasir
-    Route::middleware('role:admin,kasir')->prefix('transaksi')->name('transaksi.')
-        ->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | PO
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('po')->name('po.')->group(function () {
 
-            Route::get('/index', [TransaksiController::class, 'index'])
-                ->name('index');
+        Route::get('/index', [PoController::class, 'index'])
+            ->name('index');
 
-            Route::get('/create', [TransaksiController::class, 'create'])
-                ->name('create');
+        Route::get('/create', [PoController::class, 'create'])
+            ->name('create');
 
-            Route::post('/store', [TransaksiController::class, 'store'])
-                ->name('store');
+        Route::post('/store', [PoController::class, 'store'])
+            ->name('store');
 
-            Route::get('/cetak/{id}', [TransaksiController::class, 'cetakNota'])
-                ->name('cetak');
-        });
+        Route::get('/{id}/edit', [PoController::class, 'edit'])
+            ->name('edit');
 
+        Route::put('/{id}', [PoController::class, 'update'])
+            ->name('update');
 
+        Route::delete('/{id}', [PoController::class, 'destroy'])
+            ->name('destroy');
+    });
 
-    //PO
-    //Admin & Gudang
-    Route::middleware('role:admin,gudang')->prefix('po')->name('po.')
-        ->group(function () {
 
-            Route::get('/index', [PoController::class, 'index'])
-                ->name('index');
+    /*
+    |--------------------------------------------------------------------------
+    | BARANG MASUK
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('barang-masuk')->name('barang-masuk.')->group(function () {
 
-            Route::get('/create', [PoController::class, 'create'])
-                ->name('create');
+        Route::get('/index', [BarangMasukController::class, 'index'])
+            ->name('index');
 
-            Route::post('/store', [PoController::class, 'store'])
-                ->name('store');
+        Route::get('/create', [BarangMasukController::class, 'create'])
+            ->name('create');
 
-            Route::get('/{id}/edit', [PoController::class, 'edit'])
-                ->name('edit');
+        Route::post('/store', [BarangMasukController::class, 'store'])
+            ->name('store');
 
-            Route::put('/{id}', [PoController::class, 'update'])
-                ->name('update');
+        Route::get('/{id}/edit', [BarangMasukController::class, 'edit'])
+            ->name('edit');
 
-            Route::delete('/{id}', [PoController::class, 'destroy'])
-                ->name('destroy');
-        });
+        Route::put('/{id}', [BarangMasukController::class, 'update'])
+            ->name('update');
 
+        Route::delete('/{id}', [BarangMasukController::class, 'destroy'])
+            ->name('destroy');
+    });
 
 
-    //BARANG MASUK
-    //Admin & Gudang
-    Route::middleware('role:admin,gudang') ->prefix('barang-masuk')->name('barang-masuk.')
-        ->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | HISTORY STOK
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('history')->name('history.')->group(function () {
 
-            Route::get('/index', [BarangMasukController::class, 'index'])
-                ->name('index');
+        Route::get('/index', [HistoryStokController::class, 'index'])
+            ->name('index');
 
-            Route::get('/create', [BarangMasukController::class, 'create'])
-                ->name('create');
+        Route::get('/export-excel', [HistoryStokController::class, 'exportExcel'])
+            ->name('export-excel');
+    });
 
-            Route::post('/store', [BarangMasukController::class, 'store'])
-                ->name('store');
 
-            Route::get('/{id}/edit', [BarangMasukController::class, 'edit'])
-                ->name('edit');
+    /*
+    |--------------------------------------------------------------------------
+    | LAPORAN
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('laporan')->name('laporan.')->group(function () {
 
-            Route::put('/{id}', [BarangMasukController::class, 'update'])
-                ->name('update');
+        Route::get('/index', [LaporanController::class, 'index'])
+            ->name('index');
 
-            Route::delete('/{id}', [BarangMasukController::class, 'destroy'])
-                ->name('destroy');
-        });
+        Route::post('/pdf', [LaporanController::class, 'exportPdf'])
+            ->name('pdf');
 
+        Route::post('/excel', [LaporanController::class, 'exportExcel'])
+            ->name('excel');
+    });
 
 
-    //HISTORY STOK
-    //Admin & Gudang
-    Route::middleware('role:admin,gudang')->prefix('history')->name('history.')
-        ->group(function () {
-
-            Route::get('/index', [HistoryStokController::class, 'index'])
-                ->name('index');
-            Route::get('/export-excel', [HistoryStokController::class, 'exportExcel'])
-                ->name('export-excel');
-        });
-
-
-
-    //LAPORAN
-    //Admin & Owner
-    Route::middleware('role:admin,owner')->prefix('laporan')->name('laporan.')
-    ->group(function () {
-
-            Route::get('/index', [LaporanController::class, 'index'])
-                ->name('index');
-
-            Route::post('/pdf', [LaporanController::class, 'exportPdf'])
-                ->name('pdf');
-
-            Route::post('/excel', [LaporanController::class, 'exportExcel'])
-                ->name('excel');
-        });
-
-
-    //STOCK OPNAME
-    //Admin & Gudang
-    Route::middleware(['auth', 'role:admin,gudang'])->prefix('stock-opname')->name('stock-opname.')
-    ->group(function () {
+    /*
+    |--------------------------------------------------------------------------
+    | STOCK OPNAME
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('stock-opname')->name('stock-opname.')->group(function () {
 
         Route::get('/create', [StockOpnameController::class, 'create'])
             ->name('create');
@@ -256,10 +282,13 @@ Route::middleware(['auth', CheckStockOpnameMode::class])->group(function () {
             ->name('mode-off');
     });
 
-    //USER
-    //Admin
-    Route::middleware(['auth', 'role:admin'])->prefix('user')->name('user.')
-    ->group(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | USER
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('user')->name('user.')->group(function () {
 
         Route::get('/index', [UserController::class, 'index'])
             ->name('index');

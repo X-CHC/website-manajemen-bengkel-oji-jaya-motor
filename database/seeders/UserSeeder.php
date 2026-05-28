@@ -47,6 +47,13 @@ class UserSeeder extends Seeder
                 'password' => Hash::make('123'),
                 'created_at' => Carbon::now(),
             ],
+            [
+                'id_user' => 'USR006',
+                'id_role' => 'RL0003',
+                'email' => 'owner2@gmail.com',
+                'password' => Hash::make('123'),
+                'created_at' => Carbon::now(),
+            ],
         ]);
     }
 }

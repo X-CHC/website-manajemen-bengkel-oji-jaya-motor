@@ -12,22 +12,79 @@
     </a>
 
     @php
-        $role = strtolower(auth()->user()->role->nama_role ?? '');
+        use App\Models\Menu;
+        use App\Models\UserMenu;
+        use App\Models\RoleMenu;
+        use Illuminate\Support\Facades\Auth;
+        use Illuminate\Support\Facades\Cache;
 
-        $modeStockOpname = \Illuminate\Support\Facades\Cache::get('stock_opname_mode', false);
+        $userLogin = Auth::user();
 
-        $isAdmin = $role === 'admin';
+        $modeStockOpname = Cache::get('stock_opname_mode', false);
 
-        $canDashboard = in_array($role, ['admin', 'owner']);
-        $canBarang = in_array($role, ['admin', 'gudang']);
-        $canKategori = in_array($role, ['admin', 'gudang']);
-        $canPelanggan = in_array($role, ['admin', 'kasir']);
-        $canTransaksi = in_array($role, ['admin', 'kasir']);
-        $canPo = in_array($role, ['admin', 'gudang']);
-        $canBarangMasuk = in_array($role, ['admin', 'gudang']);
-        $canHistory = in_array($role, ['admin', 'gudang']);
-        $canLaporan = in_array($role, ['admin', 'owner']);
-        $canStockOpname = in_array($role, ['admin', 'gudang']);
+        /*
+        |--------------------------------------------------------------------------
+        | HELPER CEK AKSES MENU
+        |--------------------------------------------------------------------------
+        | Cek akses khusus user dulu.
+        | Jika tidak ada, cek akses default role.
+        |--------------------------------------------------------------------------
+        */
+        function punyaAksesMenu($routeName, $userLogin)
+        {
+            $menu = Menu::where('route_name', $routeName)->first();
+
+            if (!$menu) {
+                return false;
+            }
+
+            $aksesUser = UserMenu::where('id_user', $userLogin->id_user)
+                ->where('id_menu', $menu->id_menu)
+                ->first();
+
+            if ($aksesUser) {
+                return (bool) $aksesUser->can_access;
+            }
+
+            return RoleMenu::where('id_role', $userLogin->id_role)
+                ->where('id_menu', $menu->id_menu)
+                ->where('can_access', true)
+                ->exists();
+        }
+
+        /*
+        |--------------------------------------------------------------------------
+        | AKSES PARENT MENU
+        |--------------------------------------------------------------------------
+        */
+        $canDashboard = punyaAksesMenu('dashboard.index', $userLogin);
+
+        $canBarang = punyaAksesMenu('barang.index', $userLogin)
+            || punyaAksesMenu('barang.create', $userLogin);
+
+        $canKategori = punyaAksesMenu('kategori.index', $userLogin)
+            || punyaAksesMenu('kategori.create', $userLogin);
+
+        $canPelanggan = punyaAksesMenu('pelanggan.index', $userLogin)
+            || punyaAksesMenu('pelanggan.create', $userLogin);
+
+        $canTransaksi = punyaAksesMenu('transaksi.index', $userLogin)
+            || punyaAksesMenu('transaksi.create', $userLogin);
+
+        $canPo = punyaAksesMenu('po.index', $userLogin)
+            || punyaAksesMenu('po.create', $userLogin);
+
+        $canBarangMasuk = punyaAksesMenu('barang-masuk.index', $userLogin)
+            || punyaAksesMenu('barang-masuk.create', $userLogin);
+
+        $canHistory = punyaAksesMenu('history.index', $userLogin);
+
+        $canLaporan = punyaAksesMenu('laporan.index', $userLogin);
+
+        $canStockOpname = punyaAksesMenu('stock-opname.create', $userLogin);
+
+        $canUser = punyaAksesMenu('user.index', $userLogin)
+            || punyaAksesMenu('user.create', $userLogin);
     @endphp
 
     <div class="sidebar">
@@ -45,27 +102,29 @@
 
                 {{-- Dashboard --}}
                 @if($canDashboard)
-                <li class="nav-item">
-                    <a href="{{ route('dashboard.index') }}"
-                       class="nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
 
-                        <i class="nav-icon fas fa-home"></i>
+                    @if(punyaAksesMenu('dashboard.index', $userLogin))
+                        <li class="nav-item">
+                            <a href="{{ route('dashboard.index') }}"
+                            class="nav-link {{ request()->routeIs('dashboard.index') ? 'active' : '' }}">
 
-                        <p>Dashboard</p>
+                                <i class="nav-icon fas fa-home"></i>
+                                <p>Dashboard</p>
 
-                    </a>
-                </li>
+                            </a>
+                        </li>
+                    @endif
 
-                <li class="nav-item">
-                    <a href="{{ route('dashboard.index2') }}"
-                       class="nav-link {{ request()->routeIs('dashboard.index2') ? 'active' : '' }}">
+                        <li class="nav-item">
+                            <a href="{{ route('dashboard.index2') }}"
+                            class="nav-link {{ request()->routeIs('dashboard.index2') ? 'active' : '' }}">
 
-                        <i class="nav-icon fas fa-home"></i>
+                                <i class="nav-icon fas fa-home"></i>
+                                <p>Dashboard 2</p>
 
-                        <p>Dashboard 2</p>
+                            </a>
+                        </li>
 
-                    </a>
-                </li>
                 @endif
 
 
@@ -75,7 +134,7 @@
                     <li class="nav-item has-treeview {{ request()->routeIs('barang.*') ? 'menu-open' : '' }}">
 
                         <a href="#"
-                           class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('barang.*') ? 'active' : '' }}">
 
                             <i class="nav-icon fas fa-box"></i>
 
@@ -88,25 +147,29 @@
 
                         <ul class="nav nav-treeview">
 
-                            <li class="nav-item">
-                                <a href="{{ route('barang.create') }}"
-                                   class="nav-link {{ request()->routeIs('barang.create') ? 'active' : '' }}">
+                            @if(punyaAksesMenu('barang.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('barang.create') }}"
+                                    class="nav-link {{ request()->routeIs('barang.create') ? 'active' : '' }}">
 
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Tambah Barang</p>
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tambah Barang</p>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
 
-                            <li class="nav-item">
-                                <a href="{{ route('barang.index') }}"
-                                   class="nav-link {{ request()->routeIs('barang.index') ? 'active' : '' }}">
+                            @if(punyaAksesMenu('barang.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('barang.index') }}"
+                                    class="nav-link {{ request()->routeIs('barang.index') ? 'active' : '' }}">
 
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>List Barang</p>
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Barang</p>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
 
                         </ul>
 
@@ -131,27 +194,29 @@
                         </a>
 
                         <ul class="nav nav-treeview">
+                            @if(punyaAksesMenu('kategori.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('kategori.create') }}"
+                                    class="nav-link {{ request()->routeIs('kategori.create') ? 'active' : '' }}">
 
-                            <li class="nav-item">
-                                <a href="{{ route('kategori.create') }}"
-                                   class="nav-link {{ request()->routeIs('kategori.create') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tambah Kategori</p>
 
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Tambah Kategori</p>
+                                    </a>
+                                </li>
+                            @endif
 
-                                </a>
-                            </li>
+                            @if(punyaAksesMenu('kategori.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('kategori.index') }}"
+                                    class="nav-link {{ request()->routeIs('kategori.index') ? 'active' : '' }}">
 
-                            <li class="nav-item">
-                                <a href="{{ route('kategori.index') }}"
-                                   class="nav-link {{ request()->routeIs('kategori.index') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Kategori</p>
 
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>List Kategori</p>
-
-                                </a>
-                            </li>
-
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
 
                     </li>
@@ -175,27 +240,28 @@
                         </a>
 
                         <ul class="nav nav-treeview">
+                            @if(punyaAksesMenu('pelanggan.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('pelanggan.create') }}"
+                                    class="nav-link {{ request()->routeIs('pelanggan.create') ? 'active' : '' }}">
 
-                            <li class="nav-item">
-                                <a href="{{ route('pelanggan.create') }}"
-                                   class="nav-link {{ request()->routeIs('pelanggan.create') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tambah Pelanggan</p>
 
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Tambah Pelanggan</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(punyaAksesMenu('pelanggan.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('pelanggan.index') }}"
+                                    class="nav-link {{ request()->routeIs('pelanggan.index') ? 'active' : '' }}">
 
-                                </a>
-                            </li>
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Pelanggan</p>
 
-                            <li class="nav-item">
-                                <a href="{{ route('pelanggan.index') }}"
-                                   class="nav-link {{ request()->routeIs('pelanggan.index') ? 'active' : '' }}">
-
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>List Pelanggan</p>
-
-                                </a>
-                            </li>
-
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
 
                     </li>
@@ -221,25 +287,29 @@
 
                         <ul class="nav nav-treeview">
 
-                            <li class="nav-item">
-                                <a href="{{ route('transaksi.create') }}"
-                                   class="nav-link {{ request()->routeIs('transaksi.create') ? 'active' : '' }}">
+                            @if(punyaAksesMenu('transaksi.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('transaksi.create') }}"
+                                       class="nav-link {{ request()->routeIs('transaksi.create') ? 'active' : '' }}">
 
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Buat Transaksi</p>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
 
-                            <li class="nav-item">
-                                <a href="{{ route('transaksi.index') }}"
-                                   class="nav-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
+                            @if(punyaAksesMenu('transaksi.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('transaksi.index') }}"
+                                       class="nav-link {{ request()->routeIs('transaksi.index') ? 'active' : '' }}">
 
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>List Transaksi</p>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
 
                         </ul>
 
@@ -265,25 +335,29 @@
 
                         <ul class="nav nav-treeview">
 
-                            <li class="nav-item">
-                                <a href="{{ route('po.create') }}"
-                                   class="nav-link {{ request()->routeIs('po.create') ? 'active' : '' }}">
+                            @if(punyaAksesMenu('po.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('po.create') }}"
+                                       class="nav-link {{ request()->routeIs('po.create') ? 'active' : '' }}">
 
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Buat PO</p>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
 
-                            <li class="nav-item">
-                                <a href="{{ route('po.index') }}"
-                                   class="nav-link {{ request()->routeIs('po.index') ? 'active' : '' }}">
+                            @if(punyaAksesMenu('po.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('po.index') }}"
+                                       class="nav-link {{ request()->routeIs('po.index') ? 'active' : '' }}">
 
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>List PO</p>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
 
                         </ul>
 
@@ -309,25 +383,28 @@
 
                         <ul class="nav nav-treeview">
 
-                            <li class="nav-item">
-                                <a href="{{ route('barang-masuk.create') }}"
-                                   class="nav-link {{ request()->routeIs('barang-masuk.create') ? 'active' : '' }}">
+                            @if(punyaAksesMenu('barang-masuk.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('barang-masuk.create') }}"
+                                       class="nav-link {{ request()->routeIs('barang-masuk.create') ? 'active' : '' }}">
 
                                     <i class="far fa-circle nav-icon"></i>
                                     <p>Tambah Barang Masuk</p>
 
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(punyaAksesMenu('barang-masuk.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('barang-masuk.index') }}"
+                                    class="nav-link {{ request()->routeIs('barang-masuk.index') ? 'active' : '' }}">
 
-                            <li class="nav-item">
-                                <a href="{{ route('barang-masuk.index') }}"
-                                   class="nav-link {{ request()->routeIs('barang-masuk.index') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Barang Masuk</p>
 
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>List Barang Masuk</p>
-
-                                </a>
-                            </li>
+                                    </a>
+                                </li>
+                            @endif
 
                         </ul>
 
@@ -336,10 +413,10 @@
 
 
                 {{-- HISTORY STOK --}}
-                @if($canHistory)
+                @if(punyaAksesMenu('history.index', $userLogin))
                     <li class="nav-item">
                         <a href="{{ route('history.index') }}"
-                           class="nav-link {{ request()->routeIs('history.index') ? 'active' : '' }}">
+                        class="nav-link {{ request()->routeIs('history.index') ? 'active' : '' }}">
 
                             <i class="nav-icon fas fa-history"></i>
 
@@ -347,11 +424,12 @@
 
                         </a>
                     </li>
+
                 @endif
 
 
                 {{-- LAPORAN --}}
-                @if($canLaporan)
+                @if(punyaAksesMenu('laporan.index', $userLogin))
                     <li class="nav-item">
                         <a href="{{ route('laporan.index') }}"
                            class="nav-link {{ request()->routeIs('laporan.index') ? 'active' : '' }}">
@@ -365,7 +443,7 @@
                 @endif
 
                 {{-- STOCK OPNAME --}}
-                @if($canStockOpname)
+                @if(punyaAksesMenu('stock-opname.create', $userLogin))
                     <li class="nav-item">
                         <a href="{{ route('stock-opname.create') }}"
                         class="nav-link {{ request()->routeIs('stock-opname.*') ? 'active' : '' }}">
@@ -379,7 +457,7 @@
                 @endif
 
                 {{-- MENU AKUN (HANYA UNTUK ADMIN) --}}
-                @if($role == 'admin')
+                @if($canUser)
 
                     <li class="nav-item has-treeview {{ request()->routeIs('user.*') ? 'menu-open' : '' }}">
 
@@ -396,27 +474,28 @@
                         </a>
 
                         <ul class="nav nav-treeview">
+                            @if(punyaAksesMenu('user.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('user.create') }}"
+                                    class="nav-link {{ request()->routeIs('user.create') ? 'active' : '' }}">
 
-                            <li class="nav-item">
-                                <a href="{{ route('user.create') }}"
-                                class="nav-link {{ request()->routeIs('user.create') ? 'active' : '' }}">
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tambah Akun</p>
 
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>Tambah Akun</p>
+                                    </a>
+                                </li>
+                            @endif
+                            @if(punyaAksesMenu('user.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('user.index') }}"
+                                    class="nav-link {{ request()->routeIs('user.index') ? 'active' : '' }}">
 
-                                </a>
-                            </li>
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Akun</p>
 
-                            <li class="nav-item">
-                                <a href="{{ route('user.index') }}"
-                                class="nav-link {{ request()->routeIs('user.index') ? 'active' : '' }}">
-
-                                    <i class="far fa-circle nav-icon"></i>
-                                    <p>List Akun</p>
-
-                                </a>
-                            </li>
-
+                                    </a>
+                                </li>
+                            @endif
                         </ul>
 
                     </li>

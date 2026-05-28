@@ -2,83 +2,81 @@
 
 @section('content')
 
-<section class="content pt-4">
-    <div class="container-fluid">
+    <section class="content pt-4">
+        <div class="container-fluid">
 
-        {{-- INFO BOX --}}
-        <div class="row">
+            {{-- INFO BOX --}}
+            <div class="row">
 
-            {{-- Pendapatan Hari Ini --}}
-            <div class="col-12 col-sm-6 col-md-3">
-                <div class="info-box">
+                {{-- Pendapatan Hari Ini --}}
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box">
 
-                    <span class="info-box-icon bg-success elevation-1">
-                        <i class="fas fa-money-bill-wave"></i>
-                    </span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">
-                            Pendapatan Hari Ini
+                        <span class="info-box-icon bg-success elevation-1">
+                            <i class="fas fa-money-bill-wave"></i>
                         </span>
 
-                        <span class="info-box-number">
-                            Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}
-                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">
+                                Pendapatan Hari Ini
+                            </span>
+
+                            <span class="info-box-number">
+                                Rp {{ number_format($pendapatanHariIni, 0, ',', '.') }}
+                            </span>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
 
 
-            {{-- Transaksi Hari Ini --}}
-            <div class="col-12 col-sm-6 col-md-3">
-                <div class="info-box mb-3">
+                {{-- Transaksi Hari Ini --}}
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box mb-3">
 
-                    <span class="info-box-icon bg-info elevation-1">
-                        <i class="fas fa-shopping-cart"></i>
-                    </span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">
-                            Transaksi Hari Ini
+                        <span class="info-box-icon bg-info elevation-1">
+                            <i class="fas fa-shopping-cart"></i>
                         </span>
 
-                        <span class="info-box-number">
-                            {{ $transaksiHariIni }}
-                            <small>Nota</small>
-                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">
+                                Transaksi Hari Ini
+                            </span>
+
+                            <span class="info-box-number">
+                                {{ $transaksiHariIni }}
+                                <small>Nota</small>
+                            </span>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
 
 
-            {{-- Total Pelanggan --}}
-            <div class="col-12 col-sm-6 col-md-3">
-                <div class="info-box mb-3">
+                {{-- Total Pelanggan --}}
+                <div class="col-12 col-sm-6 col-md-3">
+                    <div class="info-box mb-3">
 
-                    <span class="info-box-icon bg-warning elevation-1">
-                        <i class="fas fa-users text-white"></i>
-                    </span>
-
-                    <div class="info-box-content">
-                        <span class="info-box-text">
-                            Total Pelanggan
+                        <span class="info-box-icon bg-warning elevation-1">
+                            <i class="fas fa-users text-white"></i>
                         </span>
 
-                        <span class="info-box-number">
-                            {{ $totalPelanggan }}
-                            <small>Orang</small>
-                        </span>
+                        <div class="info-box-content">
+                            <span class="info-box-text">
+                                Total Pelanggan
+                            </span>
+
+                            <span class="info-box-number">
+                                {{ $totalPelanggan }}
+                                <small>Orang</small>
+                            </span>
+                        </div>
+
                     </div>
-
                 </div>
-            </div>
 
 
-            {{-- Stok Menipis - hanya Adming --}}
-            @if(in_array($role, ['admin']))
-
+                {{-- Stok Menipis - hanya Adming --}}
                 <div class="col-12 col-sm-6 col-md-3">
                     <div class="info-box mb-3">
 
@@ -100,16 +98,13 @@
                     </div>
                 </div>
 
-            @endif
 
-        </div>
+            </div>
 
 
-        {{-- DETAIL STOK MENIPIS --}}
-        @if(in_array($role, ['admin', 'gudang']))
+            {{-- DETAIL STOK MENIPIS --}}
 
-            @if($stokMenipis > 0)
-
+            @if ($stokMenipis > 0)
                 <div class="row">
                     <div class="col-md-12">
 
@@ -123,9 +118,7 @@
                                 </h3>
 
                                 <div class="card-tools">
-                                    <button type="button"
-                                            class="btn btn-tool"
-                                            data-card-widget="collapse">
+                                    <button type="button" class="btn btn-tool" data-card-widget="collapse">
 
                                         <i class="fas fa-minus"></i>
 
@@ -153,8 +146,7 @@
 
                                         <tbody>
 
-                                            @foreach($barangStokMenipis->take(5) as $item)
-
+                                            @foreach ($barangStokMenipis->take(5) as $item)
                                                 <tr>
                                                     <td>
                                                         {{ $loop->iteration }}
@@ -177,22 +169,17 @@
                                                     </td>
 
                                                     <td>
-                                                        @if($item->jumlah_barang == 0)
-
+                                                        @if ($item->jumlah_barang == 0)
                                                             <span class="badge badge-danger">
                                                                 Habis
                                                             </span>
-
                                                         @else
-
                                                             <span class="badge badge-warning">
                                                                 Menipis
                                                             </span>
-
                                                         @endif
                                                     </td>
                                                 </tr>
-
                                             @endforeach
 
                                         </tbody>
@@ -218,368 +205,337 @@
 
                     </div>
                 </div>
-
             @else
-
                 <div class="alert alert-success">
                     Semua stok barang masih aman.
                 </div>
-
             @endif
 
-        @endif
+            {{-- GRAFIK PENDAPATAN --}}
+            <div class="row">
+                <div class="col-md-12">
 
+                    <div class="card">
 
-        {{-- GRAFIK PENDAPATAN --}}
-        <div class="row">
-            <div class="col-md-12">
+                        <div class="card-header border-transparent">
 
-                <div class="card">
+                            <h5 class="card-title">
+                                Grafik Pendapatan
+                            </h5>
 
-                    <div class="card-header border-transparent">
+                            <div class="card-tools">
 
-                        <h5 class="card-title">
-                            Grafik Pendapatan
-                        </h5>
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
 
-                        <div class="card-tools">
+                                    <i class="fas fa-minus"></i>
 
-                            <button type="button"
-                                    class="btn btn-tool"
-                                    data-card-widget="collapse">
-
-                                <i class="fas fa-minus"></i>
-
-                            </button>
-
-                        </div>
-
-                    </div>
-
-                    <div class="card-body">
-
-                        {{-- NAVIGASI BULAN TANPA REFRESH --}}
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-
-                            <button type="button"
-                                    id="btnBulanSebelumnya"
-                                    class="btn btn-outline-primary btn-sm">
-
-                                <i class="fas fa-chevron-left"></i>
-
-                            </button>
-
-
-                            <div class="text-center">
-
-                                <h5 class="mb-0"
-                                    id="namaPeriodeGrafik">
-
-                                    {{ \Carbon\Carbon::create($tahunDipilih, $bulanDipilih, 1)->translatedFormat('F Y') }}
-
-                                </h5>
-
-                                <small class="text-muted"
-                                    id="teksPeriodeGrafik">
-
-                                    Periode: {{ $teksPeriode }}
-
-                                </small>
+                                </button>
 
                             </div>
 
-
-                            <button type="button"
-                                    id="btnBulanBerikutnya"
-                                    class="btn btn-outline-primary btn-sm">
-
-                                <i class="fas fa-chevron-right"></i>
-
-                            </button>
-
                         </div>
 
+                        <div class="card-body">
 
-                        {{-- CHART --}}
-                        <div class="row">
-                            <div class="col-md-12">
+                            {{-- NAVIGASI BULAN TANPA REFRESH --}}
+                            <div class="d-flex justify-content-between align-items-center mb-3">
 
-                                <div class="chart">
-                                    <canvas id="salesChart"
-                                            height="250"
-                                            style="height: 250px;"></canvas>
+                                <button type="button" id="btnBulanSebelumnya" class="btn btn-outline-primary btn-sm">
+
+                                    <i class="fas fa-chevron-left"></i>
+
+                                </button>
+
+
+                                <div class="text-center">
+
+                                    <h5 class="mb-0" id="namaPeriodeGrafik">
+
+                                        {{ \Carbon\Carbon::create($tahunDipilih, $bulanDipilih, 1)->translatedFormat('F Y') }}
+
+                                    </h5>
+
+                                    <small class="text-muted" id="teksPeriodeGrafik">
+
+                                        Periode: {{ $teksPeriode }}
+
+                                    </small>
+
                                 </div>
 
+
+                                <button type="button" id="btnBulanBerikutnya" class="btn btn-outline-primary btn-sm">
+
+                                    <i class="fas fa-chevron-right"></i>
+
+                                </button>
+
                             </div>
-                        </div>
 
-                    </div>
 
-                </div>
+                            {{-- CHART --}}
+                            <div class="row">
+                                <div class="col-md-12">
 
-            </div>
-        </div>
-
-
-        {{-- TRANSAKSI, PELANGGAN, BARANG TERBARU --}}
-        <div class="row">
-
-            {{-- Transaksi Terbaru --}}
-            <div class="col-md-8">
-
-                <div class="card">
-
-                    <div class="card-header border-transparent bg-primary text-white">
-
-                        <h3 class="card-title">
-                            Transaksi Terbaru
-                        </h3>
-
-                        <div class="card-tools">
-                            <button type="button"
-                                    class="btn btn-tool text-white"
-                                    data-card-widget="collapse">
-
-                                <i class="fas fa-minus"></i>
-
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div class="card-body p-0">
-
-                        <div class="table-responsive">
-
-                            <table class="table m-0 table-hover">
-
-                                <thead>
-                                    <tr>
-                                        <th>ID Transaksi</th>
-                                        <th>Pelanggan</th>
-                                        <th>Tanggal</th>
-                                        <th>Total Bayar</th>
-                                        <th>Status</th>
-                                    </tr>
-                                </thead>
-
-                                <tbody>
-
-                                    @forelse($transaksiTerbaru as $trx)
-
-                                        <tr>
-                                            <td>
-                                                <a href="#">
-                                                    {{ $trx->id_transaksi }}
-                                                </a>
-                                            </td>
-
-                                            <td>
-                                                {{ $trx->pelanggan->nama_pelanggan ?? $trx->nama_pelanggan_lain }}
-                                            </td>
-
-                                            <td>
-                                                {{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->format('d M Y') }}
-                                            </td>
-
-                                            <td>
-                                                Rp {{ number_format($trx->total_harga, 0, ',', '.') }}
-                                            </td>
-
-                                            <td>
-                                                <span class="badge badge-success">
-                                                    Selesai
-                                                </span>
-                                            </td>
-                                        </tr>
-
-                                    @empty
-
-                                        <tr>
-                                            <td colspan="5"
-                                                class="text-center text-muted">
-
-                                                Belum ada transaksi
-
-                                            </td>
-                                        </tr>
-
-                                    @endforelse
-
-                                </tbody>
-
-                            </table>
-
-                        </div>
-
-                    </div>
-
-                    <div class="card-footer clearfix">
-
-                        <a href="{{ route('transaksi.index') }}"
-                           class="btn btn-sm btn-secondary float-right">
-
-                            Lihat Semua Transaksi
-
-                        </a>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            {{-- Sidebar Kanan --}}
-            <div class="col-md-4">
-
-                {{-- Pelanggan Terbaru --}}
-                <div class="card">
-
-                    <div class="card-header bg-warning">
-
-                        <h3 class="card-title">
-                            Pelanggan Terbaru
-                        </h3>
-
-                        <div class="card-tools">
-                            <button type="button"
-                                    class="btn btn-tool"
-                                    data-card-widget="collapse">
-
-                                <i class="fas fa-minus"></i>
-
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div class="card-body p-0">
-
-                        <ul class="users-list clearfix">
-
-                            @forelse($pelangganTerbaru as $plg)
-
-                                <li>
-                                    <img src="https://ui-avatars.com/api/?name={{ urlencode($plg->nama_pelanggan) }}&background=random"
-                                         alt="User Image">
-
-                                    <a class="users-list-name"
-                                       href="#">
-
-                                        {{ $plg->nama_pelanggan }}
-
-                                    </a>
-
-                                    <span class="users-list-date">
-                                        {{ \Carbon\Carbon::parse($plg->created_at)->diffForHumans() }}
-                                    </span>
-                                </li>
-
-                            @empty
-
-                                <li class="w-100 text-center py-3 text-muted">
-                                    Belum ada pelanggan
-                                </li>
-
-                            @endforelse
-
-                        </ul>
-
-                    </div>
-
-                    <div class="card-footer text-center">
-
-                        <a href="{{ route('pelanggan.index') }}">
-                            Lihat Semua Pelanggan
-                        </a>
-
-                    </div>
-
-                </div>
-
-
-                {{-- Barang Terbaru --}}
-                <div class="card">
-
-                    <div class="card-header bg-info">
-
-                        <h3 class="card-title">
-                            Barang Terbaru
-                        </h3>
-
-                        <div class="card-tools">
-                            <button type="button"
-                                    class="btn btn-tool"
-                                    data-card-widget="collapse">
-
-                                <i class="fas fa-minus"></i>
-
-                            </button>
-                        </div>
-
-                    </div>
-
-                    <div class="card-body p-0">
-
-                        <ul class="products-list product-list-in-card pl-2 pr-2">
-
-                            @forelse($barangTerbaru as $brg)
-
-                                <li class="item">
-
-                                    <div class="product-img">
-
-                                        <span class="info-box-icon bg-secondary rounded"
-                                              style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
-
-                                            <i class="fas fa-box"></i>
-
-                                        </span>
-
+                                    <div class="chart">
+                                        <canvas id="salesChart" height="250" style="height: 250px;"></canvas>
                                     </div>
 
-                                    <div class="product-info">
+                                </div>
+                            </div>
 
-                                        <a href="javascript:void(0)"
-                                           class="product-title">
+                        </div>
 
-                                            {{ $brg->nama_barang }}
+                    </div>
 
-                                            <span class="badge badge-success float-right">
-                                                Rp {{ number_format($brg->harga_jual, 0, ',', '.') }}
-                                            </span>
+                </div>
+            </div>
+
+
+            {{-- TRANSAKSI, PELANGGAN, BARANG TERBARU --}}
+            <div class="row">
+
+                {{-- Transaksi Terbaru --}}
+                <div class="col-md-8">
+
+                    <div class="card">
+
+                        <div class="card-header border-transparent bg-primary text-white">
+
+                            <h3 class="card-title">
+                                Transaksi Terbaru
+                            </h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool text-white" data-card-widget="collapse">
+
+                                    <i class="fas fa-minus"></i>
+
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body p-0">
+
+                            <div class="table-responsive">
+
+                                <table class="table m-0 table-hover">
+
+                                    <thead>
+                                        <tr>
+                                            <th>ID Transaksi</th>
+                                            <th>Pelanggan</th>
+                                            <th>Tanggal</th>
+                                            <th>Total Bayar</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+
+                                        @forelse($transaksiTerbaru as $trx)
+                                            <tr>
+                                                <td>
+                                                    <a href="#">
+                                                        {{ $trx->id_transaksi }}
+                                                    </a>
+                                                </td>
+
+                                                <td>
+                                                    {{ $trx->pelanggan->nama_pelanggan ?? $trx->nama_pelanggan_lain }}
+                                                </td>
+
+                                                <td>
+                                                    {{ \Carbon\Carbon::parse($trx->tanggal_transaksi)->format('d M Y') }}
+                                                </td>
+
+                                                <td>
+                                                    Rp {{ number_format($trx->total_harga, 0, ',', '.') }}
+                                                </td>
+
+                                                <td>
+                                                    <span class="badge badge-success">
+                                                        Selesai
+                                                    </span>
+                                                </td>
+                                            </tr>
+
+                                        @empty
+
+                                            <tr>
+                                                <td colspan="5" class="text-center text-muted">
+
+                                                    Belum ada transaksi
+
+                                                </td>
+                                            </tr>
+                                        @endforelse
+
+                                    </tbody>
+
+                                </table>
+
+                            </div>
+
+                        </div>
+
+                        <div class="card-footer clearfix">
+
+                            <a href="{{ route('transaksi.index') }}" class="btn btn-sm btn-secondary float-right">
+
+                                Lihat Semua Transaksi
+
+                            </a>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                {{-- Sidebar Kanan --}}
+                <div class="col-md-4">
+
+                    {{-- Pelanggan Terbaru --}}
+                    <div class="card">
+
+                        <div class="card-header bg-warning">
+
+                            <h3 class="card-title">
+                                Pelanggan Terbaru
+                            </h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+
+                                    <i class="fas fa-minus"></i>
+
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body p-0">
+
+                            <ul class="users-list clearfix">
+
+                                @forelse($pelangganTerbaru as $plg)
+                                    <li>
+                                        <img src="https://ui-avatars.com/api/?name={{ urlencode($plg->nama_pelanggan) }}&background=random"
+                                            alt="User Image">
+
+                                        <a class="users-list-name" href="#">
+
+                                            {{ $plg->nama_pelanggan }}
 
                                         </a>
 
-                                        <span class="product-description">
-                                            Sisa Stok: {{ $brg->jumlah_barang }} Pcs
+                                        <span class="users-list-date">
+                                            {{ \Carbon\Carbon::parse($plg->created_at)->diffForHumans() }}
                                         </span>
+                                    </li>
 
-                                    </div>
+                                @empty
 
-                                </li>
+                                    <li class="w-100 text-center py-3 text-muted">
+                                        Belum ada pelanggan
+                                    </li>
+                                @endforelse
 
-                            @empty
+                            </ul>
 
-                                <li class="item text-center text-muted py-3">
-                                    Belum ada barang
-                                </li>
+                        </div>
 
-                            @endforelse
+                        <div class="card-footer text-center">
 
-                        </ul>
+                            <a href="{{ route('pelanggan.index') }}">
+                                Lihat Semua Pelanggan
+                            </a>
+
+                        </div>
 
                     </div>
 
-                    <div class="card-footer text-center">
 
-                        <a href="{{ route('barang.index') }}"
-                           class="uppercase">
+                    {{-- Barang Terbaru --}}
+                    <div class="card">
 
-                            Lihat Semua Barang
+                        <div class="card-header bg-info">
 
-                        </a>
+                            <h3 class="card-title">
+                                Barang Terbaru
+                            </h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+
+                                    <i class="fas fa-minus"></i>
+
+                                </button>
+                            </div>
+
+                        </div>
+
+                        <div class="card-body p-0">
+
+                            <ul class="products-list product-list-in-card pl-2 pr-2">
+
+                                @forelse($barangTerbaru as $brg)
+                                    <li class="item">
+
+                                        <div class="product-img">
+
+                                            <span class="info-box-icon bg-secondary rounded"
+                                                style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center;">
+
+                                                <i class="fas fa-box"></i>
+
+                                            </span>
+
+                                        </div>
+
+                                        <div class="product-info">
+
+                                            <a href="javascript:void(0)" class="product-title">
+
+                                                {{ $brg->nama_barang }}
+
+                                                <span class="badge badge-success float-right">
+                                                    Rp {{ number_format($brg->harga_jual, 0, ',', '.') }}
+                                                </span>
+
+                                            </a>
+
+                                            <span class="product-description">
+                                                Sisa Stok: {{ $brg->jumlah_barang }} Pcs
+                                            </span>
+
+                                        </div>
+
+                                    </li>
+
+                                @empty
+
+                                    <li class="item text-center text-muted py-3">
+                                        Belum ada barang
+                                    </li>
+                                @endforelse
+
+                            </ul>
+
+                        </div>
+
+                        <div class="card-footer text-center">
+
+                            <a href="{{ route('barang.index') }}" class="uppercase">
+
+                                Lihat Semua Barang
+
+                            </a>
+
+                        </div>
 
                     </div>
 
@@ -588,234 +544,220 @@
             </div>
 
         </div>
-
-    </div>
-</section>
+    </section>
 
 @endsection
 
 
 @push('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        $(function() {
 
-<script>
+            /*
+            |--------------------------------------------------------------------------
+            | DATA AWAL DARI CONTROLLER
+            |--------------------------------------------------------------------------
+            */
+            let bulanAktif = Number(@json($bulanDipilih));
 
-$(function () {
+            let tahunAktif = Number(@json($tahunDipilih));
 
-    /*
-    |--------------------------------------------------------------------------
-    | DATA AWAL DARI CONTROLLER
-    |--------------------------------------------------------------------------
-    */
-    let bulanAktif = Number(@json($bulanDipilih));
+            let labelTanggal = @json($chartLabels);
 
-    let tahunAktif = Number(@json($tahunDipilih));
+            let dataPendapatan = @json($chartData);
 
-    let labelTanggal = @json($chartLabels);
+            let routeGrafik = "{{ route('dashboard.grafik') }}";
 
-    let dataPendapatan = @json($chartData);
-
-    let routeGrafik = "{{ route('dashboard.grafik') }}";
-
-    let chartPendapatan = null;
+            let chartPendapatan = null;
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | FORMAT RUPIAH
-    |--------------------------------------------------------------------------
-    */
-    function formatRupiah(angka)
-    {
-        return 'Rp ' + angka
-            .toString()
-            .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
-    }
+            /*
+            |--------------------------------------------------------------------------
+            | FORMAT RUPIAH
+            |--------------------------------------------------------------------------
+            */
+            function formatRupiah(angka) {
+                return 'Rp ' + angka
+                    .toString()
+                    .replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+            }
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | BUAT / RENDER CHART
-    |--------------------------------------------------------------------------
-    */
-    function renderChart(labels, data)
-    {
-        let areaChartCanvas = $('#salesChart').get(0).getContext('2d');
+            /*
+            |--------------------------------------------------------------------------
+            | BUAT / RENDER CHART
+            |--------------------------------------------------------------------------
+            */
+            function renderChart(labels, data) {
+                let areaChartCanvas = $('#salesChart').get(0).getContext('2d');
 
-        let areaChartData = {
-            labels: labels,
-            datasets: [
-                {
-                    label               : 'Pendapatan (Rp)',
-                    type                : 'line',
-                    tension             : 0.4,
-                    fill                : true,
-                    backgroundColor     : 'rgba(60,141,188,0.4)',
-                    borderColor         : 'rgba(60,141,188,1)',
-                    pointRadius         : 3,
-                    pointBackgroundColor: 'rgba(60,141,188,1)',
-                    data                : data
-                }
-            ]
-        };
+                let areaChartData = {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Pendapatan (Rp)',
+                        type: 'line',
+                        tension: 0.4,
+                        fill: true,
+                        backgroundColor: 'rgba(60,141,188,0.4)',
+                        borderColor: 'rgba(60,141,188,1)',
+                        pointRadius: 3,
+                        pointBackgroundColor: 'rgba(60,141,188,1)',
+                        data: data
+                    }]
+                };
 
-        let areaChartOptions = {
-            maintainAspectRatio : false,
-            responsive : true,
+                let areaChartOptions = {
+                    maintainAspectRatio: false,
+                    responsive: true,
 
-            plugins: {
-                legend: {
-                    display: false
-                },
+                    plugins: {
+                        legend: {
+                            display: false
+                        },
 
-                tooltip: {
-                    callbacks: {
-                        label: function(context) {
-                            let label = context.dataset.label || '';
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
 
-                            if (label) {
-                                label += ': ';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+
+                                    if (context.parsed.y !== null) {
+                                        label += formatRupiah(context.parsed.y);
+                                    }
+
+                                    return label;
+                                }
                             }
+                        }
+                    },
 
-                            if (context.parsed.y !== null) {
-                                label += formatRupiah(context.parsed.y);
+                    scales: {
+                        x: {
+                            grid: {
+                                display: false
                             }
+                        },
 
-                            return label;
+                        y: {
+                            beginAtZero: true,
+
+                            ticks: {
+                                callback: function(value) {
+                                    return formatRupiah(value);
+                                }
+                            }
                         }
                     }
+                };
+
+                if (chartPendapatan !== null) {
+                    chartPendapatan.destroy();
                 }
-            },
 
-            scales: {
-                x: {
-                    grid: {
-                        display: false
-                    }
-                },
+                chartPendapatan = new Chart(areaChartCanvas, {
+                    type: 'line',
+                    data: areaChartData,
+                    options: areaChartOptions
+                });
+            }
 
-                y: {
-                    beginAtZero: true,
 
-                    ticks: {
-                        callback: function(value) {
-                            return formatRupiah(value);
+            /*
+            |--------------------------------------------------------------------------
+            | AMBIL DATA GRAFIK TANPA REFRESH
+            |--------------------------------------------------------------------------
+            */
+            function ambilDataGrafik(bulan, tahun) {
+                $('#btnBulanSebelumnya').prop('disabled', true);
+
+                $('#btnBulanBerikutnya').prop('disabled', true);
+
+                fetch(routeGrafik + '?bulan=' + bulan + '&tahun=' + tahun, {
+                        method: 'GET',
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
                         }
-                    }
+                    })
+                    .then(function(response) {
+                        return response.json();
+                    })
+                    .then(function(result) {
+
+                        bulanAktif = Number(result.bulan);
+
+                        tahunAktif = Number(result.tahun);
+
+                        $('#namaPeriodeGrafik').text(result.namaPeriode);
+
+                        $('#teksPeriodeGrafik').text('Periode: ' + result.teksPeriode);
+
+                        renderChart(result.labels, result.data);
+                    })
+                    .catch(function(error) {
+
+                        alert('Gagal mengambil data grafik');
+
+                        console.log(error);
+                    })
+                    .finally(function() {
+
+                        $('#btnBulanSebelumnya').prop('disabled', false);
+
+                        $('#btnBulanBerikutnya').prop('disabled', false);
+                    });
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | TOMBOL BULAN SEBELUMNYA
+            |--------------------------------------------------------------------------
+            */
+            $('#btnBulanSebelumnya').click(function() {
+
+                bulanAktif--;
+
+                if (bulanAktif < 1) {
+                    bulanAktif = 12;
+
+                    tahunAktif--;
                 }
-            }
-        };
 
-        if(chartPendapatan !== null)
-        {
-            chartPendapatan.destroy();
-        }
+                ambilDataGrafik(bulanAktif, tahunAktif);
+            });
 
-        chartPendapatan = new Chart(areaChartCanvas, {
-            type: 'line',
-            data: areaChartData,
-            options: areaChartOptions
+
+            /*
+            |--------------------------------------------------------------------------
+            | TOMBOL BULAN BERIKUTNYA
+            |--------------------------------------------------------------------------
+            */
+            $('#btnBulanBerikutnya').click(function() {
+
+                bulanAktif++;
+
+                if (bulanAktif > 12) {
+                    bulanAktif = 1;
+
+                    tahunAktif++;
+                }
+
+                ambilDataGrafik(bulanAktif, tahunAktif);
+            });
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | RENDER CHART PERTAMA
+            |--------------------------------------------------------------------------
+            */
+            renderChart(labelTanggal, dataPendapatan);
+
         });
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | AMBIL DATA GRAFIK TANPA REFRESH
-    |--------------------------------------------------------------------------
-    */
-    function ambilDataGrafik(bulan, tahun)
-    {
-        $('#btnBulanSebelumnya').prop('disabled', true);
-
-        $('#btnBulanBerikutnya').prop('disabled', true);
-
-        fetch(routeGrafik + '?bulan=' + bulan + '&tahun=' + tahun, {
-            method: 'GET',
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
-            }
-        })
-        .then(function(response) {
-            return response.json();
-        })
-        .then(function(result) {
-
-            bulanAktif = Number(result.bulan);
-
-            tahunAktif = Number(result.tahun);
-
-            $('#namaPeriodeGrafik').text(result.namaPeriode);
-
-            $('#teksPeriodeGrafik').text('Periode: ' + result.teksPeriode);
-
-            renderChart(result.labels, result.data);
-        })
-        .catch(function(error) {
-
-            alert('Gagal mengambil data grafik');
-
-            console.log(error);
-        })
-        .finally(function() {
-
-            $('#btnBulanSebelumnya').prop('disabled', false);
-
-            $('#btnBulanBerikutnya').prop('disabled', false);
-        });
-    }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOMBOL BULAN SEBELUMNYA
-    |--------------------------------------------------------------------------
-    */
-    $('#btnBulanSebelumnya').click(function(){
-
-        bulanAktif--;
-
-        if(bulanAktif < 1)
-        {
-            bulanAktif = 12;
-
-            tahunAktif--;
-        }
-
-        ambilDataGrafik(bulanAktif, tahunAktif);
-    });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOMBOL BULAN BERIKUTNYA
-    |--------------------------------------------------------------------------
-    */
-    $('#btnBulanBerikutnya').click(function(){
-
-        bulanAktif++;
-
-        if(bulanAktif > 12)
-        {
-            bulanAktif = 1;
-
-            tahunAktif++;
-        }
-
-        ambilDataGrafik(bulanAktif, tahunAktif);
-    });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | RENDER CHART PERTAMA
-    |--------------------------------------------------------------------------
-    */
-    renderChart(labelTanggal, dataPendapatan);
-
-});
-
-</script>
-
+    </script>
 @endpush
