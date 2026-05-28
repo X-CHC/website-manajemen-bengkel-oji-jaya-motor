@@ -13,6 +13,7 @@ use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\StockOpnameController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\RoleController;
 
 use App\Http\Middleware\CheckStockOpnameMode;
 
@@ -41,6 +42,8 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('dashboard/2', [DashboardController::class, 'index2'])
+    ->name('dashboard.index2');
 
 /*
 |--------------------------------------------------------------------------
@@ -63,9 +66,7 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
             ->middleware('akses.menu')
             ->name('index');
 
-        Route::get('/2', [DashboardController::class, 'index2'])
-            ->middleware('akses.menu:dashboard.index')
-            ->name('index2');
+
 
         Route::get('/grafik', [DashboardController::class, 'grafikPendapatan2'])
             ->middleware('akses.menu:dashboard.index')
@@ -132,8 +133,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     | PELANGGAN
     |--------------------------------------------------------------------------
     */
-    Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
 
+    Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
         Route::get('/index', [PelangganController::class, 'index'])
             ->name('index');
 
@@ -151,6 +152,7 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
 
         Route::delete('/{id}', [PelangganController::class, 'destroy'])
             ->name('destroy');
+
     });
 
 
@@ -306,6 +308,32 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
             ->name('update');
 
         Route::delete('/{id}', [UserController::class, 'destroy'])
+            ->name('destroy');
+    });
+
+    /*
+    |--------------------------------------------------------------------------
+    | ROLE
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('role')->name('role.')->group(function () {
+
+        Route::get('/index', [RoleController::class, 'index'])
+            ->name('index');
+
+        Route::get('/create', [RoleController::class, 'create'])
+            ->name('create');
+
+        Route::post('/store', [RoleController::class, 'store'])
+            ->name('store');
+
+        Route::get('/{id}/edit', [RoleController::class, 'edit'])
+            ->name('edit');
+
+        Route::put('/{id}', [RoleController::class, 'update'])
+            ->name('update');
+
+        Route::delete('/{id}', [RoleController::class, 'destroy'])
             ->name('destroy');
     });
 });

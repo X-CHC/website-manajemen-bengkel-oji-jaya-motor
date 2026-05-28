@@ -477,7 +477,61 @@ class MenuSeeder extends Seeder
                 'urutan' => 50,
                 'created_at' => Carbon::now(),
             ],
-        ]);
+
+            /*
+            |--------------------------------------------------------------------------
+            | ROLE
+            |--------------------------------------------------------------------------
+            */
+            [
+                'id_menu' => 'MN0051',
+                'nama_menu' => 'List Role',
+                'route_name' => 'role.index',
+                'icon' => 'fas fa-user-shield',
+                'urutan' => 51,
+                'created_at' => Carbon::now(),
+            ],
+            [
+                'id_menu' => 'MN0052',
+                'nama_menu' => 'Tambah Role',
+                'route_name' => 'role.create',
+                'icon' => 'fas fa-user-shield',
+                'urutan' => 52,
+                'created_at' => Carbon::now(),
+            ],
+            [
+                'id_menu' => 'MN0053',
+                'nama_menu' => 'Simpan Role',
+                'route_name' => 'role.store',
+                'icon' => 'fas fa-user-shield',
+                'urutan' => 53,
+                'created_at' => Carbon::now(),
+            ],
+            [
+                'id_menu' => 'MN0054',
+                'nama_menu' => 'Edit Role',
+                'route_name' => 'role.edit',
+                'icon' => 'fas fa-user-shield',
+                'urutan' => 54,
+                'created_at' => Carbon::now(),
+            ],
+            [
+                'id_menu' => 'MN0055',
+                'nama_menu' => 'Update Role',
+                'route_name' => 'role.update',
+                'icon' => 'fas fa-user-shield',
+                'urutan' => 55,
+                'created_at' => Carbon::now(),
+            ],
+            [
+                'id_menu' => 'MN0056',
+                'nama_menu' => 'Hapus Role',
+                'route_name' => 'role.destroy',
+                'icon' => 'fas fa-user-shield',
+                'urutan' => 56,
+                'created_at' => Carbon::now(),
+            ],
+                    ]);
 
 
     }

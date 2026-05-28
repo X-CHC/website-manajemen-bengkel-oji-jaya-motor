@@ -12,45 +12,11 @@
     </a>
 
     @php
-        use App\Models\Menu;
-        use App\Models\UserMenu;
-        use App\Models\RoleMenu;
-        use Illuminate\Support\Facades\Auth;
         use Illuminate\Support\Facades\Cache;
 
-        $userLogin = Auth::user();
+        $userLogin = auth()->user();
 
         $modeStockOpname = Cache::get('stock_opname_mode', false);
-
-        /*
-        |--------------------------------------------------------------------------
-        | HELPER CEK AKSES MENU
-        |--------------------------------------------------------------------------
-        | Cek akses khusus user dulu.
-        | Jika tidak ada, cek akses default role.
-        |--------------------------------------------------------------------------
-        */
-        function punyaAksesMenu($routeName, $userLogin)
-        {
-            $menu = Menu::where('route_name', $routeName)->first();
-
-            if (!$menu) {
-                return false;
-            }
-
-            $aksesUser = UserMenu::where('id_user', $userLogin->id_user)
-                ->where('id_menu', $menu->id_menu)
-                ->first();
-
-            if ($aksesUser) {
-                return (bool) $aksesUser->can_access;
-            }
-
-            return RoleMenu::where('id_role', $userLogin->id_role)
-                ->where('id_menu', $menu->id_menu)
-                ->where('can_access', true)
-                ->exists();
-        }
 
         /*
         |--------------------------------------------------------------------------
@@ -85,6 +51,9 @@
 
         $canUser = punyaAksesMenu('user.index', $userLogin)
             || punyaAksesMenu('user.create', $userLogin);
+
+        $canRole = punyaAksesMenu('role.index', $userLogin)
+            || punyaAksesMenu('role.create', $userLogin);
     @endphp
 
     <div class="sidebar">
@@ -456,7 +425,7 @@
                     </li>
                 @endif
 
-                {{-- MENU AKUN (HANYA UNTUK ADMIN) --}}
+                {{-- MENU AKUN  --}}
                 @if($canUser)
 
                     <li class="nav-item has-treeview {{ request()->routeIs('user.*') ? 'menu-open' : '' }}">
@@ -500,6 +469,52 @@
 
                     </li>
 
+                @endif
+
+                @if(punyaAksesMenu('role.index', $userLogin) || punyaAksesMenu('role.create', $userLogin))
+                    <li class="nav-item has-treeview {{ request()->routeIs('role.*') ? 'menu-open' : '' }}">
+
+                        <a href="#"
+                        class="nav-link {{ request()->routeIs('role.*') ? 'active' : '' }}">
+
+                            <i class="nav-icon fas fa-user-shield"></i>
+
+                            <p>
+                                Role
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
+
+                        </a>
+
+                        <ul class="nav nav-treeview">
+
+                            @if(punyaAksesMenu('role.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('role.create') }}"
+                                    class="nav-link {{ request()->routeIs('role.create') ? 'active' : '' }}">
+
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>Tambah Role</p>
+
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if(punyaAksesMenu('role.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('role.index') }}"
+                                    class="nav-link {{ request()->routeIs('role.index') ? 'active' : '' }}">
+
+                                        <i class="far fa-circle nav-icon"></i>
+                                        <p>List Role</p>
+
+                                    </a>
+                                </li>
+                            @endif
+
+                        </ul>
+
+                    </li>
                 @endif
 
             </ul>
