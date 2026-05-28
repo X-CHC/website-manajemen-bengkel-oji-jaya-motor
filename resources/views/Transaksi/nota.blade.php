@@ -235,7 +235,7 @@
     <table class="header">
         <tr>
             <td class="logo-box">
-                <img src="{{ public_path('assets/img/logo-oji.jpeg') }}" class="logo-img">
+                <img src="{{ public_path('assets/img/logo-nota.jpeg') }}" class="logo-img">
             </td>
 
             <td class="header-title">
