@@ -6,6 +6,10 @@
     <div class="container-fluid">
 
         @php
+            $canCreateBarang = punyaAksesMenu('barang.create', auth()->user());
+            $canEditBarang = punyaAksesMenu('barang.edit', auth()->user());
+            $canDeleteBarang = punyaAksesMenu('barang.destroy', auth()->user());
+
             $barangMenipis = $barang->filter(function ($item) {
                 return $item->jumlah_barang > 0 &&
                        $item->jumlah_barang <= $item->alert_jumlah_barang;
@@ -56,7 +60,7 @@
                     <div class="table-responsive p-3">
 
                         <table id="tablePeringatanStok"
-                            class="table table-bordered table-hover mb-0">
+                               class="table table-bordered table-hover mb-0">
 
                             <thead>
                                 <tr>
@@ -148,11 +152,17 @@
                             Data Barang
                         </h3>
 
-                        <a href="{{ route('barang.create') }}"
-                           class="btn btn-primary btn-sm ml-auto">
-                            <i class="fas fa-plus"></i>
-                            Tambah Barang
-                        </a>
+                        @if($canCreateBarang)
+
+                            <a href="{{ route('barang.create') }}"
+                               class="btn btn-primary btn-sm ml-auto">
+
+                                <i class="fas fa-plus"></i>
+                                Tambah Barang
+
+                            </a>
+
+                        @endif
 
                     </div>
 
@@ -172,7 +182,10 @@
                                     <th>Alert</th>
                                     <th>Status Stok</th>
                                     <th>Dibuat</th>
-                                    <th width="15%">Action</th>
+
+                                    @if($canEditBarang || $canDeleteBarang)
+                                        <th width="15%">Action</th>
+                                    @endif
                                 </tr>
                             </thead>
 
@@ -242,39 +255,57 @@
                                             {{ $item->created_at->format('d-m-Y H:i') }}
                                         </td>
 
-                                        <td>
+                                        @if($canEditBarang || $canDeleteBarang)
 
-                                            <a href="{{ route('barang.edit', $item->id_barang) }}"
-                                               class="btn btn-warning btn-sm">
-                                                <i class="fas fa-edit"></i>
-                                            </a>
+                                            <td>
 
-                                            <form action="{{ route('barang.destroy', $item->id_barang) }}"
-                                                  method="POST"
-                                                  style="display:inline-block;">
+                                                @if($canEditBarang)
 
-                                                @csrf
-                                                @method('DELETE')
+                                                    <a href="{{ route('barang.edit', $item->id_barang) }}"
+                                                       class="btn btn-warning btn-sm">
 
-                                                <button type="submit"
-                                                        class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('Yakin hapus data?')">
+                                                        <i class="fas fa-edit"></i>
 
-                                                    <i class="fas fa-trash"></i>
+                                                    </a>
 
-                                                </button>
+                                                @endif
 
-                                            </form>
 
-                                        </td>
+                                                @if($canDeleteBarang)
+
+                                                    <form action="{{ route('barang.destroy', $item->id_barang) }}"
+                                                          method="POST"
+                                                          style="display:inline-block;">
+
+                                                        @csrf
+                                                        @method('DELETE')
+
+                                                        <button type="submit"
+                                                                class="btn btn-danger btn-sm"
+                                                                onclick="return confirm('Yakin hapus data?')">
+
+                                                            <i class="fas fa-trash"></i>
+
+                                                        </button>
+
+                                                    </form>
+
+                                                @endif
+
+                                            </td>
+
+                                        @endif
 
                                     </tr>
 
                                 @empty
 
                                     <tr>
-                                        <td colspan="10" class="text-center">
+                                        <td colspan="{{ ($canEditBarang || $canDeleteBarang) ? 10 : 9 }}"
+                                            class="text-center">
+
                                             Data barang belum tersedia
+
                                         </td>
                                     </tr>
 
@@ -338,4 +369,3 @@ $(function () {
 </script>
 
 @endpush
-

@@ -352,6 +352,95 @@ class DashboardController extends Controller
     }
 
 
+    public function grafikPendapatan(Request $request)
+    {
+        /*
+        |--------------------------------------------------------------------------
+        | AMBIL BULAN DAN TAHUN
+        |--------------------------------------------------------------------------
+        */
+        $bulanDipilih = (int) ($request->bulan ?? now()->month);
+
+        $tahunDipilih = (int) ($request->tahun ?? now()->year);
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | VALIDASI BULAN DAN TAHUN
+        |--------------------------------------------------------------------------
+        */
+        if ($bulanDipilih < 1 || $bulanDipilih > 12) {
+            $bulanDipilih = now()->month;
+        }
+
+        if ($tahunDipilih < 2000 || $tahunDipilih > now()->year + 1) {
+            $tahunDipilih = now()->year;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | PERIODE BULAN
+        |--------------------------------------------------------------------------
+        */
+        $awalBulan = Carbon::create(
+            $tahunDipilih,
+            $bulanDipilih,
+            1
+        )->startOfMonth();
+
+        $akhirBulan = Carbon::create(
+            $tahunDipilih,
+            $bulanDipilih,
+            1
+        )->endOfMonth();
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | DATA GRAFIK
+        |--------------------------------------------------------------------------
+        */
+        $chartLabels = [];
+
+        $chartData = [];
+
+        for (
+            $tanggal = $awalBulan->copy();
+            $tanggal <= $akhirBulan;
+            $tanggal->addDay()
+        ) {
+            $chartLabels[] = $tanggal->format('d M');
+
+            $chartData[] = Transaksi::whereDate(
+                'tanggal_transaksi',
+                $tanggal->format('Y-m-d')
+            )->sum('total_harga');
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | RESPONSE JSON
+        |--------------------------------------------------------------------------
+        */
+        return response()->json([
+            'bulan' => $bulanDipilih,
+
+            'tahun' => $tahunDipilih,
+
+            'namaPeriode' => $awalBulan->translatedFormat('F Y'),
+
+            'teksPeriode' => $awalBulan->format('d M Y') .
+                ' - ' .
+                $akhirBulan->format('d M Y'),
+
+            'labels' => $chartLabels,
+
+            'data' => $chartData,
+        ]);
+    }
+
     public function grafikPendapatan2(Request $request)
     {
         /*

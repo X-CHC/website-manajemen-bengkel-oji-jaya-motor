@@ -44,6 +44,8 @@ Route::get('/', function () {
 
 Route::get('dashboard/2', [DashboardController::class, 'index2'])
     ->name('dashboard.index2');
+Route::get('/grafik2', [DashboardController::class, 'grafikPendapatan2'])
+    ->name('dashboard.grafik2');
 
 /*
 |--------------------------------------------------------------------------
@@ -68,7 +70,7 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
 
 
 
-        Route::get('/grafik', [DashboardController::class, 'grafikPendapatan2'])
+        Route::get('/grafik', [DashboardController::class, 'grafikPendapatan'])
             ->middleware('akses.menu:dashboard.index')
             ->name('grafik');
     });

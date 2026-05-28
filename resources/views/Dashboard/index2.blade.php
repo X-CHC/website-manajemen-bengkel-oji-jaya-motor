@@ -568,7 +568,7 @@
 
             let dataPendapatan = @json($chartData);
 
-            let routeGrafik = "{{ route('dashboard.grafik') }}";
+            let routeGrafik = "{{ route('dashboard.grafik2') }}";
 
             let chartPendapatan = null;
 
