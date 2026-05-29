@@ -2,6 +2,12 @@
 
 @section('content')
 
+@php
+    $canCreateRole = punyaAksesMenu('role.create', auth()->user());
+    $canEditRole = punyaAksesMenu('role.edit', auth()->user());
+    $canDeleteRole = punyaAksesMenu('role.destroy', auth()->user());
+@endphp
+
 <section class="content">
     <div class="container-fluid">
 
@@ -13,7 +19,7 @@
                     Data Role
                 </h3>
 
-                @if(punyaAksesMenu('role.create', auth()->user()))
+                @if($canCreateRole)
                     <a href="{{ route('role.create') }}"
                        class="btn btn-primary btn-sm ml-auto">
 
@@ -37,7 +43,9 @@
                             <th>Nama Role</th>
                             <th>Tingkat Role</th>
                             <th>Tanggal Dibuat</th>
-                            <th>Aksi</th>
+                            @if($canEditRole || $canDeleteRole)
+                                <th>Aksi</th>
+                            @endif
                         </tr>
                     </thead>
 
@@ -58,38 +66,40 @@
                                     {{ $item->created_at ? $item->created_at->format('d-m-Y H:i') : '-' }}
                                 </td>
 
-                                <td>
-                                    <div class="d-flex">
+                                @if($canEditRole || $canDeleteRole)
+                                    <td>
+                                        <div class="d-flex">
 
-                                        @if(punyaAksesMenu('role.edit', auth()->user()))
-                                            <a href="{{ route('role.edit', $item->id_role) }}"
-                                               class="btn btn-warning btn-sm mr-1">
+                                            @if($canEditRole)
+                                                <a href="{{ route('role.edit', $item->id_role) }}"
+                                                   class="btn btn-warning btn-sm mr-1">
 
-                                                <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-edit"></i>
 
-                                            </a>
-                                        @endif
+                                                </a>
+                                            @endif
 
-                                        @if(punyaAksesMenu('role.destroy', auth()->user()))
-                                            <form action="{{ route('role.destroy', $item->id_role) }}"
-                                                  method="POST">
+                                            @if($canDeleteRole)
+                                                <form action="{{ route('role.destroy', $item->id_role) }}"
+                                                      method="POST">
 
-                                                @csrf
-                                                @method('DELETE')
+                                                    @csrf
+                                                    @method('DELETE')
 
-                                                <button type="submit"
-                                                        class="btn btn-danger btn-sm"
-                                                        onclick="return confirm('Yakin hapus role ini?')">
+                                                    <button type="submit"
+                                                            class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Yakin hapus role ini?')">
 
-                                                    <i class="fas fa-trash"></i>
+                                                        <i class="fas fa-trash"></i>
 
-                                                </button>
+                                                    </button>
 
-                                            </form>
-                                        @endif
+                                                </form>
+                                            @endif
 
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
+                                @endif
                             </tr>
 
                         @endforeach

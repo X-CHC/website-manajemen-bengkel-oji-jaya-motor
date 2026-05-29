@@ -2,6 +2,12 @@
 
 @section('content')
 
+@php
+    $canCreateUser = punyaAksesMenu('user.create', auth()->user());
+    $canEditUser = punyaAksesMenu('user.edit', auth()->user());
+    $canDeleteUser = punyaAksesMenu('user.destroy', auth()->user());
+@endphp
+
 <section class="content">
     <div class="container-fluid">
 
@@ -14,13 +20,15 @@
                     Data Akun
                 </h3>
 
-                <a href="{{ route('user.create') }}"
-                   class="btn btn-primary btn-sm ml-auto">
+                @if($canCreateUser)
+                    <a href="{{ route('user.create') }}"
+                       class="btn btn-primary btn-sm ml-auto">
 
-                    <i class="fas fa-plus"></i>
-                    Tambah Akun
+                        <i class="fas fa-plus"></i>
+                        Tambah Akun
 
-                </a>
+                    </a>
+                @endif
 
             </div>
 
@@ -36,7 +44,9 @@
                             <th>Email</th>
                             <th>Role</th>
                             <th>Tanggal Dibuat</th>
-                            <th>Aksi</th>
+                            @if($canEditUser || $canDeleteUser)
+                                <th>Aksi</th>
+                            @endif
                         </tr>
                     </thead>
 
@@ -65,37 +75,43 @@
                                     {{ $item->created_at->format('d-m-Y H:i') }}
                                 </td>
 
-                                <td>
-                                    <div class="d-flex">
+                                @if($canEditUser || $canDeleteUser)
+                                    <td>
+                                        <div class="d-flex">
 
-                                        {{-- EDIT --}}
-                                        <a href="{{ route('user.edit', $item->id_user) }}"
-                                        class="btn btn-warning btn-sm mr-1">
+                                            @if($canEditUser)
+                                                {{-- EDIT --}}
+                                                <a href="{{ route('user.edit', $item->id_user) }}"
+                                                class="btn btn-warning btn-sm mr-1">
 
-                                            <i class="fas fa-edit"></i>
+                                                    <i class="fas fa-edit"></i>
 
-                                        </a>
+                                                </a>
+                                            @endif
 
-                                        {{-- HAPUS --}}
-                                        <form action="{{ route('user.destroy', $item->id_user) }}"
-                                            method="POST">
+                                            @if($canDeleteUser)
+                                                {{-- HAPUS --}}
+                                                <form action="{{ route('user.destroy', $item->id_user) }}"
+                                                    method="POST">
 
-                                            @csrf
-                                            @method('DELETE')
+                                                    @csrf
+                                                    @method('DELETE')
 
-                                            <button type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Yakin hapus akun ini?')"
-                                                    {{ auth()->user()->id_user == $item->id_user ? 'disabled' : '' }}>
+                                                    <button type="submit"
+                                                            class="btn btn-danger btn-sm"
+                                                            onclick="return confirm('Yakin hapus akun ini?')"
+                                                            {{ auth()->user()->id_user == $item->id_user ? 'disabled' : '' }}>
 
-                                                <i class="fas fa-trash"></i>
+                                                        <i class="fas fa-trash"></i>
 
-                                            </button>
+                                                    </button>
 
-                                        </form>
+                                                </form>
+                                            @endif
 
-                                    </div>
-                                </td>
+                                        </div>
+                                    </td>
+                                @endif
                             </tr>
 
                         @endforeach

@@ -219,6 +219,7 @@ class RoleMenuSeeder extends Seeder
             */
             'stock-opname.create',
             'stock-opname.store',
+            'stock-opname.excel',
             'stock-opname.mode-on',
             'stock-opname.mode-off',
         ]);

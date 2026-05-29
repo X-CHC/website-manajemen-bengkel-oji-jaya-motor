@@ -2,8 +2,12 @@
 
 @section('content')
 
-<div class="container-fluid pt-4">
+@php
+    $canExportPdf = punyaAksesMenu('laporan.pdf', auth()->user());
+    $canExportExcel = punyaAksesMenu('laporan.excel', auth()->user());
+@endphp
 
+<div class="container-fluid pt-4">
 
     {{-- ALERT SUCCESS --}}
     @if(session('success'))
@@ -40,19 +44,23 @@
                             -- Pilih Laporan --
                         </option>
 
-                        <option value="transaksi">
-                            Transaksi / Penjualan
-                        </option>
+                        @if($canExportPdf)
+                            <option value="transaksi">
+                                Transaksi / Penjualan
+                            </option>
+                        @endif
 
-                        <option value="barang_masuk">
-                            Barang Masuk
-                        </option>
+                        @if($canExportExcel)
+                            <option value="barang_masuk">
+                                Barang Masuk
+                            </option>
+                        @endif
 
                     </select>
 
                     <small class="text-muted">
-                        PDF hanya tersedia untuk laporan transaksi / penjualan.
-                        Excel tersedia untuk semua jenis laporan.
+                        Transaksi / Penjualan akan dicetak PDF.
+                        Barang Masuk akan dicetak Excel.
                     </small>
 
                 </div>
@@ -131,26 +139,32 @@
                 </div>
 
 
-                {{-- BUTTON EXPORT --}}
-                <div class="d-flex gap-2 mt-4">
+                {{-- BUTTON CETAK --}}
+                <div class="mt-4">
 
-                    <button type="button"
-                            id="btnPdf"
-                            class="btn btn-danger">
+                    @if($canExportPdf || $canExportExcel)
 
-                        <i class="fas fa-file-pdf"></i>
-                        Export PDF
+                        <button type="button"
+                                id="btnCetak"
+                                class="btn btn-primary">
 
-                    </button>
+                            <i class="fas fa-print"></i>
+                            Cetak Laporan
 
-                    <button type="button"
-                            id="btnExcel"
-                            class="btn btn-success">
+                        </button>
 
-                        <i class="fas fa-file-excel"></i>
-                        Export Excel
+                    @else
 
-                    </button>
+                        <button type="button"
+                                class="btn btn-secondary"
+                                disabled>
+
+                            <i class="fas fa-lock"></i>
+                            Tidak Ada Akses Cetak Laporan
+
+                        </button>
+
+                    @endif
 
                 </div>
 
@@ -173,6 +187,10 @@
     window.routeLaporanPdf = "{{ route('laporan.pdf') }}";
 
     window.routeLaporanExcel = "{{ route('laporan.excel') }}";
+
+    window.canExportPdf = @json($canExportPdf);
+
+    window.canExportExcel = @json($canExportExcel);
 </script>
 
 <script src="{{ asset('assets/js/laporan.js') }}"></script>

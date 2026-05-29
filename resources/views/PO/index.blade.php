@@ -2,17 +2,33 @@
 
 @section('content')
 
+@php
+    $canCreatePO = punyaAksesMenu('po.create', auth()->user());
+    $canEditPO = punyaAksesMenu('po.edit', auth()->user());
+    $canDeletePO = punyaAksesMenu('po.destroy', auth()->user());
+@endphp
+
 <div class="container-fluid">
 
 
 
     <div class="card">
 
-        <div class="card-header">
+        <div class="card-header d-flex justify-content-between align-items-center">
 
             <h3 class="card-title">
                 Data Purchase Order
             </h3>
+
+            @if($canCreatePO)
+                <a href="{{ route('po.create') }}"
+                   class="btn btn-primary btn-sm ml-auto">
+
+                    <i class="fas fa-plus"></i>
+                    Tambah PO
+
+                </a>
+            @endif
 
         </div>
 
@@ -38,7 +54,9 @@
 
                         <th>Detail</th>
 
-                        <th>Aksi</th>
+                        @if($canEditPO || $canDeletePO)
+                            <th>Aksi</th>
+                        @endif
 
                     </tr>
 
@@ -96,44 +114,50 @@
 
                         </td>
 
-                        <td>
-                            @if($item->status_po == 'pending')
+                        @if($canEditPO || $canDeletePO)
+                            <td>
+                                @if($item->status_po == 'pending')
 
-                                <a href="{{ route('po.edit', $item->id_po) }}"
-                                class="btn btn-warning btn-sm">
+                                    @if($canEditPO)
+                                        <a href="{{ route('po.edit', $item->id_po) }}"
+                                        class="btn btn-warning btn-sm">
 
-                                    <i class="fas fa-edit"></i>
-                                    Edit
+                                            <i class="fas fa-edit"></i>
+                                            Edit
 
-                                </a>
+                                        </a>
+                                    @endif
 
-                                <form action="{{ route('po.destroy', $item->id_po) }}"
-                                    method="POST"
-                                    class="d-inline">
+                                    @if($canDeletePO)
+                                        <form action="{{ route('po.destroy', $item->id_po) }}"
+                                            method="POST"
+                                            class="d-inline">
 
-                                    @csrf
-                                    @method('DELETE')
+                                            @csrf
+                                            @method('DELETE')
 
-                                    <button type="submit"
-                                            class="btn btn-danger btn-sm"
-                                            onclick="return confirm('Hapus PO ini?')">
+                                            <button type="submit"
+                                                    class="btn btn-danger btn-sm"
+                                                    onclick="return confirm('Hapus PO ini?')">
 
-                                        <i class="fas fa-trash"></i>
-                                        Hapus
+                                                <i class="fas fa-trash"></i>
+                                                Hapus
 
-                                    </button>
+                                            </button>
 
-                                </form>
+                                        </form>
+                                    @endif
 
-                            @else
+                                @else
 
-                                <span class="badge badge-secondary">
-                                    Terkunci
-                                </span>
+                                    <span class="badge badge-secondary">
+                                        Terkunci
+                                    </span>
 
-                            @endif
+                                @endif
 
-                        </td>
+                            </td>
+                        @endif
 
                     </tr>
 

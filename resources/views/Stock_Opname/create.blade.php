@@ -2,6 +2,13 @@
 
 @section('content')
 
+@php
+    $canModeOn = punyaAksesMenu('stock-opname.mode-on', auth()->user());
+    $canModeOff = punyaAksesMenu('stock-opname.mode-off', auth()->user());
+    $canStore = punyaAksesMenu('stock-opname.store', auth()->user());
+    $canExportExcel = punyaAksesMenu('stock-opname.export-excel', auth()->user());
+@endphp
+
 <section class="content">
 <div class="container-fluid">
 
@@ -22,7 +29,6 @@
         </div>
 
     @endif
-
 
 
     {{-- CARD MODE STOCK OPNAME --}}
@@ -49,22 +55,24 @@
 
                 </div>
 
-                <form action="{{ route('stock-opname.mode-off') }}"
-                      method="POST"
-                      class="d-inline">
+                @if($canModeOff)
+                    <form action="{{ route('stock-opname.mode-off') }}"
+                          method="POST"
+                          class="d-inline">
 
-                    @csrf
+                        @csrf
 
-                    <button type="submit"
-                            class="btn btn-secondary"
-                            onclick="return confirm('Matikan mode stock opname?')">
+                        <button type="submit"
+                                class="btn btn-secondary"
+                                onclick="return confirm('Matikan mode stock opname?')">
 
-                        <i class="fas fa-power-off"></i>
-                        Matikan Mode Stock Opname
+                            <i class="fas fa-power-off"></i>
+                            Matikan Mode Stock Opname
 
-                    </button>
+                        </button>
 
-                </form>
+                    </form>
+                @endif
 
             @else
 
@@ -73,26 +81,28 @@
                     <i class="fas fa-info-circle"></i>
 
                     Mode stock opname sedang mati.
-                    Aktifkan mode ini jika ingin melakukan pengecekan stok fisik.
+                    Aktifkan mode ini jika ingin melakukan pengecekan stok toko.
 
                 </div>
 
-                <form action="{{ route('stock-opname.mode-on') }}"
-                      method="POST"
-                      class="d-inline">
+                @if($canModeOn)
+                    <form action="{{ route('stock-opname.mode-on') }}"
+                          method="POST"
+                          class="d-inline">
 
-                    @csrf
+                        @csrf
 
-                    <button type="submit"
-                            class="btn btn-danger"
-                            onclick="return confirm('Aktifkan mode stock opname? Fitur lain akan dinonaktifkan sementara.')">
+                        <button type="submit"
+                                class="btn btn-danger"
+                                onclick="return confirm('Aktifkan mode stock opname? Fitur lain akan dinonaktifkan sementara.')">
 
-                        <i class="fas fa-power-off"></i>
-                        Aktifkan Mode Stock Opname
+                            <i class="fas fa-power-off"></i>
+                            Aktifkan Mode Stock Opname
 
-                    </button>
+                        </button>
 
-                </form>
+                    </form>
+                @endif
 
             @endif
 
@@ -101,111 +111,161 @@
     </div>
 
 
-    <form action="{{ route('stock-opname.store') }}"
-          method="POST">
+    @if($canStore || $modeStockOpname || $canExportExcel)
 
-        @csrf
+        <form id="formStockOpname"
+              action="{{ route('stock-opname.store') }}"
+              method="POST">
 
-        <div class="card card-primary">
+            @csrf
 
+            <div class="card card-primary">
 
+                <div class="card-body">
 
-            <div class="card-body">
+                    <table id="tableStockOpname"
+                           class="table table-bordered table-striped">
 
-                <table id="tableStockOpname" class="table table-bordered table-striped">
-
-                    <thead>
-
-                        <tr>
-
-                            <th>No</th>
-
-                            <th>Barang</th>
-
-                            <th>Kategori</th>
-
-                            <th>Stok Sistem</th>
-
-                            <th>Stok Toko</th>
-
-                            <th>Selisih</th>
-
-                        </tr>
-
-                    </thead>
-
-                    <tbody>
-
-                        @foreach($barang as $item)
+                        <thead>
 
                             <tr>
 
-                                <td>
-                                    {{ $loop->iteration }}
-                                </td>
+                                <th>No</th>
 
-                                <td>
-                                    {{ $item->nama_barang }}
+                                <th>Barang</th>
 
-                                    <input type="hidden"
-                                           name="id_barang[]"
-                                           value="{{ $item->id_barang }}">
-                                </td>
+                                <th>Kategori</th>
 
-                                <td>
-                                    {{ $item->kategori->nama_kategori ?? '-' }}
-                                </td>
+                                <th>Stok Sistem</th>
 
-                                <td>
-                                    <input type="number"
-                                           class="form-control stok-sistem"
-                                           value="{{ $item->jumlah_barang }}"
-                                           readonly>
-                                </td>
+                                <th>Stok Toko</th>
 
-                                <td>
-                                    <input type="number"
-                                           name="stok_toko[]"
-                                           class="form-control stok-toko"
-                                           value="{{ old('stok_toko.' . $loop->index, $item->jumlah_barang) }}"
-                                           min="0"
-                                           required
-                                           {{ !$modeStockOpname ? 'readonly' : '' }}>
-                                </td>
-
-                                <td>
-                                    <input type="text"
-                                           class="form-control selisih"
-                                           value="0"
-                                           readonly>
-                                </td>
+                                <th>Selisih</th>
 
                             </tr>
 
-                        @endforeach
+                        </thead>
 
-                    </tbody>
+                        <tbody>
 
-                </table>
+                            @foreach($barang as $item)
+
+                                <tr>
+
+                                    <td>
+                                        {{ $loop->iteration }}
+                                    </td>
+
+                                    <td>
+                                        {{ $item->nama_barang }}
+
+                                        <input type="hidden"
+                                               name="id_barang[]"
+                                               value="{{ $item->id_barang }}">
+                                    </td>
+
+                                    <td>
+                                        {{ $item->kategori->nama_kategori ?? '-' }}
+                                    </td>
+
+                                    <td>
+                                        <input type="number"
+                                               class="form-control stok-sistem"
+                                               value="{{ $item->jumlah_barang }}"
+                                               readonly>
+                                    </td>
+
+                                    <td>
+                                        <input type="number"
+                                               name="stok_toko[]"
+                                               class="form-control stok-toko"
+                                               value="{{ old('stok_toko.' . $loop->index, $item->jumlah_barang) }}"
+                                               min="0"
+                                               required
+                                               {{ !$modeStockOpname ? 'readonly' : '' }}>
+                                    </td>
+
+                                    <td>
+                                        <input type="text"
+                                               class="form-control selisih"
+                                               value="0"
+                                               readonly>
+                                    </td>
+
+                                </tr>
+
+                            @endforeach
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+                @if($canStore || ($canExportExcel && !$modeStockOpname))
+                    <div class="card-footer">
+
+                        <div class="d-flex justify-content-between align-items-center flex-wrap">
+
+                            <div>
+
+                                @if($canStore)
+                                    <button type="button"
+                                            id="btnSimpanStockOpname"
+                                            class="btn btn-primary"
+                                            {{ !$modeStockOpname ? 'disabled' : '' }}>
+
+                                        <i class="fas fa-save"></i>
+                                        Simpan Stock Opname
+
+                                    </button>
+                                @endif
+
+                                @if($canExportExcel && !$modeStockOpname)
+                                    <button type="button"
+                                            id="btnExportStockOpname"
+                                            class="btn btn-success">
+
+                                        <i class="fas fa-file-excel"></i>
+                                        Export Excel
+
+                                    </button>
+                                @endif
+
+                            </div>
+
+
+                            @if($canExportExcel && !$modeStockOpname)
+                                <div class="small mt-2 mt-md-0">
+
+                                    @if($jumlahStockOpnameBulanIni > 0)
+
+                                        <span class="text-success">
+                                            <i class="fas fa-check-circle"></i>
+                                            Bulan ini sudah ada {{ $jumlahStockOpnameBulanIni }} stock opname.
+                                        </span>
+
+                                    @else
+
+                                        <span class="text-muted">
+                                            <i class="fas fa-info-circle"></i>
+                                            Bulan ini belum ada perubahan / stock opname.
+                                        </span>
+
+                                    @endif
+
+                                </div>
+                            @endif
+
+                        </div>
+
+                    </div>
+                @endif
 
             </div>
 
-            <div class="card-footer">
-
-                <button type="submit"
-                        class="btn btn-primary"
-                        {{ !$modeStockOpname ? 'disabled' : '' }}
-                        onclick="return confirm('Simpan hasil stock opname? Mode stock opname akan dimatikan setelah data disimpan.')">
-
-                    Simpan Stock Opname
-
-                </button>
-
-            </div>
-
-        </div>
-
-    </form>
+        </form>
+    @endif
 
 </div>
 </section>
@@ -229,24 +289,31 @@ function hitungSelisih(row)
 
     let selisih = stokToko - stokSistem;
 
-    row.find('.selisih').val(selisih);
+    let inputSelisih = row.find('.selisih');
 
-    if(selisih < 0)
-    {
-        row.find('.selisih')
-            .removeClass('is-valid')
-            .addClass('is-invalid');
-    }
-    else if(selisih > 0)
-    {
-        row.find('.selisih')
-            .removeClass('is-invalid')
-            .addClass('is-valid');
-    }
-    else
-    {
-        row.find('.selisih')
-            .removeClass('is-invalid is-valid');
+    inputSelisih.val(selisih);
+
+    /*
+    |--------------------------------------------------------------------------
+    | RESET CLASS SELISIH
+    |--------------------------------------------------------------------------
+    */
+    inputSelisih.removeClass(
+        'text-success text-danger text-dark font-weight-bold'
+    );
+
+    if (selisih < 0) {
+
+        inputSelisih.addClass('text-danger font-weight-bold');
+
+    } else if (selisih > 0) {
+
+        inputSelisih.addClass('text-success font-weight-bold');
+
+    } else {
+
+        inputSelisih.addClass('text-dark');
+
     }
 }
 
@@ -281,7 +348,42 @@ $(function () {
         hitungSelisih(row);
     });
 
-});
+
+    /*
+    |--------------------------------------------------------------------------
+    | SIMPAN STOCK OPNAME
+    |--------------------------------------------------------------------------
+    */
+    $('#btnSimpanStockOpname').on('click', function () {
+
+        if (!confirm('Simpan hasil stock opname? Mode stock opname akan dimatikan setelah data disimpan.')) {
+            return;
+        }
+
+        $('#formStockOpname')
+            .attr('action', "{{ route('stock-opname.store') }}")
+            .attr('target', '_self')
+            .submit();
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | EXPORT EXCEL STOCK OPNAME
+    |--------------------------------------------------------------------------
+    */
+    $('#btnExportStockOpname').on('click', function () {
+
+        $('#formStockOpname')
+            .attr('action', "{{ route('stock-opname.export-excel') }}")
+            .attr('target', '_blank')
+            .submit();
+
+    });
+
+
+    });
 
 </script>
 

@@ -179,7 +179,15 @@ class RoleController extends Controller
         $role = Role::findOrFail($id);
 
         $menu = Menu::orderBy('urutan', 'asc')
-            ->get();
+            ->get()
+            ->groupBy(function ($item) {
+
+                if (!$item->route_name) {
+                    return 'lainnya';
+                }
+
+                return explode('.', $item->route_name)[0];
+            });
 
         $aksesRole = RoleMenu::where('id_role', $id)
             ->where('can_access', true)

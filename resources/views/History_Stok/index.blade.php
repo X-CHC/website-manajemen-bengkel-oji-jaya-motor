@@ -2,6 +2,10 @@
 
 @section('content')
 
+@php
+    $canExportHistoryExcel = punyaAksesMenu('history.export-excel', auth()->user());
+@endphp
+
 <section class="content">
 <div class="container-fluid">
 
@@ -13,13 +17,15 @@
                 History Stok Barang
             </h3>
 
-            <a href="{{ route('history.export-excel') }}"
-               class="btn btn-success btn-sm ml-auto">
+            @if($canExportHistoryExcel)
+                <a href="{{ route('history.export-excel') }}"
+                   class="btn btn-success btn-sm ml-auto">
 
-                <i class="fas fa-file-excel"></i>
-                Cetak Excel
+                    <i class="fas fa-file-excel"></i>
+                    Cetak Excel
 
-            </a>
+                </a>
+            @endif
 
         </div>
 

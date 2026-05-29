@@ -531,8 +531,14 @@ class MenuSeeder extends Seeder
                 'urutan' => 56,
                 'created_at' => Carbon::now(),
             ],
-                    ]);
-
-
+            [
+                'id_menu' => 'MN0057',
+                'nama_menu' => 'Export Excel Stock Opname',
+                'route_name' => 'stock-opname.export-excel',
+                'icon' => 'fas fa-file-excel',
+                'urutan' => 57,
+                'created_at' => Carbon::now(),
+            ],
+        ]);
     }
 }

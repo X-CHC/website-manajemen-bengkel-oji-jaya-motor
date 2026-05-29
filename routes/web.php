@@ -279,6 +279,9 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
         Route::post('/store', [StockOpnameController::class, 'store'])
             ->name('store');
 
+        Route::post('/export-excel', [StockOpnameController::class, 'exportExcel'])
+            ->name('export-excel');
+
         Route::post('/mode-on', [StockOpnameController::class, 'modeOn'])
             ->name('mode-on');
 

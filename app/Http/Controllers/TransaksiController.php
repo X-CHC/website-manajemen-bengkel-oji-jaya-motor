@@ -10,22 +10,22 @@ use App\Models\DetailTransaksi;
 use App\Models\HistoryStok;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class TransaksiController extends Controller
 {
     public function index()
     {
-
         // AMBIL DATA TRANSAKSI
-
         $transaksi = Transaksi::with([
-                            'detailTransaksi.barang'
-                        ])
-                        ->orderBy(
-                            'tanggal_transaksi',
-                            'desc'
-                        )
-                        ->get();
+                'user',
+                'detailTransaksi.barang'
+            ])
+            ->orderBy(
+                'tanggal_transaksi',
+                'desc'
+            )
+            ->get();
 
         return view(
             'transaksi.index',
@@ -122,6 +122,8 @@ class TransaksiController extends Controller
         Transaksi::create([
 
             'id_transaksi' => $id_transaksi,
+
+            'id_user' => Auth::user()->id_user,
 
             'id_pelanggan' => $request->id_pelanggan,
 
@@ -341,6 +343,7 @@ class TransaksiController extends Controller
     public function cetakNota($id)
     {
         $transaksi = Transaksi::with([
+            'user',
             'pelanggan',
             'detailTransaksi.barang'
         ])->findOrFail($id);

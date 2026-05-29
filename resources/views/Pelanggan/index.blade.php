@@ -2,6 +2,12 @@
 
 @section('content')
 
+@php
+    $canCreatePelanggan = punyaAksesMenu('pelanggan.create', auth()->user());
+    $canEditPelanggan = punyaAksesMenu('pelanggan.edit', auth()->user());
+    $canDeletePelanggan = punyaAksesMenu('pelanggan.destroy', auth()->user());
+@endphp
+
 <section class="content">
     <div class="container-fluid">
 
@@ -21,14 +27,16 @@
                                 Data Pelanggan
                             </h3>
 
-                            <a href="{{ route('pelanggan.create') }}"
-                               class="btn btn-primary btn-sm">
+                            @if($canCreatePelanggan)
+                                <a href="{{ route('pelanggan.create') }}"
+                                   class="btn btn-primary btn-sm">
 
-                                <i class="fas fa-plus"></i>
+                                    <i class="fas fa-plus"></i>
 
-                                Tambah Pelanggan
+                                    Tambah Pelanggan
 
-                            </a>
+                                </a>
+                            @endif
 
                         </div>
 
@@ -72,9 +80,11 @@
                                         Dibuat
                                     </th>
 
-                                    <th width="15%">
-                                        Action
-                                    </th>
+                                    @if($canEditPelanggan || $canDeletePelanggan)
+                                        <th width="15%">
+                                            Action
+                                        </th>
+                                    @endif
 
                                 </tr>
 
@@ -114,38 +124,44 @@
                                             {{ $item->created_at->format('d-m-Y H:i') }}
                                         </td>
 
-                                        <td>
+                                        @if($canEditPelanggan || $canDeletePelanggan)
+                                            <td>
 
-                                            <div class="d-flex">
+                                                <div class="d-flex">
 
-                                                {{-- EDIT --}}
-                                                <a href="{{ route('pelanggan.edit', $item->id_pelanggan) }}"
-                                                   class="btn btn-warning btn-sm mr-1">
+                                                    @if($canEditPelanggan)
+                                                        {{-- EDIT --}}
+                                                        <a href="{{ route('pelanggan.edit', $item->id_pelanggan) }}"
+                                                           class="btn btn-warning btn-sm mr-1">
 
-                                                    <i class="fas fa-edit"></i>
+                                                            <i class="fas fa-edit"></i>
 
-                                                </a>
+                                                        </a>
+                                                    @endif
 
-                                                {{-- HAPUS --}}
-                                                <form action="{{ route('pelanggan.destroy', $item->id_pelanggan) }}"
-                                                      method="POST">
+                                                    @if($canDeletePelanggan)
+                                                        {{-- HAPUS --}}
+                                                        <form action="{{ route('pelanggan.destroy', $item->id_pelanggan) }}"
+                                                              method="POST">
 
-                                                    @csrf
-                                                    @method('DELETE')
+                                                            @csrf
+                                                            @method('DELETE')
 
-                                                    <button type="submit"
-                                                            class="btn btn-danger btn-sm"
-                                                            onclick="return confirm('Yakin hapus pelanggan?')">
+                                                            <button type="submit"
+                                                                    class="btn btn-danger btn-sm"
+                                                                    onclick="return confirm('Yakin hapus pelanggan?')">
 
-                                                        <i class="fas fa-trash"></i>
+                                                                <i class="fas fa-trash"></i>
 
-                                                    </button>
+                                                            </button>
 
-                                                </form>
+                                                        </form>
+                                                    @endif
 
-                                            </div>
+                                                </div>
 
-                                        </td>
+                                            </td>
+                                        @endif
 
                                     </tr>
 
@@ -153,7 +169,7 @@
 
                                     <tr>
 
-                                        <td colspan="8"
+                                        <td colspan="{{ ($canEditPelanggan || $canDeletePelanggan) ? 8 : 7 }}"
                                             class="text-center">
 
                                             Data pelanggan belum ada

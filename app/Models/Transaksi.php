@@ -17,6 +17,7 @@ class Transaksi extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'id_user',
         'id_transaksi',
         'id_pelanggan',
         'nama_pelanggan_lain',
@@ -35,5 +36,10 @@ class Transaksi extends Model
     public function detailTransaksi()
     {
         return $this->hasMany(DetailTransaksi::class, 'id_transaksi', 'id_transaksi');
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'id_user', 'id_user');
     }
 }

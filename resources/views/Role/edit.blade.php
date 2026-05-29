@@ -25,7 +25,7 @@
 
         <div class="row">
 
-            <div class="col-md-8">
+            <div class="col-md-12">
 
                 <div class="card card-warning">
 
@@ -90,6 +90,10 @@
                                     </div>
                                 @enderror
 
+                                <small class="text-muted">
+                                    Angka ini bisa dipakai untuk urutan/tingkatan role.
+                                </small>
+
                             </div>
 
 
@@ -98,33 +102,83 @@
 
                             <div class="form-group">
 
-                                <label>Akses Menu</label>
+                                <label class="mb-3">
+                                    Akses Menu
+                                </label>
 
                                 <div class="row">
 
-                                    @foreach($menu as $item)
+                                    @foreach($menu as $groupName => $items)
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-6 mb-4">
 
-                                            <div class="custom-control custom-checkbox mb-2">
+                                            <div class="card card-outline card-secondary">
 
-                                                <input type="checkbox"
-                                                       name="id_menu[]"
-                                                       value="{{ $item->id_menu }}"
-                                                       class="custom-control-input"
-                                                       id="menu_{{ $item->id_menu }}"
-                                                       {{ in_array($item->id_menu, old('id_menu', $aksesRole)) ? 'checked' : '' }}>
+                                                <div class="card-header">
 
-                                                <label class="custom-control-label"
-                                                       for="menu_{{ $item->id_menu }}">
+                                                    <div class="custom-control custom-checkbox">
 
-                                                    {{ $item->nama_menu }}
+                                                        <input type="checkbox"
+                                                               class="custom-control-input check-parent"
+                                                               id="parent_{{ $groupName }}"
+                                                               data-group="{{ $groupName }}">
 
-                                                    <small class="text-muted">
-                                                        ({{ $item->route_name }})
-                                                    </small>
+                                                        <label class="custom-control-label font-weight-bold"
+                                                               for="parent_{{ $groupName }}">
 
-                                                </label>
+                                                            {{ ucwords(str_replace('-', ' ', $groupName)) }}
+
+                                                        </label>
+
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="card-body">
+
+                                                    <div class="row">
+
+                                                        @foreach($items as $item)
+
+                                                            <div class="col-md-6 mb-3">
+
+                                                                <div class="border rounded p-3 h-100 shadow-sm akses-menu-item">
+
+                                                                    <div class="custom-control custom-checkbox">
+
+                                                                        <input type="checkbox"
+                                                                               name="id_menu[]"
+                                                                               value="{{ $item->id_menu }}"
+                                                                               class="custom-control-input check-child child-{{ $groupName }}"
+                                                                               id="menu_{{ $item->id_menu }}"
+                                                                               {{ in_array($item->id_menu, old('id_menu', $aksesRole)) ? 'checked' : '' }}>
+
+                                                                        <label class="custom-control-label"
+                                                                               for="menu_{{ $item->id_menu }}">
+
+                                                                            <span class="font-weight-bold">
+                                                                                {{ $item->nama_menu }}
+                                                                            </span>
+
+                                                                            <br>
+
+                                                                            <small class="text-muted">
+                                                                                ({{ $item->route_name }})
+                                                                            </small>
+
+                                                                        </label>
+
+                                                                    </div>
+
+                                                                </div>
+
+                                                            </div>
+
+                                                        @endforeach
+
+                                                    </div>
+
+                                                </div>
 
                                             </div>
 
@@ -168,3 +222,112 @@
 </section>
 
 @endsection
+
+
+@push('scripts')
+
+<script>
+$(function () {
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE STYLE ITEM YANG DICENTANG
+    |--------------------------------------------------------------------------
+    */
+    function updateItemChecked()
+    {
+        $('.check-child').each(function () {
+
+            let item = $(this).closest('.akses-menu-item');
+
+            if ($(this).prop('checked')) {
+
+                item.removeClass('border')
+                    .addClass('border border-primary bg-light');
+
+            } else {
+
+                item.removeClass('border-primary bg-light')
+                    .addClass('border');
+
+            }
+
+        });
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | UPDATE CHECKBOX PARENT
+    |--------------------------------------------------------------------------
+    | Parent hanya ikut checked kalau semua child dalam group tercentang.
+    |--------------------------------------------------------------------------
+    */
+    function updateParentChecked()
+    {
+        $('.check-parent').each(function () {
+
+            let group = $(this).data('group');
+
+            let totalChild = $('.child-' + group).length;
+
+            let totalChecked = $('.child-' + group + ':checked').length;
+
+            $(this).prop(
+                'checked',
+                totalChild > 0 && totalChild === totalChecked
+            );
+
+        });
+    }
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHECK PARENT
+    |--------------------------------------------------------------------------
+    | Jika checkbox modul dicentang, semua akses di bawahnya ikut dicentang.
+    |--------------------------------------------------------------------------
+    */
+    $('.check-parent').on('change', function () {
+
+        let group = $(this).data('group');
+
+        $('.child-' + group).prop(
+            'checked',
+            $(this).prop('checked')
+        );
+
+        updateItemChecked();
+        updateParentChecked();
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | CHECK CHILD
+    |--------------------------------------------------------------------------
+    | Child bisa dicentang satu-satu.
+    |--------------------------------------------------------------------------
+    */
+    $('.check-child').on('change', function () {
+
+        updateItemChecked();
+        updateParentChecked();
+
+    });
+
+
+    /*
+    |--------------------------------------------------------------------------
+    | LOAD AWAL
+    |--------------------------------------------------------------------------
+    */
+    updateItemChecked();
+    updateParentChecked();
+
+});
+</script>
+
+@endpush

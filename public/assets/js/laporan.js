@@ -1,4 +1,6 @@
-$(document).ready(function() {
+$(function () {
+
+    let allBarang = window.allBarang || [];
 
     /*
     |--------------------------------------------------------------------------
@@ -16,40 +18,47 @@ $(document).ready(function() {
     | LOAD BARANG BERDASARKAN KATEGORI
     |--------------------------------------------------------------------------
     */
-    function loadBarang(idKategori = '') {
+    function loadBarang(idKategori = '')
+    {
         let html = '';
 
-        let kategoriPilihan = String(idKategori).trim();
+        allBarang.forEach(function (item) {
 
-        window.allBarang.forEach(function(item) {
+            if (idKategori === '') {
 
-            let kategoriBarang = String(item.id_kategori_barang || '').trim();
-
-            let idBrg = String(item.id_barang || '').trim();
-
-            let namaBrg = item.nama_barang || 'Tanpa Nama';
-
-            if(kategoriPilihan === '' || kategoriBarang === kategoriPilihan) {
                 html += `
-                    <option value="${idBrg}">
-                        ${namaBrg}
+                    <option value="${item.id_barang}">
+                        ${item.nama_barang}
+                    </option>
+                `;
+
+                return;
+            }
+
+            if (item.id_kategori_barang == idKategori) {
+
+                html += `
+                    <option value="${item.id_barang}">
+                        ${item.nama_barang}
                     </option>
                 `;
             }
+
         });
 
         $('#id_barang').html(html);
 
-        $('#id_barang').val(null).trigger('change');
+        $('#id_barang').trigger('change');
     }
 
 
     /*
     |--------------------------------------------------------------------------
-    | SAAT KATEGORI DIGANTI
+    | GANTI KATEGORI
     |--------------------------------------------------------------------------
     */
-    $('#id_kategori').change(function() {
+    $('#id_kategori').on('change', function () {
+
         let kategori = $(this).val();
 
         loadBarang(kategori);
@@ -58,7 +67,7 @@ $(document).ready(function() {
 
     /*
     |--------------------------------------------------------------------------
-    | LOAD PERTAMA
+    | LOAD AWAL
     |--------------------------------------------------------------------------
     */
     loadBarang();
@@ -66,50 +75,63 @@ $(document).ready(function() {
 
     /*
     |--------------------------------------------------------------------------
-    | TOMBOL PDF
+    | CETAK LAPORAN
     |--------------------------------------------------------------------------
-    | PDF hanya transaksi.
-    |--------------------------------------------------------------------------
-    */
-    $('#btnPdf').click(function() {
-
-        let jenis = $('#jenis_laporan').val();
-
-        if(!jenis) {
-            alert('Silakan pilih jenis laporan terlebih dahulu!');
-            return;
-        }
-
-        if(jenis !== 'transaksi') {
-            alert('Export PDF hanya tersedia untuk laporan transaksi / penjualan.');
-            return;
-        }
-
-        $('#formLaporan').attr('action', window.routeLaporanPdf);
-
-        $('#formLaporan').submit();
-    });
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | TOMBOL EXCEL
-    |--------------------------------------------------------------------------
-    | Excel bisa semua jenis laporan.
+    | transaksi    => PDF
+    | barang_masuk => Excel
     |--------------------------------------------------------------------------
     */
-    $('#btnExcel').click(function() {
+    $('#btnCetak').on('click', function () {
 
-        let jenis = $('#jenis_laporan').val();
+        let jenisLaporan = $('#jenis_laporan').val();
 
-        if(!jenis) {
-            alert('Silakan pilih jenis laporan terlebih dahulu!');
+        if (jenisLaporan === '') {
+            toastr.warning('Pilih jenis laporan terlebih dahulu');
             return;
         }
 
-        $('#formLaporan').attr('action', window.routeLaporanExcel);
 
-        $('#formLaporan').submit();
+        /*
+        |--------------------------------------------------------------------------
+        | TRANSAKSI / PENJUALAN => PDF
+        |--------------------------------------------------------------------------
+        */
+        if (jenisLaporan === 'transaksi') {
+
+            if (!window.canExportPdf) {
+                toastr.error('Kamu tidak memiliki akses cetak PDF laporan');
+                return;
+            }
+
+            $('#formLaporan')
+                .attr('action', window.routeLaporanPdf)
+                .submit();
+
+            return;
+        }
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | BARANG MASUK => EXCEL
+        |--------------------------------------------------------------------------
+        */
+        if (jenisLaporan === 'barang_masuk') {
+
+            if (!window.canExportExcel) {
+                toastr.error('Kamu tidak memiliki akses cetak Excel laporan');
+                return;
+            }
+
+            $('#formLaporan')
+                .attr('action', window.routeLaporanExcel)
+                .submit();
+
+            return;
+        }
+
+
+        toastr.error('Jenis laporan tidak valid');
     });
 
 });

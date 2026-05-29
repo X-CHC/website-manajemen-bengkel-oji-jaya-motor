@@ -4,14 +4,21 @@
 
 @section('content')
 
+@php
+    $canCetakTransaksi = punyaAksesMenu('transaksi.cetak', auth()->user());
+    $canCreateTransaksi = punyaAksesMenu('transaksi.create', auth()->user());
+@endphp
+
 <div class="container-fluid pt-4">
 
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Data Transaksi</h4>
-        <a href="{{ route('transaksi.create') }}" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Tambah Transaksi
-        </a>
+        @if($canCreateTransaksi)
+            <a href="{{ route('transaksi.create') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Tambah Transaksi
+            </a>
+        @endif
     </div>
 
     {{-- CARD --}}
@@ -53,9 +60,11 @@
                                     </button>
 
                                     {{-- TOMBOL CETAK --}}
-                                    <a href="{{ route('transaksi.cetak', $item->id_transaksi) }}" target="_blank" class="btn btn-success btn-sm">
-                                        <i class="fas fa-print"></i>
-                                    </a>
+                                    @if($canCetakTransaksi)
+                                        <a href="{{ route('transaksi.cetak', $item->id_transaksi) }}" target="_blank" class="btn btn-success btn-sm">
+                                            <i class="fas fa-print"></i>
+                                        </a>
+                                    @endif
                                 </div>
                             </td>
                         </tr>
