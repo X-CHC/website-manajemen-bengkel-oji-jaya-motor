@@ -98,8 +98,6 @@ class StockOpnameController extends Controller
 
             'stok_toko' => 'required|array',
             'stok_toko.*' => 'required|integer|min:0',
-
-            'keterangan' => 'nullable|max:255',
         ], [
             'id_barang.required' => 'Data barang tidak ditemukan',
             'id_barang.*.exists' => 'Barang tidak valid',
@@ -108,13 +106,73 @@ class StockOpnameController extends Controller
             'stok_toko.*.required' => 'Stok toko wajib diisi',
             'stok_toko.*.integer' => 'Stok toko harus berupa angka',
             'stok_toko.*.min' => 'Stok toko tidak boleh negatif',
-
-            'keterangan.max' => 'Keterangan maksimal 255 karakter',
         ]);
 
         DB::beginTransaction();
 
         try {
+
+            /*
+            |--------------------------------------------------------------------------
+            | AMBIL DATA BARANG
+            |--------------------------------------------------------------------------
+            */
+            $barangList = Barang::whereIn('id_barang', $request->id_barang)
+                ->get()
+                ->keyBy('id_barang');
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | CEK BARANG YANG BERUBAH SAJA
+            |--------------------------------------------------------------------------
+            | Barang yang stok toko sama dengan stok sistem tidak perlu masuk
+            | ke tbl_stock_opname, detail stock opname, maupun history stok.
+            |--------------------------------------------------------------------------
+            */
+            $barangBerubah = [];
+
+            foreach ($request->id_barang as $index => $idBarang) {
+
+                $barang = $barangList->get($idBarang);
+
+                if (!$barang) {
+                    continue;
+                }
+
+                $stokSistem = (int) $barang->jumlah_barang;
+
+                $stokToko = (int) $request->stok_toko[$index];
+
+                $selisih = $stokToko - $stokSistem;
+
+                if ($selisih == 0) {
+                    continue;
+                }
+
+                $barangBerubah[] = [
+                    'barang' => $barang,
+                    'stok_sistem' => $stokSistem,
+                    'stok_toko' => $stokToko,
+                    'selisih' => $selisih,
+                ];
+            }
+
+
+            /*
+            |--------------------------------------------------------------------------
+            | JIKA TIDAK ADA PERUBAHAN
+            |--------------------------------------------------------------------------
+            */
+            if (count($barangBerubah) == 0) {
+
+                DB::rollBack();
+
+                return redirect()
+                    ->route('stock-opname.create')
+                    ->with('info', 'Tidak ada perubahan stok yang disimpan');
+            }
+
 
             /*
             |--------------------------------------------------------------------------
@@ -147,13 +205,14 @@ class StockOpnameController extends Controller
                 'id_stock_opname' => $id_stock_opname,
                 'id_user' => Auth::user()->id_user,
                 'tanggal_opname' => now()->toDateString(),
-                'keterangan' => $request->keterangan,
             ]);
 
 
             /*
             |--------------------------------------------------------------------------
             | AUTO NUMBER DETAIL STOCK OPNAME
+            |--------------------------------------------------------------------------
+            | Prefix DSO + 3 digit = 6 karakter, sesuai char(6).
             |--------------------------------------------------------------------------
             */
             $detailTerakhir = DetailStockOpname::withTrashed()
@@ -165,7 +224,7 @@ class StockOpnameController extends Controller
             } else {
                 $nomorDetail = (int) substr(
                     $detailTerakhir->id_detail_stock_opname,
-                    -4
+                    -3
                 ) + 1;
             }
 
@@ -191,44 +250,18 @@ class StockOpnameController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | AMBIL DATA BARANG
+            | SIMPAN DETAIL, UPDATE BARANG, DAN HISTORY
             |--------------------------------------------------------------------------
             */
-            $barangList = Barang::whereIn('id_barang', $request->id_barang)
-                ->get()
-                ->keyBy('id_barang');
+            foreach ($barangBerubah as $data) {
 
+                $barang = $data['barang'];
 
-            /*
-            |--------------------------------------------------------------------------
-            | LOOP BARANG
-            |--------------------------------------------------------------------------
-            */
-            foreach ($request->id_barang as $index => $idBarang) {
+                $stokSistem = $data['stok_sistem'];
 
-                $barang = $barangList->get($idBarang);
+                $stokToko = $data['stok_toko'];
 
-                if (!$barang) {
-                    continue;
-                }
-
-                $stokSistem = (int) $barang->jumlah_barang;
-
-                $stokToko = (int) $request->stok_toko[$index];
-
-                $selisih = $stokToko - $stokSistem;
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | JIKA STOK SAMA, DETAIL TETAP DISIMPAN
-                |--------------------------------------------------------------------------
-                | Supaya laporan stock opname tetap menunjukkan barang yang dicek.
-                |--------------------------------------------------------------------------
-                */
-                $id_detail_stock_opname = 'DSO' . sprintf('%03s', $nomorDetail);
-
-                $nomorDetail++;
+                $selisih = $data['selisih'];
 
 
                 /*
@@ -236,6 +269,10 @@ class StockOpnameController extends Controller
                 | SIMPAN DETAIL STOCK OPNAME
                 |--------------------------------------------------------------------------
                 */
+                $id_detail_stock_opname = 'DSO' . sprintf('%03s', $nomorDetail);
+
+                $nomorDetail++;
+
                 DetailStockOpname::create([
                     'id_detail_stock_opname' => $id_detail_stock_opname,
                     'id_stock_opname' => $id_stock_opname,
@@ -244,16 +281,6 @@ class StockOpnameController extends Controller
                     'stok_toko' => $stokToko,
                     'selisih' => $selisih,
                 ]);
-
-
-                /*
-                |--------------------------------------------------------------------------
-                | JIKA TIDAK ADA SELISIH, TIDAK PERLU UPDATE STOK / HISTORY
-                |--------------------------------------------------------------------------
-                */
-                if ($selisih == 0) {
-                    continue;
-                }
 
 
                 /*
@@ -318,41 +345,64 @@ class StockOpnameController extends Controller
     public function exportExcel(Request $request)
     {
         $request->validate([
-            'tanggal_awal' => 'required|date',
-            'tanggal_akhir' => 'required|date|after_or_equal:tanggal_awal',
+            'tanggal_awal' => 'nullable|date',
+            'tanggal_akhir' => 'nullable|date|after_or_equal:tanggal_awal',
         ], [
-            'tanggal_awal.required' => 'Tanggal awal wajib diisi',
             'tanggal_awal.date' => 'Tanggal awal tidak valid',
 
-            'tanggal_akhir.required' => 'Tanggal akhir wajib diisi',
             'tanggal_akhir.date' => 'Tanggal akhir tidak valid',
             'tanggal_akhir.after_or_equal' => 'Tanggal akhir tidak boleh lebih kecil dari tanggal awal',
         ]);
 
+
+        /*
+        |--------------------------------------------------------------------------
+        | PERIODE LAPORAN
+        |--------------------------------------------------------------------------
+        */
         $tanggalAwal = $request->tanggal_awal;
 
         $tanggalAkhir = $request->tanggal_akhir;
 
-        $periode = date('d-m-Y', strtotime($tanggalAwal)) .
-            ' sampai ' .
-            date('d-m-Y', strtotime($tanggalAkhir));
+        if ($tanggalAwal && $tanggalAkhir) {
 
-        $periodeFile = $tanggalAwal . '-sampai-' . $tanggalAkhir;
+            $periode = date('d-m-Y', strtotime($tanggalAwal)) .
+                ' sampai ' .
+                date('d-m-Y', strtotime($tanggalAkhir));
+
+            $periodeFile = $tanggalAwal . '-sampai-' . $tanggalAkhir;
+
+        } else {
+
+            $periode = 'Semua Periode';
+
+            $periodeFile = 'semua-periode';
+
+        }
 
 
         /*
         |--------------------------------------------------------------------------
-        | AMBIL DETAIL RIWAYAT STOCK OPNAME
+        | AMBIL DATA DARI TABEL STOCK OPNAME
+        |--------------------------------------------------------------------------
+        | Header stock opname menyimpan tanggal dan user.
+        | Detail stock opname menyimpan barang yang diubah.
         |--------------------------------------------------------------------------
         */
-        $detailStockOpname = DetailStockOpname::with([
-                'stockOpname.user.role',
-                'barang.kategori',
-            ])
-            ->whereHas('stockOpname', function ($query) use ($tanggalAwal, $tanggalAkhir) {
-                $query->whereDate('tanggal_opname', '>=', $tanggalAwal)
-                    ->whereDate('tanggal_opname', '<=', $tanggalAkhir);
-            })
+        $query = StockOpname::with([
+            'user.role',
+            'detailStockOpname.barang.kategori',
+        ]);
+
+        if ($tanggalAwal && $tanggalAkhir) {
+
+            $query->whereDate('tanggal_opname', '>=', $tanggalAwal)
+                ->whereDate('tanggal_opname', '<=', $tanggalAkhir);
+
+        }
+
+        $stockOpname = $query
+            ->orderBy('tanggal_opname', 'asc')
             ->orderBy('created_at', 'asc')
             ->get();
 
@@ -362,48 +412,61 @@ class StockOpnameController extends Controller
         | FORMAT DATA EXCEL
         |--------------------------------------------------------------------------
         */
-        $data = $detailStockOpname->map(function ($item, $index) use ($periode) {
+        $data = collect();
 
-            if ($item->selisih > 0) {
-                $status = 'Stok toko lebih banyak';
-            } elseif ($item->selisih < 0) {
-                $status = 'Stok toko lebih sedikit';
-            } else {
-                $status = 'Sesuai';
+        $nomor = 1;
+
+        foreach ($stockOpname as $opname) {
+
+            foreach ($opname->detailStockOpname as $detail) {
+
+                if ($detail->selisih > 0) {
+
+                    $status = 'Berkurang';
+
+                } elseif ($detail->selisih < 0) {
+
+                    $status = 'Bertambah';
+
+                } else {
+
+                    $status = 'Sesuai';
+
+                }
+
+                $data->push([
+                    'No' => $nomor++,
+
+                    'Periode' => $periode,
+
+                    'ID Stock Opname' => $opname->id_stock_opname,
+
+                    'Tanggal Opname' => $opname->tanggal_opname
+                        ? date('d-m-Y', strtotime($opname->tanggal_opname))
+                        : '-',
+
+                    'Petugas' => $opname->user->email ?? '-',
+
+                    'Role Petugas' => $opname->user->role->nama_role ?? '-',
+
+                    'ID Detail' => $detail->id_detail_stock_opname,
+
+                    'ID Barang' => $detail->id_barang,
+
+                    'Nama Barang' => $detail->barang->nama_barang ?? '-',
+
+                    'Kategori' => $detail->barang->kategori->nama_kategori ?? '-',
+
+                    'Stok Sistem' => $detail->stok_sistem,
+
+                    'Stok Toko' => $detail->stok_toko,
+
+                    'Selisih' => $detail->selisih,
+
+                    'Status' => $status,
+                ]);
             }
-
-            return [
-                'No' => $index + 1,
-
-                'Periode' => $periode,
-
-                'ID Stock Opname' => $item->id_stock_opname,
-
-                'Tanggal Opname' => optional($item->stockOpname)->tanggal_opname
-                    ? date('d-m-Y', strtotime($item->stockOpname->tanggal_opname))
-                    : '-',
-
-                'Petugas' => $item->stockOpname->user->email ?? '-',
-
-                'Role Petugas' => $item->stockOpname->user->role->nama_role ?? '-',
-
-                'ID Barang' => $item->id_barang,
-
-                'Nama Barang' => $item->barang->nama_barang ?? '-',
-
-                'Kategori' => $item->barang->kategori->nama_kategori ?? '-',
-
-                'Stok Sistem' => $item->stok_sistem,
-
-                'Stok Toko' => $item->stok_toko,
-
-                'Selisih' => $item->selisih,
-
-                'Status' => $status,
-
-                'Keterangan' => $item->stockOpname->keterangan ?? '-',
-            ];
-        });
+        }
 
 
         /*
@@ -412,6 +475,7 @@ class StockOpnameController extends Controller
         |--------------------------------------------------------------------------
         */
         if ($data->isEmpty()) {
+
             $data = collect([
                 [
                     'No' => '-',
@@ -420,16 +484,17 @@ class StockOpnameController extends Controller
                     'Tanggal Opname' => '-',
                     'Petugas' => '-',
                     'Role Petugas' => '-',
+                    'ID Detail' => '-',
                     'ID Barang' => '-',
                     'Nama Barang' => '-',
                     'Kategori' => '-',
                     'Stok Sistem' => '-',
                     'Stok Toko' => '-',
                     'Selisih' => '-',
-                    'Status' => 'Tidak ada data stock opname pada periode ini',
-                    'Keterangan' => '-',
+                    'Status' => 'Belum ada data stock opname',
                 ]
             ]);
+
         }
 
         return (new FastExcel($data))

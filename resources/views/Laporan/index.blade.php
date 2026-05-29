@@ -58,11 +58,6 @@
 
                     </select>
 
-                    <small class="text-muted">
-                        Transaksi / Penjualan akan dicetak PDF.
-                        Barang Masuk akan dicetak Excel.
-                    </small>
-
                 </div>
 
 

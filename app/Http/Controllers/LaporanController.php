@@ -41,7 +41,6 @@ class LaporanController extends Controller
     //EXPORT PDF
     //PDF hanya untuk laporan transaksi / penjualan.
     //Isinya rekap, bukan tabel mentah.
-
     public function exportPdf(Request $request)
     {
         if ($request->jenis_laporan != 'transaksi') {
@@ -56,7 +55,7 @@ class LaporanController extends Controller
             'transaksi'
         ]);
 
-        //FILTER TANGGAL
+        // FILTER TANGGAL
         if ($request->tanggal_awal && $request->tanggal_akhir) {
             $query->whereHas('transaksi', function ($q) use ($request) {
                 $q->whereDate(
@@ -72,7 +71,7 @@ class LaporanController extends Controller
             });
         }
 
-        //FILTER KATEGORI
+        // FILTER KATEGORI
         if ($request->id_kategori) {
             $query->whereHas('barang', function ($q) use ($request) {
                 $q->where(
@@ -82,7 +81,7 @@ class LaporanController extends Controller
             });
         }
 
-        //FILTER BARANG MULTI SELECT
+        // FILTER BARANG MULTI SELECT
         if ($request->id_barang) {
             $query->whereIn(
                 'id_barang',
@@ -92,14 +91,106 @@ class LaporanController extends Controller
 
         $rawData = $query->get();
 
-        $totalPendapatan = $rawData->sum('sub_total');
 
+        /*
+        |--------------------------------------------------------------------------
+        | HITUNG TOTAL PENJUALAN BARANG
+        |--------------------------------------------------------------------------
+        | Total ini hanya dari detail barang, belum termasuk jasa.
+        |--------------------------------------------------------------------------
+        */
+        $totalPenjualanBarang = $rawData->sum('sub_total');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HITUNG TOTAL MODAL BARANG
+        |--------------------------------------------------------------------------
+        | Modal = harga_beli barang x jumlah terjual.
+        |--------------------------------------------------------------------------
+        */
+        $totalModalBarang = $rawData->sum(function ($item) {
+
+            $hargaBeli = $item->barang->harga_beli ?? 0;
+
+            return $hargaBeli * $item->jumlah_barang;
+        });
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HITUNG LABA KOTOR BARANG
+        |--------------------------------------------------------------------------
+        */
+        $labaKotor = $totalPenjualanBarang - $totalModalBarang;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HITUNG TOTAL JASA
+        |--------------------------------------------------------------------------
+        | Distinct id_transaksi supaya harga_jasa tidak dobel saat transaksi
+        | punya banyak detail barang.
+        |--------------------------------------------------------------------------
+        */
+        $transaksiUnik = $rawData
+            ->pluck('transaksi')
+            ->filter()
+            ->unique('id_transaksi');
+
+        $totalJasa = $transaksiUnik->sum('harga_jasa');
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | HITUNG TOTAL PENDAPATAN DAN LABA BERSIH SEMENTARA
+        |--------------------------------------------------------------------------
+        | Laba bersih sementara = laba barang + jasa.
+        | Belum dikurangi biaya operasional karena belum ada tabel biaya.
+        |--------------------------------------------------------------------------
+        */
+        $totalPendapatan = $totalPenjualanBarang + $totalJasa;
+
+        $labaBersih = $labaKotor + $totalJasa;
+
+
+        /*
+        |--------------------------------------------------------------------------
+        | REKAP PER BARANG
+        |--------------------------------------------------------------------------
+        */
         $rekap = $rawData
             ->groupBy('id_barang')
             ->map(function ($items) {
+
+                $barang = $items->first()->barang;
+
+                $jumlahTerjual = $items->sum('jumlah_barang');
+
+                $hargaBeli = $barang->harga_beli ?? 0;
+
+                $hargaJual = $barang->harga_jual ?? $items->first()->harga_barang ?? 0;
+
+                $totalModal = $hargaBeli * $jumlahTerjual;
+
+                $totalHarga = $items->sum('sub_total');
+
+                $labaBarang = $totalHarga - $totalModal;
+
                 return [
-                    'nama_barang' => $items->first()->barang->nama_barang ?? '-',
-                    'jumlah_terjual' => $items->sum('jumlah_barang'),
+                    'nama_barang' => $barang->nama_barang ?? '-',
+
+                    'jumlah_terjual' => $jumlahTerjual,
+
+                    'harga_beli' => $hargaBeli,
+
+                    'harga_jual' => $hargaJual,
+
+                    'total_modal' => $totalModal,
+
+                    'total_harga' => $totalHarga,
+
+                    'laba_barang' => $labaBarang,
                 ];
             });
 
@@ -107,7 +198,12 @@ class LaporanController extends Controller
             'laporan.view',
             compact(
                 'rekap',
+                'totalPenjualanBarang',
+                'totalModalBarang',
+                'labaKotor',
+                'totalJasa',
                 'totalPendapatan',
+                'labaBersih',
                 'request'
             )
         );
@@ -116,8 +212,7 @@ class LaporanController extends Controller
     }
 
     //EXPORT EXCEL
-    //Excel bisa untuk transaksi, barang masuk, dan history stok.
-    //Isinya tabel detail.
+
 
     public function exportExcel(Request $request)
     {
@@ -276,68 +371,6 @@ class LaporanController extends Controller
                 ->download('laporan-barang-masuk-' . $periodeFile . '.xlsx');
         }
 
-
-        /*
-        |--------------------------------------------------------------------------
-        | HISTORY STOK
-        |--------------------------------------------------------------------------
-        */
-        if ($request->jenis_laporan == 'history_stok') {
-            $query = HistoryStok::with('barang');
-
-            if ($request->tanggal_awal && $request->tanggal_akhir) {
-                $query->whereDate(
-                    'created_at',
-                    '>=',
-                    $request->tanggal_awal
-                )
-                ->whereDate(
-                    'created_at',
-                    '<=',
-                    $request->tanggal_akhir
-                );
-            }
-
-            if ($request->id_kategori) {
-                $query->whereHas('barang', function ($q) use ($request) {
-                    $q->where(
-                        'id_kategori_barang',
-                        $request->id_kategori
-                    );
-                });
-            }
-
-            if ($request->id_barang) {
-                $query->whereIn(
-                    'id_barang',
-                    $request->id_barang
-                );
-            }
-
-            $data = $query->get()->map(function ($item) use ($periode) {
-                return [
-                    'Periode' => $periode,
-
-                    'Tanggal' => date(
-                        'd-m-Y H:i',
-                        strtotime($item->created_at)
-                    ),
-
-                    'Barang' => $item->barang->nama_barang ?? '-',
-
-                    'Jumlah Masuk' => $item->jumlah_masuk,
-
-                    'Jumlah Keluar' => $item->jumlah_keluar,
-
-                    'Jumlah Sisa' => $item->jumlah_sisa,
-
-                    'Jumlah Barang' => $item->jumlah_barang,
-                ];
-            });
-
-            return (new FastExcel($data))
-                ->download('laporan-history-stok-' . $periodeFile . '.xlsx');
-        }
 
         return back()->with(
             'error',
