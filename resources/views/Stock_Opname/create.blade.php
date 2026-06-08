@@ -6,7 +6,8 @@
     $canModeOn = punyaAksesMenu('stock-opname.mode-on', auth()->user());
     $canModeOff = punyaAksesMenu('stock-opname.mode-off', auth()->user());
     $canStore = punyaAksesMenu('stock-opname.store', auth()->user());
-    $canExportExcel = punyaAksesMenu('stock-opname.export-excel', auth()->user());
+
+    $sudahStockOpnameBulanIni = $jumlahStockOpnameBulanIni > 0;
 @endphp
 
 <section class="content">
@@ -64,6 +65,7 @@
 
                         <button type="submit"
                                 class="btn btn-secondary"
+                                {{ $sudahStockOpnameBulanIni ? 'disabled' : '' }}
                                 onclick="return confirm('Matikan mode stock opname?')">
 
                             <i class="fas fa-power-off"></i>
@@ -94,6 +96,7 @@
 
                         <button type="submit"
                                 class="btn btn-danger"
+                                {{ $sudahStockOpnameBulanIni ? 'disabled' : '' }}
                                 onclick="return confirm('Aktifkan mode stock opname? Fitur lain akan dinonaktifkan sementara.')">
 
                             <i class="fas fa-power-off"></i>
@@ -106,12 +109,24 @@
 
             @endif
 
+            @if($sudahStockOpnameBulanIni)
+
+                <small class="text-muted d-block mt-2">
+
+                    <i class="fas fa-info-circle"></i>
+                    Bulan ini sudah ada {{ $jumlahStockOpnameBulanIni }} stock opname.
+                    Mode stock opname tidak dapat diaktifkan lagi untuk bulan ini.
+
+                </small>
+
+            @endif
+
         </div>
 
     </div>
 
 
-    @if($canStore || $modeStockOpname || $canExportExcel)
+    @if($canStore || $modeStockOpname)
 
         <form id="formStockOpname"
               action="{{ route('stock-opname.store') }}"
@@ -182,7 +197,8 @@
                                                value="{{ old('stok_toko.' . $loop->index, $item->jumlah_barang) }}"
                                                min="0"
                                                required
-                                               {{ !$modeStockOpname ? 'readonly' : '' }}>
+                                               {{ !$modeStockOpname ? 'readonly' : '' }}
+                                               {{ $sudahStockOpnameBulanIni ? 'readonly' : '' }}>
                                     </td>
 
                                     <td>
@@ -202,60 +218,45 @@
 
                 </div>
 
-                @if($canStore || ($canExportExcel && !$modeStockOpname))
+                @if($canStore)
                     <div class="card-footer">
 
                         <div class="d-flex justify-content-between align-items-center flex-wrap">
 
                             <div>
 
-                                @if($canStore)
-                                    <button type="button"
-                                            id="btnSimpanStockOpname"
-                                            class="btn btn-primary"
-                                            {{ !$modeStockOpname ? 'disabled' : '' }}>
+                                <button type="button"
+                                        id="btnSimpanStockOpname"
+                                        class="btn btn-primary"
+                                        {{ !$modeStockOpname || $sudahStockOpnameBulanIni ? 'disabled' : '' }}>
 
-                                        <i class="fas fa-save"></i>
-                                        Simpan Stock Opname
+                                    <i class="fas fa-save"></i>
+                                    Simpan Stock Opname
 
-                                    </button>
-                                @endif
-
-                                @if($canExportExcel && !$modeStockOpname)
-                                    <button type="button"
-                                            id="btnExportStockOpname"
-                                            class="btn btn-success">
-
-                                        <i class="fas fa-file-excel"></i>
-                                        Export Excel
-
-                                    </button>
-                                @endif
+                                </button>
 
                             </div>
 
 
-                            @if($canExportExcel && !$modeStockOpname)
-                                <div class="small mt-2 mt-md-0">
+                            <div class="small mt-2 mt-md-0">
 
-                                    @if($jumlahStockOpnameBulanIni > 0)
+                                @if($jumlahStockOpnameBulanIni > 0)
 
-                                        <span class="text-success">
-                                            <i class="fas fa-check-circle"></i>
-                                            Bulan ini sudah ada {{ $jumlahStockOpnameBulanIni }} stock opname.
-                                        </span>
+                                    <span class="text-success">
+                                        <i class="fas fa-check-circle"></i>
+                                        Bulan ini sudah ada {{ $jumlahStockOpnameBulanIni }} stock opname.
+                                    </span>
 
-                                    @else
+                                @else
 
-                                        <span class="text-muted">
-                                            <i class="fas fa-info-circle"></i>
-                                            Bulan ini belum ada perubahan / stock opname.
-                                        </span>
+                                    <span class="text-muted">
+                                        <i class="fas fa-info-circle"></i>
+                                        Bulan ini belum ada perubahan / stock opname.
+                                    </span>
 
-                                    @endif
+                                @endif
 
-                                </div>
-                            @endif
+                            </div>
 
                         </div>
 
@@ -293,11 +294,6 @@ function hitungSelisih(row)
 
     inputSelisih.val(selisih);
 
-    /*
-    |--------------------------------------------------------------------------
-    | RESET CLASS SELISIH
-    |--------------------------------------------------------------------------
-    */
     inputSelisih.removeClass(
         'text-success text-danger text-dark font-weight-bold'
     );
@@ -335,9 +331,19 @@ $(document).on('input', '.stok-toko', function(){
 
 $(function () {
 
+    /*
+    |--------------------------------------------------------------------------
+    | DATATABLE TANPA PAGING
+    |--------------------------------------------------------------------------
+    | Semua data tampil panjang ke bawah.
+    |--------------------------------------------------------------------------
+    */
     $("#tableStockOpname").DataTable({
         responsive: true,
         autoWidth: false,
+        paging: false,
+        lengthChange: false,
+        info: false,
     });
 
 
@@ -367,23 +373,7 @@ $(function () {
 
     });
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | EXPORT EXCEL STOCK OPNAME
-    |--------------------------------------------------------------------------
-    */
-    $('#btnExportStockOpname').on('click', function () {
-
-        $('#formStockOpname')
-            .attr('action', "{{ route('stock-opname.export-excel') }}")
-            .attr('target', '_blank')
-            .submit();
-
-    });
-
-
-    });
+});
 
 </script>
 
