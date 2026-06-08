@@ -17,11 +17,9 @@ use App\Http\Controllers\RoleController;
 
 use App\Http\Middleware\CheckStockOpnameMode;
 
-/*
-|--------------------------------------------------------------------------
-| LOGIN / LOGOUT
-|--------------------------------------------------------------------------
-*/
+
+//LOGIN / LOGOUT
+
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -33,54 +31,35 @@ Route::post('/logout', [AuthController::class, 'logout'])
     ->name('logout');
 
 
-/*
-|--------------------------------------------------------------------------
-| HALAMAN BEBAS
-|--------------------------------------------------------------------------
-*/
-Route::get('/', function () {
+
+//HALAMAN BEBAS
+
+Route::get('/welcome', function () {
     return view('welcome');
 });
 
-Route::get('dashboard/2', [DashboardController::class, 'index2'])
-    ->name('dashboard.index2');
-Route::get('/grafik2', [DashboardController::class, 'grafikPendapatan2'])
-    ->name('dashboard.grafik2');
 
-/*
-|--------------------------------------------------------------------------
-| ROUTE YANG BUTUH LOGIN + AKSES MENU DATABASE
-|--------------------------------------------------------------------------
-| Akses tidak lagi hardcode berdasarkan role di route.
-| Semua akses dicek lewat tbl_menu, tbl_role_menu, dan tbl_user_menu.
-|--------------------------------------------------------------------------
-*/
+//ROUTE YANG BUTUH LOGIN + AKSES MENU DATABASE
+//Akses tidak lagi hardcode berdasarkan role di route.
+//Semua akses dicek lewat tbl_menu, tbl_role_menu, dan tbl_user_menu.
+
 Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | DASHBOARD
-    |--------------------------------------------------------------------------
-    */
+
+    //DASHBOARD
     Route::prefix('dashboard')->name('dashboard.')->group(function () {
 
         Route::get('/', [DashboardController::class, 'index'])
-            ->middleware('akses.menu')
             ->name('index');
 
 
-
-        Route::get('/grafik', [DashboardController::class, 'grafikPendapatan'])
-            ->middleware('akses.menu:dashboard.index')
+        Route::get('/grafik', [DashboardController::class, 'grafik'])
             ->name('grafik');
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | BARANG
-    |--------------------------------------------------------------------------
-    */
+
+    //BARANG
     Route::prefix('barang')->name('barang.')->group(function () {
 
         Route::get('/index', [BarangController::class, 'index'])
@@ -103,11 +82,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | KATEGORI
-    |--------------------------------------------------------------------------
-    */
+
+    //KATEGORI
     Route::prefix('kategori')->name('kategori.')->group(function () {
 
         Route::get('/index', [KategoriController::class, 'index'])
@@ -130,11 +106,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | PELANGGAN
-    |--------------------------------------------------------------------------
-    */
+
+    //PELANGGAN
 
     Route::prefix('pelanggan')->name('pelanggan.')->group(function () {
         Route::get('/index', [PelangganController::class, 'index'])
@@ -158,11 +131,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | TRANSAKSI
-    |--------------------------------------------------------------------------
-    */
+
+    //TRANSAKSI
     Route::prefix('transaksi')->name('transaksi.')->group(function () {
 
         Route::get('/index', [TransaksiController::class, 'index'])
@@ -179,11 +149,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | PO
-    |--------------------------------------------------------------------------
-    */
+
+    //PO
     Route::prefix('po')->name('po.')->group(function () {
 
         Route::get('/index', [PoController::class, 'index'])
@@ -206,11 +173,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | BARANG MASUK
-    |--------------------------------------------------------------------------
-    */
+
+    //BARANG MASUK
     Route::prefix('barang-masuk')->name('barang-masuk.')->group(function () {
 
         Route::get('/index', [BarangMasukController::class, 'index'])
@@ -233,11 +197,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | HISTORY STOK
-    |--------------------------------------------------------------------------
-    */
+
+    //HISTORY STOK
     Route::prefix('history')->name('history.')->group(function () {
 
         Route::get('/index', [HistoryStokController::class, 'index'])
@@ -248,11 +209,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | LAPORAN
-    |--------------------------------------------------------------------------
-    */
+
+    //LAPORAN
     Route::prefix('laporan')->name('laporan.')->group(function () {
 
         Route::get('/index', [LaporanController::class, 'index'])
@@ -266,12 +224,12 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | STOCK OPNAME
-    |--------------------------------------------------------------------------
-    */
+
+    //STOCK OPNAME
     Route::prefix('stock-opname')->name('stock-opname.')->group(function () {
+
+        Route::get('/index', [StockOpnameController::class, 'index'])
+            ->name('index');
 
         Route::get('/create', [StockOpnameController::class, 'create'])
             ->name('create');
@@ -290,11 +248,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
     });
 
 
-    /*
-    |--------------------------------------------------------------------------
-    | USER
-    |--------------------------------------------------------------------------
-    */
+
+    //USER
     Route::prefix('user')->name('user.')->group(function () {
 
         Route::get('/index', [UserController::class, 'index'])
@@ -316,11 +271,8 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
             ->name('destroy');
     });
 
-    /*
-    |--------------------------------------------------------------------------
-    | ROLE
-    |--------------------------------------------------------------------------
-    */
+
+    //ROLE
     Route::prefix('role')->name('role.')->group(function () {
 
         Route::get('/index', [RoleController::class, 'index'])

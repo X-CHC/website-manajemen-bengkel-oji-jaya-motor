@@ -84,16 +84,6 @@
                         </li>
                     @endif
 
-                        <li class="nav-item">
-                            <a href="{{ route('dashboard.index2') }}"
-                            class="nav-link {{ request()->routeIs('dashboard.index2') ? 'active' : '' }}">
-
-                                <i class="nav-icon fas fa-home"></i>
-                                <p>Dashboard 2</p>
-
-                            </a>
-                        </li>
-
                 @endif
 
 
@@ -412,16 +402,57 @@
                 @endif
 
                 {{-- STOCK OPNAME --}}
-                @if(punyaAksesMenu('stock-opname.create', $userLogin))
-                    <li class="nav-item">
-                        <a href="{{ route('stock-opname.create') }}"
+                @if(
+                    punyaAksesMenu('stock-opname.index', $userLogin) ||
+                    punyaAksesMenu('stock-opname.create', $userLogin)
+                )
+                    <li class="nav-item has-treeview {{ request()->routeIs('stock-opname.*') ? 'menu-open' : '' }}">
+
+                        <a href="#"
                         class="nav-link {{ request()->routeIs('stock-opname.*') ? 'active' : '' }}">
 
                             <i class="nav-icon fas fa-clipboard-check"></i>
 
-                            <p>Stock Opname</p>
+                            <p>
+                                Stock Opname
+                                <i class="right fas fa-angle-left"></i>
+                            </p>
 
                         </a>
+
+                        <ul class="nav nav-treeview">
+
+                                                        @if(punyaAksesMenu('stock-opname.create', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('stock-opname.create') }}"
+                                    class="nav-link {{ request()->routeIs('stock-opname.create') ? 'active' : '' }}">
+
+                                        <i class="far fa-circle nav-icon"></i>
+
+                                        <p>Stock Opname</p>
+
+                                    </a>
+                                </li>
+                            @endif
+
+                            @if(punyaAksesMenu('stock-opname.index', $userLogin))
+                                <li class="nav-item">
+                                    <a href="{{ route('stock-opname.index') }}"
+                                    class="nav-link {{ request()->routeIs('stock-opname.index') ? 'active' : '' }}">
+
+                                        <i class="far fa-circle nav-icon"></i>
+
+                                        <p>Riwayat Stock Opname</p>
+
+                                    </a>
+                                </li>
+                            @endif
+
+
+
+
+                        </ul>
+
                     </li>
                 @endif
 
