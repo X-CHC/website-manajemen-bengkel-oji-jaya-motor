@@ -34,21 +34,15 @@ class AuthController extends Controller
             | REDIRECT BERDASARKAN ROLE
             |--------------------------------------------------------------------------
             */
-            if ($role == 'admin') {
-                return redirect()->route('dashboard.index');
+            switch ($role) {
+                case 'admin':  $route = 'dashboard.index'; break;
+                case 'owner':  $route = 'laporan.index'; break;
+                case 'kasir':  $route = 'transaksi.create'; break;
+                case 'gudang': $route = 'barang.index'; break;
+                default:       $route = 'login';
             }
 
-            if ($role == 'owner') {
-                return redirect()->route('laporan.index');
-            }
-
-            if ($role == 'kasir') {
-                return redirect()->route('transaksi.create');
-            }
-
-            if ($role == 'gudang') {
-                return redirect()->route('barang.index');
-            }
+            return redirect()->route($route)->with('success', 'Login berhasil');
 
             /*
             |--------------------------------------------------------------------------
@@ -73,6 +67,6 @@ class AuthController extends Controller
         $request->session()->invalidate(); // hapus semua session
         $request->session()->regenerateToken(); // reset CSRF
 
-        return redirect('/login');
+        return redirect('/');
 }
 }

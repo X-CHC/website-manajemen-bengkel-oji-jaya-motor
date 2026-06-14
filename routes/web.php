@@ -20,11 +20,11 @@ use App\Http\Middleware\CheckStockOpnameMode;
 
 //LOGIN / LOGOUT
 
-Route::get('/login', function () {
+Route::get('/', function () {
     return view('login');
 })->name('login');
 
-Route::post('/login', [AuthController::class, 'login'])
+Route::post('/', [AuthController::class, 'login'])
     ->name('login.post');
 
 Route::post('/logout', [AuthController::class, 'logout'])
