@@ -174,7 +174,6 @@
 
                                 <div class="alert alert-info">
                                     Pilih role terlebih dahulu untuk melihat akses default role.
-                                    Akses ini berasal dari <b>tbl_role_menu</b>.
                                 </div>
 
                                 <div class="row">

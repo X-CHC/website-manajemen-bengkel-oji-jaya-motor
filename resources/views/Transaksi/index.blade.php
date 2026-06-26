@@ -33,7 +33,7 @@
                     <thead>
                         <tr>
                             <th width="5%">No</th>
-                            <th>ID Transaksi</th>
+                            <th>Nama Pelanggan</th>
                             <th>Tanggal</th>
                             <th>Total Harga</th>
                             <th>Uang Bayar</th>
@@ -46,7 +46,7 @@
                         @foreach($transaksi as $index => $item)
                         <tr>
                             <td>{{ $index + 1 }}</td>
-                            <td>{{ $item->id_transaksi }}</td>
+                            <td>{{ $item->pelanggan?->nama_pelanggan ?? $item->nama_pelanggan_lain }}</td>
                             <td>{{ \Carbon\Carbon::parse($item->tanggal_transaksi)->format('d-m-Y') }}</td>
                             <td>Rp {{ number_format($item->total_harga, 0, ',', '.') }}</td>
                             <td>Rp {{ number_format($item->uang_bayar, 0, ',', '.') }}</td>

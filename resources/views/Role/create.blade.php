@@ -76,11 +76,6 @@
                                         {{ $message }}
                                     </div>
                                 @enderror
-
-                                <small class="text-muted">
-                                    Angka ini bisa dipakai untuk urutan/tingkatan role.
-                                </small>
-
                             </div>
 
 

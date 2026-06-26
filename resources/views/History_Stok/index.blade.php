@@ -52,8 +52,6 @@
 
                         <th>Sisa Stok</th>
 
-                        <th>Keterangan</th>
-
                     </tr>
 
                 </thead>
@@ -119,26 +117,6 @@
                         <td>
                             {{ $item->jumlah_sisa }}
                         </td>
-
-                        <td>
-
-                            @if($item->jumlah_masuk > 0 && $item->jumlah_keluar == 0)
-
-                                Barang Masuk / Penambahan Stok
-
-                            @elseif($item->jumlah_keluar > 0 && $item->jumlah_masuk == 0)
-
-                                Penjualan / Pengurangan Stok
-
-                            @else
-
-                                Stock Opname / Penyesuaian Stok
-
-                            @endif
-
-                        </td>
-
-                    </tr>
 
                     @endforeach
 

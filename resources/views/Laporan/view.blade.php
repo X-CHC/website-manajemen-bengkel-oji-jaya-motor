@@ -225,7 +225,7 @@
 
                 <tr>
                     <td class="summary-label">
-                        Laba Kotor Barang
+                        keuntungan Kotor
                     </td>
 
                     <td class="summary-value">
@@ -235,7 +235,7 @@
 
                 <tr>
                     <td class="summary-label grand-total">
-                        Laba Bersih Sementara
+                        Total Pendapatan Kasar
                     </td>
 
                     <td class="summary-value grand-total">
@@ -257,8 +257,8 @@
 
         <strong>Keterangan:</strong>
         Total pendapatan berasal dari penjualan barang ditambah jasa.
-        Laba kotor barang berasal dari penjualan barang dikurangi modal barang.
-        Laba bersih sementara berasal dari laba kotor barang ditambah jasa,
+        Keuntungan Kotor berasal dari penjualan barang dikurangi modal barang.
+        Total Pendapatan Kasar berasal dari Keuntungan Kotor ditambah jasa,
         dan belum dikurangi biaya operasional lain seperti listrik, sewa, atau gaji.
 
     </div>
@@ -289,7 +289,7 @@
 
                 <th>Total Penjualan</th>
 
-                <th>Laba Barang</th>
+                <th>Selisih Harga</th>
 
             </tr>
 

@@ -361,7 +361,7 @@
 
                                     <thead>
                                         <tr>
-                                            <th>ID Transaksi</th>
+                                            <th>NO</th>
                                             <th>Pelanggan</th>
                                             <th>Tanggal</th>
                                             <th>Total Bayar</th>
@@ -371,14 +371,10 @@
 
                                     <tbody>
 
-                                        @forelse($transaksiTerbaru as $trx)
+                                        @forelse($transaksiTerbaru as $index => $trx)
 
                                             <tr>
-                                                <td>
-                                                    <a href="#">
-                                                        {{ $trx->id_transaksi }}
-                                                    </a>
-                                                </td>
+                                                <td>{{ $index + 1 }}</td>
 
                                                 <td>
                                                     {{ $trx->pelanggan->nama_pelanggan ?? $trx->nama_pelanggan_lain }}

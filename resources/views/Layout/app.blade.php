@@ -54,7 +54,7 @@
 
 <script src="{{ asset('assets/adminlte/plugins/datatables-bs4/js/dataTables.bootstrap4.min.js') }}"></script>
 
-<script src="{{ asset('assets/adminlte/plugins/inputmask/jquery.inputmask.min.js') }}"></script>
+<script src="{{ asset('assets/adminlte/plugins/inputmask/jquery.inputmask.bundle.js') }}"></script>
 
 <!-- JS Alert -->
 <script src="{{ asset('assets/adminlte/plugins/toastr/toastr.min.js') }}"></script>

@@ -46,8 +46,6 @@ class HistoryStokController extends Controller
                     'Sisa Stok' => $item->jumlah_sisa,
 
                     'Jumlah Barang' => $item->jumlah_barang,
-
-                    'Keterangan' => $this->getKeterangan($item),
                 ];
             });
 
@@ -56,16 +54,5 @@ class HistoryStokController extends Controller
     }
 
 
-    private function getKeterangan($item)
-    {
-        if ($item->jumlah_masuk > 0 && $item->jumlah_keluar == 0) {
-            return 'Barang Masuk / Penambahan Stok';
-        }
 
-        if ($item->jumlah_keluar > 0 && $item->jumlah_masuk == 0) {
-            return 'Penjualan / Pengurangan Stok';
-        }
-
-        return 'Stock Opname / Penyesuaian Stok';
-    }
 }

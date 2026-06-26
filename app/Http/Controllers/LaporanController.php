@@ -41,6 +41,7 @@ class LaporanController extends Controller
     //EXPORT PDF
     //PDF hanya untuk laporan transaksi / penjualan.
     //Isinya rekap, bukan tabel mentah.
+
     public function exportPdf(Request $request)
     {
         if ($request->jenis_laporan != 'transaksi') {
@@ -213,28 +214,21 @@ class LaporanController extends Controller
 
     //EXPORT EXCEL
 
-
     public function exportExcel(Request $request)
     {
         /*
         |--------------------------------------------------------------------------
-        | FORMAT PERIODE
+        | FORMAT PERIODE (Hanya untuk Nama File)
         |--------------------------------------------------------------------------
         */
         $tanggalAwal = $request->tanggal_awal;
         $tanggalAkhir = $request->tanggal_akhir;
 
         if ($tanggalAwal && $tanggalAkhir) {
-            $periode = date('d-m-Y', strtotime($tanggalAwal)) .
-                ' sampai ' .
-                date('d-m-Y', strtotime($tanggalAkhir));
-
             $periodeFile = $tanggalAwal . '-sampai-' . $tanggalAkhir;
         } else {
-            $periode = 'Semua Periode';
             $periodeFile = 'semua-periode';
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -278,23 +272,17 @@ class LaporanController extends Controller
                 );
             }
 
-            $data = $query->get()->map(function ($item) use ($periode) {
+            // Hapus use ($periode) karena sudah tidak dipakai
+            $data = $query->get()->map(function ($item) {
                 return [
-                    'Periode' => $periode,
-
                     'Tanggal' => date(
                         'd-m-Y',
                         strtotime($item->transaksi->tanggal_transaksi)
                     ),
-
                     'ID Transaksi' => $item->id_transaksi,
-
                     'Barang' => $item->barang->nama_barang ?? '-',
-
                     'Jumlah' => $item->jumlah_barang,
-
                     'Harga Barang' => $item->harga_barang,
-
                     'Subtotal' => $item->sub_total,
                 ];
             });
@@ -302,7 +290,6 @@ class LaporanController extends Controller
             return (new FastExcel($data))
                 ->download('laporan-transaksi-' . $periodeFile . '.xlsx');
         }
-
 
         /*
         |--------------------------------------------------------------------------
@@ -346,23 +333,17 @@ class LaporanController extends Controller
                 );
             }
 
-            $data = $query->get()->map(function ($item) use ($periode) {
+            // Hapus use ($periode) karena sudah tidak dipakai
+            $data = $query->get()->map(function ($item) {
                 return [
-                    'Periode' => $periode,
-
                     'Tanggal Masuk' => date(
                         'd-m-Y',
                         strtotime($item->barangMasuk->tanggal_masuk)
                     ),
-
                     'ID Barang Masuk' => $item->id_barang_masuk,
-
                     'Barang' => $item->barang->nama_barang ?? '-',
-
                     'Jumlah Masuk' => $item->jumlah_barang,
-
                     'Harga Beli' => $item->harga_beli,
-
                     'Subtotal' => $item->sub_total,
                 ];
             });
@@ -370,7 +351,6 @@ class LaporanController extends Controller
             return (new FastExcel($data))
                 ->download('laporan-barang-masuk-' . $periodeFile . '.xlsx');
         }
-
 
         return back()->with(
             'error',
