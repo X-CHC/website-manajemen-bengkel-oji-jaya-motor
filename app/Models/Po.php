@@ -16,7 +16,12 @@ class Po extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['id_po', 'tgl_po', 'mitra_po'];
+    protected $fillable = [
+        'id_po',
+        'tgl_po',
+        'mitra_po',
+        'status_po'
+        ];
 
     public function detailPo()
     {

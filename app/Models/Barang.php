@@ -31,10 +31,7 @@ class Barang extends Model
 
     public function detailStockOpname()
     {
-        return $this->hasMany(
-            DetailStockOpname::class,
-            'id_barang',
-            'id_barang'
+        return $this->hasMany(DetailStockOpname::class, 'id_barang', 'id_barang'
         );
     }
 }

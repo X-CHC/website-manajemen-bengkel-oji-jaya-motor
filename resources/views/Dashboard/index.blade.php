@@ -365,7 +365,6 @@
                                             <th>Pelanggan</th>
                                             <th>Tanggal</th>
                                             <th>Total Bayar</th>
-                                            <th>Status</th>
                                         </tr>
                                     </thead>
 
@@ -386,12 +385,6 @@
 
                                                 <td>
                                                     Rp {{ number_format($trx->total_harga, 0, ',', '.') }}
-                                                </td>
-
-                                                <td>
-                                                    <span class="badge badge-success">
-                                                        Selesai
-                                                    </span>
                                                 </td>
                                             </tr>
 

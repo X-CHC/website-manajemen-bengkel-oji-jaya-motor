@@ -91,32 +91,55 @@
                     <span>&times;</span>
                 </button>
             </div>
-
             <div class="modal-body">
                 <div class="table-responsive">
                     <table class="table table-bordered">
                         <thead class="bg-light">
                             <tr>
-                                <th>Barang</th>
+                                <th>Jenis</th>
+                                <th>Nama</th>
                                 <th>Qty</th>
                                 <th>Harga</th>
                                 <th>Subtotal</th>
                             </tr>
                         </thead>
+
                         <tbody>
+
+                            {{-- Detail Barang --}}
                             @forelse($item->detailTransaksi as $detail)
                             <tr>
+                                <td>Barang</td>
                                 <td>{{ $detail->barang->nama_barang ?? 'Barang Dihapus' }}</td>
                                 <td>{{ $detail->jumlah_barang }}</td>
-                                <td>Rp {{ number_format($detail->harga_barang, 0, ',', '.') }}</td>
-                                <td>Rp {{ number_format($detail->sub_total, 0, ',', '.') }}</td>
+                                <td>Rp {{ number_format($detail->harga_barang,0,',','.') }}</td>
+                                <td>Rp {{ number_format($detail->sub_total,0,',','.') }}</td>
                             </tr>
                             @empty
                             <tr>
-                                <td colspan="4" class="text-center">Tidak ada detail barang.</td>
+                                <td colspan="5" class="text-center">Tidak ada barang.</td>
                             </tr>
                             @endforelse
+
+                            {{-- Jasa --}}
+                            @if($item->harga_jasa > 0)
+                            <tr class="table-center">
+                                <td>Jasa</td>
+                                <td>Biaya Servis</td>
+                                <td>1</td>
+                                <td>Rp {{ number_format($item->harga_jasa,0,',','.') }}</td>
+                                <td>Rp {{ number_format($item->harga_jasa,0,',','.') }}</td>
+                            </tr>
+                            @endif
+
                         </tbody>
+
+                        <tfoot>
+                            <tr>
+                                <td colspan="4" class="text-right">Total Transaksi</td>
+                                <td>Rp {{ number_format($item->total_harga,0,',','.') }}</td>
+                            </tr>
+                        </tfoot>
                     </table>
                 </div>
             </div>

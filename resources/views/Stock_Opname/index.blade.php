@@ -36,10 +36,10 @@
             @if($canCreate)
 
                 <a href="{{ route('stock-opname.create') }}"
-                   class="btn btn-secondary btn-sm ml-auto">
+                   class="btn btn-success btn-sm ml-auto">
 
-                    <i class="fas fa-arrow-left"></i>
-                    Kembali ke Stock Opname
+                    <i class="fas fa-plus"></i>
+                    Buat Stock Opname
 
                 </a>
 
@@ -85,8 +85,6 @@
                         <th>Tahun</th>
 
                         <th>Petugas</th>
-
-                        <th>Jumlah Barang Diubah</th>
 
                         @if($canExportExcel)
                             <th>Aksi</th>
@@ -138,10 +136,6 @@
                                 <small class="text-muted">
                                     {{ $item->user->role->nama_role ?? '-' }}
                                 </small>
-                            </td>
-
-                            <td>
-                                {{ $item->detailStockOpname->count() }}
                             </td>
 
                             @if($canExportExcel)

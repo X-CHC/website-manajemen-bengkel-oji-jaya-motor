@@ -172,7 +172,7 @@ class BarangMasukController extends Controller
                 $numberDetail = 1;
             } else {
                 $kode = $lastDetail->id_detail_masuk;
-                $numberDetail = (int) substr($kode, -4) + 1;
+                $numberDetail = (int) substr($kode, -3) + 1;
             }
 
             $lastHistory = HistoryStok::withTrashed()
@@ -246,15 +246,15 @@ class BarangMasukController extends Controller
             }
 
             // UPDATE STATUS PO
-            Po::where('id_po', $request->id_po)
-                ->update([
-                    'status_po' => 'selesai'
-                ]);
+            $po = Po::find($request->id_po);
+            $po->update([
+                'status_po' => 'selesai'
+            ]);
 
             DB::commit();
 
             return redirect()
-                ->route('barang-masuk.create')
+                ->route('barang-masuk.index')
                 ->with('success', 'Barang masuk berhasil disimpan');
 
         } catch (\Exception $e) {

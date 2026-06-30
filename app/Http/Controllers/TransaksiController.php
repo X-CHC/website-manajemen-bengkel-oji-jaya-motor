@@ -222,7 +222,7 @@ class TransaksiController extends Controller
             DB::commit();
 
             return redirect()
-                ->route('transaksi.create')
+                ->route('transaksi.index')
                 ->with(
                     'success',
                     'Transaksi berhasil disimpan'

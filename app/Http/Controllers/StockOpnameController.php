@@ -58,6 +58,7 @@ class StockOpnameController extends Controller
         );
     }
 
+    // mode stock opname on/off
     public function modeOn()
     {
         $jumlahStockOpnameBulanIni = StockOpname::whereMonth('tanggal_opname', now()->month)
@@ -76,13 +77,6 @@ class StockOpnameController extends Controller
             ->route('stock-opname.create')
             ->with('success', 'Mode stock opname berhasil diaktifkan');
     }
-
-
-    /*
-    |--------------------------------------------------------------------------
-    | MATIKAN MODE STOCK OPNAME
-    |--------------------------------------------------------------------------
-    */
     public function modeOff()
     {
         Cache::forget('stock_opname_mode');
@@ -140,12 +134,12 @@ class StockOpnameController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | CEK BARANG YANG BERUBAH SAJA
+            | SIAPKAN SEMUA DATA BARANG (BERUBAH MAUPUN TIDAK)
             |--------------------------------------------------------------------------
-            | Barang yang stok toko sama dengan stok sistem tidak akan disimpan.
+            | Semua barang tetap disimpan, selisih 0 tetap dicatat.
             |--------------------------------------------------------------------------
             */
-            $barangBerubah = [];
+            $semuaBarang = [];
 
             foreach ($request->id_barang as $index => $idBarang) {
 
@@ -161,11 +155,7 @@ class StockOpnameController extends Controller
 
                 $selisih = $stokToko - $stokSistem;
 
-                if ($selisih == 0) {
-                    continue;
-                }
-
-                $barangBerubah[] = [
+                $semuaBarang[] = [
                     'barang' => $barang,
                     'stok_sistem' => $stokSistem,
                     'stok_toko' => $stokToko,
@@ -176,18 +166,16 @@ class StockOpnameController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | JIKA TIDAK ADA BARANG YANG BERUBAH
-            |--------------------------------------------------------------------------
-            | Tidak perlu membuat header stock opname, detail, history, atau update stok.
+            | JIKA TIDAK ADA BARANG SAMA SEKALI
             |--------------------------------------------------------------------------
             */
-            if (count($barangBerubah) == 0) {
+            if (count($semuaBarang) == 0) {
 
                 DB::rollBack();
 
                 return redirect()
                     ->route('stock-opname.create')
-                    ->with('info', 'Tidak ada perubahan stok yang disimpan');
+                    ->with('info', 'Tidak ada data barang untuk disimpan');
             }
 
 
@@ -201,7 +189,7 @@ class StockOpnameController extends Controller
                 ->first();
 
             if (!$stockOpnameTerakhir) {
-                $id_stock_opname = 'SO0001';
+                $id_stock_opname = 'SOP001';
             } else {
                 $kode = $stockOpnameTerakhir->id_stock_opname;
 
@@ -209,15 +197,13 @@ class StockOpnameController extends Controller
 
                 $noUrut++;
 
-                $id_stock_opname = 'SO' . sprintf('%04s', $noUrut);
+                $id_stock_opname = 'SOP' . sprintf('%03s', $noUrut);
             }
 
 
             /*
             |--------------------------------------------------------------------------
             | SIMPAN HEADER STOCK OPNAME
-            |--------------------------------------------------------------------------
-            | Header hanya dibuat kalau ada barang yang benar-benar berubah.
             |--------------------------------------------------------------------------
             */
             StockOpname::create([
@@ -230,8 +216,6 @@ class StockOpnameController extends Controller
             /*
             |--------------------------------------------------------------------------
             | AUTO NUMBER DETAIL STOCK OPNAME
-            |--------------------------------------------------------------------------
-            | DSO001 = 6 karakter, sesuai char(6).
             |--------------------------------------------------------------------------
             */
             $detailTerakhir = DetailStockOpname::withTrashed()
@@ -269,10 +253,10 @@ class StockOpnameController extends Controller
 
             /*
             |--------------------------------------------------------------------------
-            | SIMPAN HANYA BARANG YANG BERUBAH
+            | SIMPAN SEMUA BARANG (BERUBAH MAUPUN TIDAK)
             |--------------------------------------------------------------------------
             */
-            foreach ($barangBerubah as $data) {
+            foreach ($semuaBarang as $data) {
 
                 $barang = $data['barang'];
 
@@ -409,13 +393,7 @@ class StockOpnameController extends Controller
 
         foreach ($stockOpname->detailStockOpname as $detail) {
 
-            if ($detail->selisih > 0) {
-                $status = 'Stok toko lebih banyak';
-            } elseif ($detail->selisih < 0) {
-                $status = 'Stok toko lebih sedikit';
-            } else {
-                $status = 'Sesuai';
-            }
+
 
             $data->push([
                 'No' => $nomor++,
@@ -442,9 +420,6 @@ class StockOpnameController extends Controller
 
                 'Selisih' => $detail->selisih,
 
-                'Status' => $status,
-
-                'Keterangan' => $stockOpname->keterangan ?? '-',
             ]);
         }
 
@@ -470,8 +445,6 @@ class StockOpnameController extends Controller
                     'Stok Sistem' => '-',
                     'Stok Toko' => '-',
                     'Selisih' => '-',
-                    'Status' => 'Belum ada detail stock opname',
-                    'Keterangan' => $stockOpname->keterangan ?? '-',
                 ]
             ]);
         }

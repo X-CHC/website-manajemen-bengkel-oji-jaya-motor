@@ -14,7 +14,12 @@ class DetailPo extends Model
     public $incrementing = false;
     protected $keyType = 'string';
 
-    protected $fillable = ['id_detail_po', 'id_po', 'id_barang', 'jumlah_po'];
+    protected $fillable = [
+        'id_detail_po',
+        'id_po',
+        'id_barang',
+        'jumlah_po'
+        ];
 
     public function po()
     {

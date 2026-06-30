@@ -28,7 +28,7 @@ class DummyBengkelSeeder extends Seeder
         DB::table('tbl_history_stok')->truncate();        // id_history_stok = HS0001
         DB::table('tbl_detail_transaksi')->truncate();    // id_detail_transaksi = DTR001
         DB::table('tbl_transaksi')->truncate();           // id_transaksi = TRX001
-        DB::table('tbl_detail_masuk')->truncate();        // id_detail_masuk = DM0001
+        DB::table('tbl_detail_masuk')->truncate();        // id_detail_masuk = DMK001
         DB::table('tbl_barang_masuk')->truncate();        // id_barang_masuk = BMK001
         DB::table('tbl_detail_po')->truncate();           // id_detail_po = DPO001
         DB::table('tbl_po')->truncate();                  // id_po = PO0001
@@ -433,7 +433,7 @@ class DummyBengkelSeeder extends Seeder
         */
         DB::table('tbl_detail_masuk')->insert([
             [
-                'id_detail_masuk' => 'DM0001',
+                'id_detail_masuk' => 'DMK001',
                 'id_barang_masuk' => 'BMK001',
                 'id_barang' => 'BRG001',
                 'jumlah_barang' => 15,
@@ -443,7 +443,7 @@ class DummyBengkelSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-05-03'),
             ],
             [
-                'id_detail_masuk' => 'DM0002',
+                'id_detail_masuk' => 'DMK002',
                 'id_barang_masuk' => 'BMK001',
                 'id_barang' => 'BRG003',
                 'jumlah_barang' => 20,
@@ -453,7 +453,7 @@ class DummyBengkelSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-05-03'),
             ],
             [
-                'id_detail_masuk' => 'DM0003',
+                'id_detail_masuk' => 'DMK003',
                 'id_barang_masuk' => 'BMK002',
                 'id_barang' => 'BRG002',
                 'jumlah_barang' => 10,
@@ -463,7 +463,7 @@ class DummyBengkelSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-05-10'),
             ],
             [
-                'id_detail_masuk' => 'DM0004',
+                'id_detail_masuk' => 'DMK004',
                 'id_barang_masuk' => 'BMK002',
                 'id_barang' => 'BRG004',
                 'jumlah_barang' => 15,
@@ -473,7 +473,7 @@ class DummyBengkelSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-05-10'),
             ],
             [
-                'id_detail_masuk' => 'DM0005',
+                'id_detail_masuk' => 'DMK005',
                 'id_barang_masuk' => 'BMK003',
                 'id_barang' => 'BRG005',
                 'jumlah_barang' => 5,
@@ -483,7 +483,7 @@ class DummyBengkelSeeder extends Seeder
                 'updated_at' => Carbon::parse('2026-05-17'),
             ],
             [
-                'id_detail_masuk' => 'DM0006',
+                'id_detail_masuk' => 'DMK006',
                 'id_barang_masuk' => 'BMK003',
                 'id_barang' => 'BRG006',
                 'jumlah_barang' => 4,

@@ -56,10 +56,6 @@
 
                         <th>Nota Supplier</th>
 
-                        @if($canEditBarangMasuk || $canDeleteBarangMasuk)
-                            <th width="15%">Aksi</th>
-                        @endif
-
                     </tr>
 
                 </thead>
@@ -162,53 +158,9 @@
 
                         </td>
 
-                        @if($canEditBarangMasuk || $canDeleteBarangMasuk)
-                            <td>
-                                <div class="d-flex gap-1">
-
-                                    @if($canEditBarangMasuk)
-                                        <a href="{{ route('barang-masuk.edit', $item->id_barang_masuk) }}"
-                                           class="btn btn-warning btn-sm">
-
-                                            <i class="fas fa-edit"></i>
-
-                                        </a>
-                                    @endif
-
-                                    @if($canDeleteBarangMasuk)
-                                        <form action="{{ route('barang-masuk.destroy', $item->id_barang_masuk) }}"
-                                              method="POST"
-                                              style="display:inline-block;">
-
-                                            @csrf
-                                            @method('DELETE')
-
-                                            <button type="submit"
-                                                    class="btn btn-danger btn-sm"
-                                                    onclick="return confirm('Yakin hapus barang masuk ini?')">
-
-                                                <i class="fas fa-trash"></i>
-
-                                            </button>
-
-                                        </form>
-                                    @endif
-
-                                </div>
-                            </td>
-                        @endif
-
                     </tr>
 
                     @endforeach
-
-                    @if(!$barangMasuk->count())
-                        <tr>
-                            <td colspan="{{ ($canEditBarangMasuk || $canDeleteBarangMasuk) ? 9 : 8 }}" class="text-center">
-                                Data barang masuk belum ada
-                            </td>
-                        </tr>
-                    @endif
 
                 </tbody>
 
