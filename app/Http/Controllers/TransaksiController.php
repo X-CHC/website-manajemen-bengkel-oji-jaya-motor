@@ -28,7 +28,7 @@ class TransaksiController extends Controller
             ->get();
 
         return view(
-            'transaksi.index',
+            'Transaksi.index',
             compact('transaksi')
         );
     }
@@ -253,7 +253,7 @@ class TransaksiController extends Controller
             ?? $transaksi->nama_pelanggan_lain
             ?? '-';
 
-        $pdf = Pdf::loadView('transaksi.nota', [
+        $pdf = Pdf::loadView('Transaksi.nota', [
             'transaksi' => $transaksi,
             'namaPelanggan' => $namaPelanggan,
         ]);

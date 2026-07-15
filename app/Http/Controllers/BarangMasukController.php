@@ -25,7 +25,7 @@ class BarangMasukController extends Controller
                         ->get();
 
         return view(
-            'barang_masuk.index',
+            'Barang_Masuk.index',
             compact('barangMasuk')
         );
     }
@@ -273,7 +273,7 @@ class BarangMasukController extends Controller
                         ->findOrFail($id);
 
         return view(
-            'barang_masuk.edit',
+            'Barang_Masuk.edit',
             compact('barangMasuk')
         );
     }

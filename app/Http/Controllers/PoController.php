@@ -19,7 +19,7 @@ class PoController extends Controller
                 ->get();
 
         return view(
-            'po.index',
+            'PO.index',
             compact('po')
         );
     }
@@ -29,7 +29,7 @@ class PoController extends Controller
     {
         $barang = Barang::orderBy('nama_barang')->get();
 
-        return view('po.create', compact('barang'));
+        return view('PO.create', compact('barang'));
     }
 
 
@@ -155,7 +155,7 @@ class PoController extends Controller
                 ->findOrFail($id);
 
         return view(
-            'po.edit',
+            'PO.edit',
             compact('po')
         );
     }

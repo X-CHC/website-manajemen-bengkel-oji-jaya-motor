@@ -30,7 +30,7 @@ class LaporanController extends Controller
             ->get();
 
         return view(
-            'laporan.index',
+            'Laporan.index',
             compact(
                 'barang',
                 'kategori'
@@ -196,7 +196,7 @@ class LaporanController extends Controller
             });
 
         $pdf = Pdf::loadView(
-            'laporan.view',
+            'Laporan.view',
             compact(
                 'rekap',
                 'totalPenjualanBarang',
