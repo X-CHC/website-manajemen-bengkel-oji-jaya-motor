@@ -1,4 +1,4 @@
-@extends('layout.app')
+@extends('Layout.app')
 
 @section('content')
 
@@ -14,7 +14,7 @@
         <div class="card">
             <div class="card-header d-flex justify-content-between align-items-center">
                 <h3 class="card-title">Data Kategori Barang</h3>
-                
+
                 @if($canCreateKategori)
                     <a href="{{ route('kategori.create') }}"
                        class="btn btn-primary btn-sm ml-auto">

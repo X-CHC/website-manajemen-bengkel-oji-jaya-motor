@@ -17,45 +17,34 @@ class DashboardController extends Controller
     public function index(Request $request)
     {
         /*
-        |--------------------------------------------------------------------------
         | ROLE USER
-        |--------------------------------------------------------------------------
         */
         $role = strtolower(Auth::user()->role->nama_role ?? '');
 
 
         /*
-        |--------------------------------------------------------------------------
         | PENDAPATAN HARI INI
-        |--------------------------------------------------------------------------
         */
         $pendapatanHariIni = Transaksi::whereDate('tanggal_transaksi', today())
             ->sum('total_harga');
 
 
         /*
-        |--------------------------------------------------------------------------
         | JUMLAH TRANSAKSI HARI INI
-        |--------------------------------------------------------------------------
         */
         $transaksiHariIni = Transaksi::whereDate('tanggal_transaksi', today())
             ->count();
 
 
         /*
-        |--------------------------------------------------------------------------
         | TOTAL PELANGGAN
-        |--------------------------------------------------------------------------
         */
         $totalPelanggan = Pelanggan::count();
 
 
         /*
-        |--------------------------------------------------------------------------
         | BARANG STOK MENIPIS
-        |--------------------------------------------------------------------------
         | Stok menipis jika jumlah_barang <= alert_jumlah_barang.
-        |--------------------------------------------------------------------------
         */
         $barangStokMenipis = Barang::with('kategori')
             ->whereColumn('jumlah_barang', '<=', 'alert_jumlah_barang')
@@ -66,9 +55,7 @@ class DashboardController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
         | TRANSAKSI TERBARU
-        |--------------------------------------------------------------------------
         */
         $transaksiTerbaru = Transaksi::with('pelanggan')
             ->latest()
@@ -77,9 +64,7 @@ class DashboardController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
         | PELANGGAN TERBARU
-        |--------------------------------------------------------------------------
         */
         $pelangganTerbaru = Pelanggan::latest()
             ->limit(4)
@@ -87,9 +72,7 @@ class DashboardController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
         | BARANG TERBARU
-        |--------------------------------------------------------------------------
         */
         $barangTerbaru = Barang::latest()
             ->limit(3)
@@ -97,20 +80,14 @@ class DashboardController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
         | FILTER BULAN DAN TAHUN GRAFIK
-        |--------------------------------------------------------------------------
         */
         $bulanDipilih = $request->bulan ?? now()->month;
 
         $tahunDipilih = $request->tahun ?? now()->year;
 
         /*
-        |--------------------------------------------------------------------------
         | VALIDASI BULAN DAN TAHUN
-        |--------------------------------------------------------------------------
-        | Supaya jika user ubah URL manual ke bulan/tahun aneh, sistem tetap aman.
-        |--------------------------------------------------------------------------
         */
         if ($bulanDipilih < 1 || $bulanDipilih > 12) {
             $bulanDipilih = now()->month;
@@ -122,9 +99,7 @@ class DashboardController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
         | GRAFIK PENDAPATAN BERDASARKAN BULAN DAN TAHUN
-        |--------------------------------------------------------------------------
         */
         $awalBulan = Carbon::create(
             $tahunDipilih,
@@ -161,11 +136,9 @@ class DashboardController extends Controller
 
 
         /*
-        |--------------------------------------------------------------------------
         | KIRIM DATA KE VIEW
-        |--------------------------------------------------------------------------
         */
-        return view('dashboard.index', compact(
+        return view('Dashboard.index', compact(
             'role',
             'pendapatanHariIni',
             'transaksiHariIni',

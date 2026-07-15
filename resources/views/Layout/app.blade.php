@@ -23,10 +23,10 @@
 <div class="wrapper">
 
     {{-- Navbar --}}
-    @include('layout.navbar')
+    @include('Layout.navbar')
 
     {{-- Sidebar --}}
-    @include('layout.sidebar')
+    @include('Layout.sidebar')
 
     {{-- Content --}}
     <div class="content-wrapper">
@@ -34,7 +34,7 @@
     </div>
 
     {{-- Footer --}}
-    @include('layout.footer')
+    @include('Layout.footer')
 
 </div>
 
