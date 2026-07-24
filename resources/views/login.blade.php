@@ -35,6 +35,10 @@
           </div>
       @endif
 
+      @if (session('warning'))
+        <div class="alert alert-warning">{{ session('warning') }}</div>
+      @endif
+
       <form action="{{ route('login.post') }}" method="POST">
         @csrf
 
@@ -59,7 +63,7 @@
           </div>
           <!-- /.col -->
           <div class="col-4">
-            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+            <button type="submit" class="btn btn-primary btn-block">Login</button>
           </div>
           <!-- /.col -->
         </div>
