@@ -155,11 +155,14 @@ class StockOpnameController extends Controller
 
                 $selisih = $stokToko - $stokSistem;
 
+                $alasan = $request->alasan[$index] ?? null;
+
                 $semuaBarang[] = [
                     'barang' => $barang,
                     'stok_sistem' => $stokSistem,
                     'stok_toko' => $stokToko,
                     'selisih' => $selisih,
+                    'alasan' => $alasan,
                 ];
             }
 
@@ -266,6 +269,9 @@ class StockOpnameController extends Controller
 
                 $selisih = $data['selisih'];
 
+                $alasan = $data['alasan'] ?? null;
+
+
 
                 /*
                 |--------------------------------------------------------------------------
@@ -283,6 +289,7 @@ class StockOpnameController extends Controller
                     'stok_sistem' => $stokSistem,
                     'stok_toko' => $stokToko,
                     'selisih' => $selisih,
+                    'alasan' => $alasan,
                 ]);
 
 
@@ -420,6 +427,8 @@ class StockOpnameController extends Controller
 
                 'Selisih' => $detail->selisih,
 
+                'Alasan' => $detail->alasan ?? '-',
+
             ]);
         }
 
@@ -445,6 +454,7 @@ class StockOpnameController extends Controller
                     'Stok Sistem' => '-',
                     'Stok Toko' => '-',
                     'Selisih' => '-',
+                    'Alasan' => '-',
                 ]
             ]);
         }

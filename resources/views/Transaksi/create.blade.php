@@ -68,13 +68,13 @@
 
                             {{-- PELANGGAN --}}
                             <div class="form-group">
-                                <label>Pilih Pelanggan Member</label>
+                                <label>Pilih Member</label>
 
                                 <select name="id_pelanggan"
                                         class="form-control">
 
                                     <option value="">
-                                        -- Pelanggan Umum --
+                                        -- Member Umum --
                                     </option>
 
                                     @foreach($pelanggan as $item)
@@ -93,7 +93,7 @@
 
                             {{-- PELANGGAN LAIN --}}
                             <div class="form-group">
-                                <label>Nama Pelanggan Lain</label>
+                                <label>Member Lain</label>
 
                                 <input type="text"
                                        name="nama_pelanggan_lain"

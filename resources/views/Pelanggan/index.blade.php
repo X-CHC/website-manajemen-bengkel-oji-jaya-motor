@@ -57,7 +57,7 @@
                                     </th>
 
                                     <th>
-                                        ID Pelanggan
+                                        Kode Pelanggan
                                     </th>
 
                                     <th>

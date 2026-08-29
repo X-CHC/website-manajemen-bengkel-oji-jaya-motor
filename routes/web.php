@@ -146,6 +146,9 @@ Route::middleware(['auth',CheckStockOpnameMode::class,'akses.menu',])->group(fun
 
         Route::get('/cetak/{id}', [TransaksiController::class, 'cetakNota'])
             ->name('cetak');
+
+        Route::get('/export-excel', [TransaksiController::class, 'exportExcel'])
+            ->name('export-excel');
     });
 
 

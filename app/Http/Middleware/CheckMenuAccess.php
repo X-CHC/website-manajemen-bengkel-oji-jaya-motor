@@ -20,11 +20,8 @@ class CheckMenuAccess
 
         $user = Auth::user();
 
-        /*
-        |--------------------------------------------------------------------------
-        | ROUTE YANG DICEK
-        |--------------------------------------------------------------------------
-        */
+
+        //ROUTE YANG DICEK
         $routeName = $routeAkses ?: $request->route()?->getName();
 
         if (!$routeName) {
@@ -34,11 +31,8 @@ class CheckMenuAccess
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | CARI MENU BERDASARKAN ROUTE NAME
-        |--------------------------------------------------------------------------
-        */
+
+        //CARI MENU BERDASARKAN ROUTE NAME
         $menu = Menu::where('route_name', $routeName)
             ->first();
 
@@ -49,14 +43,8 @@ class CheckMenuAccess
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | CEK AKSES KHUSUS USER
-        |--------------------------------------------------------------------------
-        | Jika ada data di tbl_user_menu, maka data ini lebih diprioritaskan
-        | daripada akses default role.
-        |--------------------------------------------------------------------------
-        */
+
+        //CEK AKSES KHUSUS USER
         $aksesUser = UserMenu::where('id_user', $user->id_user)
             ->where('id_menu', $menu->id_menu)
             ->first();
@@ -73,11 +61,8 @@ class CheckMenuAccess
             );
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | CEK AKSES DEFAULT ROLE
-        |--------------------------------------------------------------------------
-        */
+
+        //CEK AKSES DEFAULT ROLE
         $aksesRole = RoleMenu::where('id_role', $user->id_role)
             ->where('id_menu', $menu->id_menu)
             ->where('can_access', true)
@@ -87,11 +72,8 @@ class CheckMenuAccess
             return $next($request);
         }
 
-        /*
-        |--------------------------------------------------------------------------
-        | AKSES DITOLAK
-        |--------------------------------------------------------------------------
-        */
+
+        //AKSES DITOLAK
         return $this->redirectKeAksesPertama(
             $user,
             'Akses ditolak. Kamu tidak memiliki izin membuka halaman ini',
@@ -102,10 +84,10 @@ class CheckMenuAccess
 
     /*
     |--------------------------------------------------------------------------
-    | REDIRECT KE AKSES PERTAMA USER
+    //REDIRECT KE AKSES PERTAMA USER
     |--------------------------------------------------------------------------
-    | Supaya user yang tidak punya akses dashboard tidak muter redirect
-    | ke dashboard terus-menerus.
+    //Supaya user yang tidak punya akses dashboard tidak muter redirect
+    //ke dashboard terus-menerus.
     |--------------------------------------------------------------------------
     */
     private function redirectKeAksesPertama($user, $pesan, $routeSaatIni = null)
@@ -124,20 +106,17 @@ class CheckMenuAccess
 
     /*
     |--------------------------------------------------------------------------
-    | CARI ROUTE PERTAMA YANG BISA DIAKSES
+    //CARI ROUTE PERTAMA YANG BISA DIAKSES
     |--------------------------------------------------------------------------
-    | Prioritas:
-    | 1. Akses khusus user dari tbl_user_menu
-    | 2. Akses default role dari tbl_role_menu
+    //Prioritas:
+    //1. Akses khusus user dari tbl_user_menu
+    //2. Akses default role dari tbl_role_menu
     |--------------------------------------------------------------------------
     */
     private function routePertamaYangBisaDiakses($user, $routeSaatIni = null)
     {
-        /*
-        |--------------------------------------------------------------------------
-        | CEK AKSES KHUSUS USER
-        |--------------------------------------------------------------------------
-        */
+
+        //CEK AKSES KHUSUS USER
         $aksesUser = UserMenu::join(
                 'tbl_menu',
                 'tbl_user_menu.id_menu',
@@ -160,11 +139,8 @@ class CheckMenuAccess
         }
 
 
-        /*
-        |--------------------------------------------------------------------------
-        | CEK AKSES DEFAULT ROLE
-        |--------------------------------------------------------------------------
-        */
+
+        //CEK AKSES DEFAULT ROLE
         $aksesRole = RoleMenu::join(
                 'tbl_menu',
                 'tbl_role_menu.id_menu',

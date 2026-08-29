@@ -7,6 +7,7 @@
 @php
     $canCetakTransaksi = punyaAksesMenu('transaksi.cetak', auth()->user());
     $canCreateTransaksi = punyaAksesMenu('transaksi.create', auth()->user());
+    $canExportTransaksiExcel = punyaAksesMenu('transaksi.export-excel', auth()->user());
 @endphp
 
 <div class="container-fluid pt-4">
@@ -14,11 +15,20 @@
     {{-- HEADER --}}
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h4>Data Transaksi</h4>
-        @if($canCreateTransaksi)
-            <a href="{{ route('transaksi.create') }}" class="btn btn-primary">
-                <i class="fas fa-plus"></i> Tambah Transaksi
-            </a>
-        @endif
+
+        <div class="d-flex">
+            @if($canCreateTransaksi)
+                <a href="{{ route('transaksi.create') }}" class="btn btn-primary mr-2">
+                    <i class="fas fa-plus"></i> Tambah Transaksi
+                </a>
+            @endif
+
+            @if($canExportTransaksiExcel)
+                <a href="{{ route('transaksi.export-excel') }}" class="btn btn-success">
+                    <i class="fas fa-file-excel"></i> Cetak Excel
+                </a>
+            @endif
+        </div>
     </div>
 
     {{-- CARD --}}

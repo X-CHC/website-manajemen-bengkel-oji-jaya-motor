@@ -275,3 +275,31 @@
         @endif
     </body>
 </html>
+
+
+
+/*
+        |--------------------------------------------------------------------------
+        | JIKA DATA KOSONG
+        |--------------------------------------------------------------------------
+        */
+        if ($data->isEmpty()) {
+
+            $data = collect([
+                [
+                    'No' => '-',
+                    'ID Stock Opname' => $stockOpname->id_stock_opname,
+                    'Tanggal Opname' => $periode,
+                    'Petugas' => $stockOpname->user->email ?? '-',
+                    'Role Petugas' => $stockOpname->user->role->nama_role ?? '-',
+                    'ID Detail' => '-',
+                    'ID Barang' => '-',
+                    'Nama Barang' => '-',
+                    'Kategori' => '-',
+                    'Stok Sistem' => '-',
+                    'Stok Toko' => '-',
+                    'Selisih' => '-',
+                    'Alasan' => '-',
+                ]
+            ]);
+        }

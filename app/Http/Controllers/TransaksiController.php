@@ -9,6 +9,7 @@ use App\Models\Transaksi;
 use App\Models\DetailTransaksi;
 use App\Models\HistoryStok;
 use Barryvdh\DomPDF\Facade\Pdf;
+use Rap2hpoutre\FastExcel\FastExcel;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 
@@ -261,5 +262,88 @@ class TransaksiController extends Controller
         $pdf->setPaper('A5', 'portrait');
 
         return $pdf->stream('nota-' . $transaksi->id_transaksi . '.pdf');
+    }
+
+    public function exportExcel()
+    {
+        $transaksi = Transaksi::with([
+            'user.role',
+            'detailTransaksi.barang.kategori',
+        ])->get();
+
+        $data = collect();
+
+        $nomor = 1;
+
+        foreach ($transaksi as $item) {
+
+            foreach ($item->detailTransaksi as $detail) {
+
+                $data->push([
+                    'No' => $nomor++,
+
+                    'ID Transaksi' => $item->id_transaksi,
+
+                    'Petugas' => $item->user->email ?? '-',
+
+                    'Role Petugas' => $item->user->role->nama_role ?? '-',
+
+                    'Tanggal Transaksi' => $item->tanggal_transaksi,
+
+                    'Nama Barang' => $detail->barang->nama_barang ?? 'Barang Dihapus',
+
+                    'Jumlah Barang' => $detail->jumlah_barang,
+
+                    'Harga Barang' => $detail->harga_barang,
+
+                    'Sub Total' => $detail->sub_total,
+
+                    'Total Harga' => $item->total_harga,
+
+                    'Harga Jasa' => $item->harga_jasa ?? 0,
+
+                    'Uang Bayar' => $item->uang_bayar,
+
+                    'Uang Kembali' => $item->uang_kembali,
+                ]);
+            }
+
+            // Jika transaksi hanya memiliki jasa tanpa barang
+            if ($item->detailTransaksi->isEmpty() && ($item->harga_jasa ?? 0) > 0) {
+
+                $data->push([
+                    'No' => $nomor++,
+
+                    'ID Transaksi' => $item->id_transaksi,
+
+                    'Petugas' => $item->user->email ?? '-',
+
+                    'Role Petugas' => $item->user->role->nama_role ?? '-',
+
+                    'Tanggal Transaksi' => $item->tanggal_transaksi->format('d-m-Y H:i:s'),
+
+                    'Nama Barang' => '-',
+
+                    'Jumlah Barang' => '-',
+
+                    'Harga Barang' => '-',
+
+                    'Sub Total' => '-',
+
+                    'Total Harga' => $item->total_harga,
+
+                    'Harga Jasa' => $item->harga_jasa,
+
+                    'Uang Bayar' => $item->uang_bayar,
+
+                    'Uang Kembali' => $item->uang_kembali,
+                ]);
+            }
+        }
+
+        return (new FastExcel($data))
+            ->download(
+                'data-transaksi-' . now()->format('d-m-Y') . '.xlsx'
+            );
     }
 }

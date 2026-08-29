@@ -278,280 +278,18 @@ class DummyBengkelSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | PURCHASE ORDER (Digeser ke bulan Mei)
-        |--------------------------------------------------------------------------
-        */
-        DB::table('tbl_po')->insert([
-            [
-                'id_po' => 'PO0001',
-                'tgl_po' => '2026-05-01',
-                'mitra_po' => 'Jaya Motor Part',
-                'status_po' => 'selesai',
-                'created_at' => Carbon::parse('2026-05-01'),
-                'updated_at' => Carbon::parse('2026-05-01'),
-            ],
-            [
-                'id_po' => 'PO0002',
-                'tgl_po' => '2026-05-08',
-                'mitra_po' => 'Sumber Sparepart',
-                'status_po' => 'selesai',
-                'created_at' => Carbon::parse('2026-05-08'),
-                'updated_at' => Carbon::parse('2026-05-08'),
-            ],
-            [
-                'id_po' => 'PO0003',
-                'tgl_po' => '2026-05-15',
-                'mitra_po' => 'Mitra Ban & Aki',
-                'status_po' => 'selesai',
-                'created_at' => Carbon::parse('2026-05-15'),
-                'updated_at' => Carbon::parse('2026-05-15'),
-            ],
-            [
-                'id_po' => 'PO0004',
-                'tgl_po' => '2026-05-25',
-                'mitra_po' => 'Gudang Sparepart Motor',
-                'status_po' => 'pending',
-                'created_at' => Carbon::parse('2026-05-25'),
-                'updated_at' => Carbon::parse('2026-05-25'),
-            ],
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DETAIL PO (Digeser ke bulan Mei)
-        |--------------------------------------------------------------------------
-        */
-        DB::table('tbl_detail_po')->insert([
-            [
-                'id_detail_po' => 'DPO001',
-                'id_po' => 'PO0001',
-                'id_barang' => 'BRG001',
-                'jumlah_po' => 15,
-                'created_at' => Carbon::parse('2026-05-01'),
-                'updated_at' => Carbon::parse('2026-05-01'),
-            ],
-            [
-                'id_detail_po' => 'DPO002',
-                'id_po' => 'PO0001',
-                'id_barang' => 'BRG003',
-                'jumlah_po' => 20,
-                'created_at' => Carbon::parse('2026-05-01'),
-                'updated_at' => Carbon::parse('2026-05-01'),
-            ],
-            [
-                'id_detail_po' => 'DPO003',
-                'id_po' => 'PO0002',
-                'id_barang' => 'BRG002',
-                'jumlah_po' => 10,
-                'created_at' => Carbon::parse('2026-05-08'),
-                'updated_at' => Carbon::parse('2026-05-08'),
-            ],
-            [
-                'id_detail_po' => 'DPO004',
-                'id_po' => 'PO0002',
-                'id_barang' => 'BRG004',
-                'jumlah_po' => 15,
-                'created_at' => Carbon::parse('2026-05-08'),
-                'updated_at' => Carbon::parse('2026-05-08'),
-            ],
-            [
-                'id_detail_po' => 'DPO005',
-                'id_po' => 'PO0003',
-                'id_barang' => 'BRG005',
-                'jumlah_po' => 5,
-                'created_at' => Carbon::parse('2026-05-15'),
-                'updated_at' => Carbon::parse('2026-05-15'),
-            ],
-            [
-                'id_detail_po' => 'DPO006',
-                'id_po' => 'PO0003',
-                'id_barang' => 'BRG006',
-                'jumlah_po' => 4,
-                'created_at' => Carbon::parse('2026-05-15'),
-                'updated_at' => Carbon::parse('2026-05-15'),
-            ],
-            [
-                'id_detail_po' => 'DPO007',
-                'id_po' => 'PO0004',
-                'id_barang' => 'BRG001',
-                'jumlah_po' => 20,
-                'created_at' => Carbon::parse('2026-05-25'),
-                'updated_at' => Carbon::parse('2026-05-25'),
-            ],
-            [
-                'id_detail_po' => 'DPO008',
-                'id_po' => 'PO0004',
-                'id_barang' => 'BRG002',
-                'jumlah_po' => 15,
-                'created_at' => Carbon::parse('2026-05-25'),
-                'updated_at' => Carbon::parse('2026-05-25'),
-            ],
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | BARANG MASUK (Digeser ke bulan Mei)
-        |--------------------------------------------------------------------------
-        */
-        DB::table('tbl_barang_masuk')->insert([
-            [
-                'id_barang_masuk' => 'BMK001',
-                'id_po' => 'PO0001',
-                'tanggal_masuk' => '2026-05-03',
-                'total_bayar' => 900000,
-                'bukti_bayar' => '1778323222_ane statis 1.png',
-                'created_at' => Carbon::parse('2026-05-03'),
-                'updated_at' => Carbon::parse('2026-05-03'),
-            ],
-            [
-                'id_barang_masuk' => 'BMK002',
-                'id_po' => 'PO0002',
-                'tanggal_masuk' => '2026-05-10',
-                'total_bayar' => 905000,
-                'bukti_bayar' => '1778474747_Screenshot (7).png',
-                'created_at' => Carbon::parse('2026-05-10'),
-                'updated_at' => Carbon::parse('2026-05-10'),
-            ],
-            [
-                'id_barang_masuk' => 'BMK003',
-                'id_po' => 'PO0003',
-                'tanggal_masuk' => '2026-05-17',
-                'total_bayar' => 1860000,
-                'bukti_bayar' => '1778474747_Screenshot (7).png',
-                'created_at' => Carbon::parse('2026-05-17'),
-                'updated_at' => Carbon::parse('2026-05-17'),
-            ],
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | DETAIL BARANG MASUK (Digeser ke bulan Mei)
-        |--------------------------------------------------------------------------
-        */
-        DB::table('tbl_detail_masuk')->insert([
-            [
-                'id_detail_masuk' => 'DMK001',
-                'id_barang_masuk' => 'BMK001',
-                'id_barang' => 'BRG001',
-                'jumlah_barang' => 15,
-                'harga_beli' => 40000,
-                'sub_total' => 600000,
-                'created_at' => Carbon::parse('2026-05-03'),
-                'updated_at' => Carbon::parse('2026-05-03'),
-            ],
-            [
-                'id_detail_masuk' => 'DMK002',
-                'id_barang_masuk' => 'BMK001',
-                'id_barang' => 'BRG003',
-                'jumlah_barang' => 20,
-                'harga_beli' => 15000,
-                'sub_total' => 300000,
-                'created_at' => Carbon::parse('2026-05-03'),
-                'updated_at' => Carbon::parse('2026-05-03'),
-            ],
-            [
-                'id_detail_masuk' => 'DMK003',
-                'id_barang_masuk' => 'BMK002',
-                'id_barang' => 'BRG002',
-                'jumlah_barang' => 10,
-                'harga_beli' => 38000,
-                'sub_total' => 380000,
-                'created_at' => Carbon::parse('2026-05-10'),
-                'updated_at' => Carbon::parse('2026-05-10'),
-            ],
-            [
-                'id_detail_masuk' => 'DMK004',
-                'id_barang_masuk' => 'BMK002',
-                'id_barang' => 'BRG004',
-                'jumlah_barang' => 15,
-                'harga_beli' => 35000,
-                'sub_total' => 525000,
-                'created_at' => Carbon::parse('2026-05-10'),
-                'updated_at' => Carbon::parse('2026-05-10'),
-            ],
-            [
-                'id_detail_masuk' => 'DMK005',
-                'id_barang_masuk' => 'BMK003',
-                'id_barang' => 'BRG005',
-                'jumlah_barang' => 5,
-                'harga_beli' => 180000,
-                'sub_total' => 900000,
-                'created_at' => Carbon::parse('2026-05-17'),
-                'updated_at' => Carbon::parse('2026-05-17'),
-            ],
-            [
-                'id_detail_masuk' => 'DMK006',
-                'id_barang_masuk' => 'BMK003',
-                'id_barang' => 'BRG006',
-                'jumlah_barang' => 4,
-                'harga_beli' => 240000,
-                'sub_total' => 960000,
-                'created_at' => Carbon::parse('2026-05-17'),
-                'updated_at' => Carbon::parse('2026-05-17'),
-            ],
-        ]);
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | BARANG MASUK HISTORY (Digeser ke bulan Mei)
-        |--------------------------------------------------------------------------
-        */
-        $barangMasukHistory = [
-            [
-                'tanggal' => '2026-05-03',
-                'id_barang' => 'BRG001',
-                'jumlah' => 15,
-            ],
-            [
-                'tanggal' => '2026-05-03',
-                'id_barang' => 'BRG003',
-                'jumlah' => 20,
-            ],
-            [
-                'tanggal' => '2026-05-10',
-                'id_barang' => 'BRG002',
-                'jumlah' => 10,
-            ],
-            [
-                'tanggal' => '2026-05-10',
-                'id_barang' => 'BRG004',
-                'jumlah' => 15,
-            ],
-            [
-                'tanggal' => '2026-05-17',
-                'id_barang' => 'BRG005',
-                'jumlah' => 5,
-            ],
-            [
-                'tanggal' => '2026-05-17',
-                'id_barang' => 'BRG006',
-                'jumlah' => 4,
-            ],
-        ];
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | HITUNG STOK TERSEDIA SETELAH BARANG MASUK
+        | STOK TERSEDIA (tanpa PO / Barang Masuk, stok tersedia = stok awal)
         |--------------------------------------------------------------------------
         */
         $stokTersedia = $stokAwal;
-
-        foreach ($barangMasukHistory as $masuk) {
-            $stokTersedia[$masuk['id_barang']] += $masuk['jumlah'];
-        }
 
 
         /*
         |--------------------------------------------------------------------------
         | TARGET STOK AKHIR
         |--------------------------------------------------------------------------
-        | 4 barang sengaja dibuat habis untuk testing:
-        | BRG001, BRG002, BRG003, BRG004
+        | 2 barang sengaja dibuat habis untuk testing:
+        | BRG002, BRG004
         |--------------------------------------------------------------------------
         */
         $targetStokAkhir = [
@@ -587,8 +325,8 @@ class DummyBengkelSeeder extends Seeder
         $idTransaksiCounter = 1;
         $idDetailTransaksiCounter = 1;
 
-        // DIUBAH MULAI DARI 1 MEI 2026
-        $tanggalMulai = Carbon::create(2026, 5, 1);
+        // DIUBAH MULAI DARI 1 JUNI 2026
+        $tanggalMulai = Carbon::create(2026, 6, 1);
         $tanggalAkhir = Carbon::now();
 
         $tanggalBerjalan = $tanggalMulai->copy();
@@ -749,7 +487,7 @@ class DummyBengkelSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | HISTORY STOK AWAL (Digeser ke bulan Mei)
+        | HISTORY STOK AWAL (Digeser ke bulan Juni)
         |--------------------------------------------------------------------------
         */
         foreach ($stokAwal as $idBarang => $jumlahAwal) {
@@ -763,32 +501,8 @@ class DummyBengkelSeeder extends Seeder
                 'jumlah_keluar' => 0,
                 'jumlah_sisa' => $jumlahAwal,
                 'jumlah_barang' => $jumlahAwal,
-                'created_at' => Carbon::parse('2026-05-01'),
-                'updated_at' => Carbon::parse('2026-05-01'),
-            ];
-
-            $historyCounter++;
-        }
-
-
-        /*
-        |--------------------------------------------------------------------------
-        | HISTORY BARANG MASUK
-        |--------------------------------------------------------------------------
-        */
-        foreach ($barangMasukHistory as $masuk) {
-
-            $stokBerjalan[$masuk['id_barang']] += $masuk['jumlah'];
-
-            $history[] = [
-                'id_history_stok' => 'HS' . str_pad($historyCounter, 4, '0', STR_PAD_LEFT),
-                'id_barang' => $masuk['id_barang'],
-                'jumlah_masuk' => $masuk['jumlah'],
-                'jumlah_keluar' => 0,
-                'jumlah_sisa' => $stokBerjalan[$masuk['id_barang']],
-                'jumlah_barang' => $stokBerjalan[$masuk['id_barang']],
-                'created_at' => Carbon::parse($masuk['tanggal']),
-                'updated_at' => Carbon::parse($masuk['tanggal']),
+                'created_at' => Carbon::parse('2026-06-01'),
+                'updated_at' => Carbon::parse('2026-06-01'),
             ];
 
             $historyCounter++;
@@ -857,6 +571,6 @@ class DummyBengkelSeeder extends Seeder
             DB::table('tbl_history_stok')->insert($chunk);
         }
 
-        $this->command->info('Data dummy bengkel berhasil dibuat (Mulai Mei 2026).');
+        $this->command->info('Data dummy bengkel berhasil dibuat (Mulai Juni 2026).');
     }
 }

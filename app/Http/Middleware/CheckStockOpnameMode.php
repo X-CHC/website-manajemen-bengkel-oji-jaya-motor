@@ -30,7 +30,7 @@ class CheckStockOpnameMode
         }
 
         if (!Auth::check()) {
-            return $next($request); // biar ditangani middleware auth/login seperti biasa
+            return $next($request);
         }
 
         $user = Auth::user();
@@ -38,8 +38,6 @@ class CheckStockOpnameMode
         /*
         |--------------------------------------------------------------------------
         | CEK APAKAH ROLE USER PUNYA AKSES KE HALAMAN STOCK OPNAME
-        |--------------------------------------------------------------------------
-        | Pakai tabel tbl_role_menu yang udah ada, bukan hardcode nama role.
         |--------------------------------------------------------------------------
         */
         $menuStockOpname = Menu::where('route_name', 'stock-opname.create')->first();

@@ -157,6 +157,8 @@
 
                                 <th>Selisih</th>
 
+                                <th>Alasan</th>
+
                             </tr>
 
                         </thead>
@@ -206,6 +208,16 @@
                                                class="form-control selisih"
                                                value="0"
                                                readonly>
+                                    </td>
+
+                                    <td>
+                                        <input type="text"
+                                                name="alasan[]"
+                                               class="form-control alasan"
+                                               value="{{ old('alasan.' . $loop->index) }}"
+                                               placeholder="Masukkan alasan perubahan stok"
+                                               {{ !$modeStockOpname ? 'readonly' : '' }}
+                                               {{ $sudahStockOpnameBulanIni ? 'readonly' : '' }}>
                                     </td>
 
                                 </tr>

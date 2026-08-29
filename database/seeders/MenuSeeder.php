@@ -6,6 +6,8 @@ use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 
+// INSERT INTO tbl_menu (id_menu, nama_menu, route_name, icon, urutan, created_at)
+// VALUES ("MN0060", "test", "dashboard.test", "test", 60, NOW());
 class MenuSeeder extends Seeder
 {
     public function run(): void
@@ -30,7 +32,7 @@ class MenuSeeder extends Seeder
                 'nama_menu' => 'Grafik Dashboard',
                 'route_name' => 'dashboard.grafik',
                 'icon' => 'fas fa-chart-line',
-                'urutan' => 2,
+                'urutan' => 59,
                 'created_at' => Carbon::now(),
             ],
 
@@ -553,6 +555,14 @@ class MenuSeeder extends Seeder
                 'route_name' => 'role.destroy',
                 'icon' => 'fas fa-user-shield',
                 'urutan' => 58,
+                'created_at' => Carbon::now(),
+            ],
+            [
+                'id_menu' => 'MN0060',
+                'nama_menu' => 'Export Excel Transaksi',
+                'route_name' => 'transaksi.export-excel',
+                'icon' => 'fas fa-user-shield',
+                'urutan' => 60,
                 'created_at' => Carbon::now(),
             ],
         ]);

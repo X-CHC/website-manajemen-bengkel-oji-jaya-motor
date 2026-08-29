@@ -174,6 +174,7 @@
                             <thead>
                                 <tr>
                                     <th width="5%">NO</th>
+                                    <th>Kode Barang</th>
                                     <th>Kategori</th>
                                     <th>Nama Barang</th>
                                     <th>Harga Beli</th>
@@ -181,7 +182,6 @@
                                     <th>Stok</th>
                                     <th>Alert</th>
                                     <th>Status Stok</th>
-                                    <th>Dibuat</th>
 
                                     @if($canEditBarang || $canDeleteBarang)
                                         <th width="15%">Action</th>
@@ -198,11 +198,14 @@
                                             stok-habis
                                         @elseif($item->jumlah_barang <= $item->alert_jumlah_barang)
                                             stok-menipis
-                                        @endif
-                                    ">
+                                        @endif">
 
                                         <td>
                                             {{ $loop->iteration }}
+                                        </td>
+
+                                        <td>
+                                            {{ $item->id_barang }}
                                         </td>
 
                                         <td>
@@ -249,10 +252,6 @@
                                                 </span>
 
                                             @endif
-                                        </td>
-
-                                        <td>
-                                            {{ $item->created_at->format('d-m-Y H:i') }}
                                         </td>
 
                                         @if($canEditBarang || $canDeleteBarang)

@@ -24,6 +24,7 @@ class DetailStockOpname extends Model
         'stok_sistem',
         'stok_toko',
         'selisih',
+        'alasan',
     ];
 
     public function stockOpname()
