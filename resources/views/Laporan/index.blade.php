@@ -173,6 +173,13 @@
 
 @endsection
 
+@push('styles')
+<style>
+    .select2-container .select2-selection__choice {
+        color: #007bff !important;
+    }
+</style>
+@endpush
 
 @push('scripts')
 
